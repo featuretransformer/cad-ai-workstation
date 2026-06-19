@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useCADStore } from "@/store/cadStore";
 import { useCADSession } from "@/hooks/useCADSession";
 import ViewerCanvas from "./ViewerCanvas";
@@ -12,20 +12,38 @@ import StatusBar from "./StatusBar";
 export default function Workstation() {
   const { leftPanelTab, setLeftPanelTab, rightPanelTab, setRightPanelTab, activeSession } = useCADStore();
   const { loadSessions, createSession } = useCADSession();
+  const [backendOnline, setBackendOnline] = useState<boolean | null>(null);
 
   useEffect(() => {
     loadSessions().then(async (sessions) => {
       if (sessions.length === 0) {
-        await createSession("Default Session");
+        // Try to create a default session — if backend is online
+        const s = await createSession("Default Session");
+        setBackendOnline(s !== null);
       } else {
         useCADStore.getState().setActiveSession(sessions[0]);
+        setBackendOnline(true);
       }
-    });
+    }).catch(() => setBackendOnline(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: "var(--bg-base)", overflow: "hidden" }}>
+      {/* Offline Banner */}
+      {backendOnline === false && (
+        <div style={{
+          background: "rgba(239,68,68,0.12)", borderBottom: "1px solid rgba(239,68,68,0.25)",
+          padding: "6px 16px", fontSize: 12, color: "#fca5a5",
+          display: "flex", alignItems: "center", gap: 8,
+        }}>
+          <span>⚠</span>
+          <strong>Backend offline</strong> — Start the FastAPI server:
+          <code style={{ background: "rgba(0,0,0,0.3)", padding: "1px 6px", borderRadius: 4, fontFamily: "JetBrains Mono, monospace" }}>
+            cd backend &amp;&amp; source .venv/bin/activate &amp;&amp; uvicorn main:app --reload --port 8000
+          </code>
+        </div>
+      )}
       {/* Header */}
       <header style={{ height: 52, background: "var(--bg-panel)", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", padding: "0 16px", gap: 12, flexShrink: 0, zIndex: 10 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

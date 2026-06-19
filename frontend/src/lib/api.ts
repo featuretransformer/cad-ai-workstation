@@ -14,12 +14,21 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json();
 }
 
+/** Same as request() but returns null instead of throwing on network errors */
+async function safeRequest<T>(path: string, options?: RequestInit): Promise<T | null> {
+  try {
+    return await request<T>(path, options);
+  } catch {
+    return null;
+  }
+}
+
 // Sessions
 export const api = {
   createSession: (name = "Untitled Session") =>
     request("/api/sessions/", { method: "POST", body: JSON.stringify({ name }) }),
 
-  listSessions: () => request("/api/sessions/"),
+  listSessions: () => safeRequest("/api/sessions/"),
 
   deleteSession: (id: string) =>
     request(`/api/sessions/${id}`, { method: "DELETE" }),
@@ -41,11 +50,11 @@ export const api = {
   getTaskStatus: (taskId: string) => request(`/api/design/task/${taskId}/status`),
 
   // Exports
-  getExports: (designId: string) => request(`/api/export/${designId}/files`),
+  getExports: (designId: string) => safeRequest(`/api/export/${designId}/files`),
 
   getDownloadUrl: (designId: string, format: string) =>
     `${API_URL}/api/export/${designId}/download/${format}`,
 
   // Health
-  health: () => request("/api/health"),
+  health: () => safeRequest("/api/health"),
 };

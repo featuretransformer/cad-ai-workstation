@@ -17,7 +17,9 @@ export default function ExportPanel() {
 
   useEffect(() => {
     if (activeDesign?.id) {
-      api.getExports(activeDesign.id).then((e) => setExports(e as ExportArtifact[])).catch(() => {});
+      api.getExports(activeDesign.id)
+        .then((e) => setExports((e as ExportArtifact[] | null) ?? []))
+        .catch(() => {});
     }
   }, [activeDesign?.id, setExports]);
 
