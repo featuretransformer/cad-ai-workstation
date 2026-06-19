@@ -1,0 +1,14 @@
+.env
+*.pyc
+__pycache__/
+.venv/
+node_modules/
+.next/
+*.step
+*.stl
+*.glb
+*.obj
+exports/
+*.egg-info/
+dist/
+.DS_Store

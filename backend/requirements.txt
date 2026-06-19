@@ -1,0 +1,41 @@
+# Core
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.9.2
+pydantic-settings==2.6.1
+python-multipart==0.0.12
+aiofiles==24.1.0
+
+# Database
+sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
+alembic==1.14.0
+
+# Task Queue
+celery[redis]==5.4.0
+redis==5.2.0
+flower==2.0.1
+
+# LLM / Agents
+langgraph==0.2.56
+langchain==0.3.7
+langchain-core==0.3.19
+langchain-google-genai==2.0.7
+langchain-groq==0.2.1
+langchain-community==0.3.7
+
+# CAD Kernel
+build123d==0.8.0
+
+# Mesh & Export
+trimesh==4.5.3
+numpy==1.26.4
+pygltflib==1.16.2
+
+# Object Storage
+minio==7.2.11
+
+# Utilities
+python-dotenv==1.0.1
+httpx==0.27.2
+websockets==13.1
