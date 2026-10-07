@@ -1,7 +1,7 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 from uuid import UUID
+from pydantic import BaseModel, Field
 
 
 class SessionCreate(BaseModel):
@@ -13,9 +13,7 @@ class SessionResponse(BaseModel):
     name: str
     created_at: datetime
     updated_at: datetime
-
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class DesignCreate(BaseModel):
@@ -30,18 +28,19 @@ class DesignResponse(BaseModel):
     prompt: str
     status: str = "PENDING"
     cad_code: Optional[str] = None
-    feature_tree: Dict[str, Any] = {}
+    feature_tree: Dict[str, Any] = Field(default_factory=dict)
     geometry_valid: bool = False
-    dfm_report: Dict[str, Any] = {}
-    engineering_report: Dict[str, Any] = {}
-    cost_estimate: Dict[str, Any] = {}
-    safety_report: Dict[str, Any] = {}
-    alternatives: List[Dict[str, Any]] = []
-    confidence_scores: Dict[str, float] = {}
+    validation_errors: List[str] = Field(default_factory=list)
+    validation_stats: Dict[str, Any] = Field(default_factory=dict)
+    failure_reason: Optional[str] = None
+    dfm_report: Dict[str, Any] = Field(default_factory=dict)
+    engineering_report: Dict[str, Any] = Field(default_factory=dict)
+    cost_estimate: Dict[str, Any] = Field(default_factory=dict)
+    safety_report: Dict[str, Any] = Field(default_factory=dict)
+    alternatives: List[Dict[str, Any]] = Field(default_factory=list)
+    confidence_scores: Dict[str, float] = Field(default_factory=dict)
     created_at: datetime
-
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class AgentLogResponse(BaseModel):
@@ -51,16 +50,14 @@ class AgentLogResponse(BaseModel):
     status: str
     message: Optional[str] = None
     confidence: float = 0.0
-    payload: Dict[str, Any] = {}
+    payload: Dict[str, Any] = Field(default_factory=dict)
     created_at: datetime
-
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class GenerateRequest(BaseModel):
     session_id: UUID
-    prompt: str
+    prompt: str = Field(min_length=1, max_length=10000)
 
 
 class GenerateResponse(BaseModel):
@@ -76,6 +73,4 @@ class ExportArtifactResponse(BaseModel):
     file_path: str
     file_size_bytes: int
     created_at: datetime
-
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
