@@ -1,5 +1,7 @@
-from pydantic_settings import BaseSettings
 from functools import lru_cache
+from typing import List
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -26,6 +28,7 @@ class Settings(BaseSettings):
     # App
     dev_mode: bool = True
     secret_key: str = "dev-secret-key"
+    cors_origins: str = "http://localhost:3000"  # Comma-separated list
     max_retries: int = 5
     cad_timeout_seconds: int = 60
     max_alternatives: int = 5
@@ -35,9 +38,16 @@ class Settings(BaseSettings):
     processed_dir: str = "datasets/processed"
     knowledge_db_path: str = "datasets/processed/knowledge.db"
 
-    class Config:
-        env_file = ".env"
-        extra = "ignore"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore",
+    )
+
+    def get_cors_origins(self) -> List[str]:
+        """Parse CORS origins from comma-separated string."""
+        if self.dev_mode:
+            return ["*"]
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
 
 
 @lru_cache()
