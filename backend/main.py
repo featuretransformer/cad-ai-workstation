@@ -11,11 +11,9 @@ from utils.storage import init_storage
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
     Base.metadata.create_all(bind=engine)
     await init_storage()
     yield
-    # Shutdown (nothing to clean up currently)
 
 
 settings = get_settings()
@@ -29,13 +27,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=["*"] if settings.dev_mode else settings.allowed_origins(),
+    allow_credentials=settings.dev_mode is False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Routers
 app.include_router(sessions.router, prefix="/api/sessions", tags=["sessions"])
 app.include_router(design.router, prefix="/api/design", tags=["design"])
 app.include_router(export.router, prefix="/api/export", tags=["export"])
