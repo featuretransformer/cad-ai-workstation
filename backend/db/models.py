@@ -1,8 +1,8 @@
 import uuid
+from datetime import datetime, timezone
 from sqlalchemy import Column, String, Integer, Float, Boolean, Text, JSON, DateTime, ForeignKey, BigInteger
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
-from datetime import datetime, timezone
 from db.base import Base
 
 
@@ -28,13 +28,16 @@ class Design(Base):
     cad_code = Column(Text)
     feature_tree = Column(JSON, default={})
     geometry_valid = Column(Boolean, default=False)
+    validation_errors = Column(JSON, default=[])
+    validation_stats = Column(JSON, default={})
+    failure_reason = Column(Text)
     dfm_report = Column(JSON, default={})
     engineering_report = Column(JSON, default={})
     cost_estimate = Column(JSON, default={})
     safety_report = Column(JSON, default={})
     alternatives = Column(JSON, default=[])
     confidence_scores = Column(JSON, default={})
-    status = Column(String(50), default="PENDING")  # PENDING | IN_PROGRESS | COMPLETE | FAILED
+    status = Column(String(50), default="PENDING")
     created_at = Column(DateTime(timezone=True), default=utcnow)
     session = relationship("Session", back_populates="designs")
     agent_logs = relationship("AgentLog", back_populates="design", cascade="all, delete-orphan")
@@ -46,7 +49,7 @@ class AgentLog(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     design_id = Column(UUID(as_uuid=True), ForeignKey("designs.id", ondelete="CASCADE"))
     agent_name = Column(String(100), nullable=False)
-    status = Column(String(50), nullable=False)  # running | done | error
+    status = Column(String(50), nullable=False)
     message = Column(Text)
     confidence = Column(Float, default=0.0)
     payload = Column(JSON, default={})

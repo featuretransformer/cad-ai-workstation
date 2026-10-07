@@ -2,7 +2,6 @@
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Sessions table
 CREATE TABLE IF NOT EXISTS sessions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL DEFAULT 'Untitled Session',
@@ -10,7 +9,6 @@ CREATE TABLE IF NOT EXISTS sessions (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Designs table (versioned)
 CREATE TABLE IF NOT EXISTS designs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     session_id UUID REFERENCES sessions(id) ON DELETE CASCADE,
@@ -19,10 +17,24 @@ CREATE TABLE IF NOT EXISTS designs (
     cad_code TEXT,
     feature_tree JSONB DEFAULT '{}',
     geometry_valid BOOLEAN DEFAULT FALSE,
+    validation_errors JSONB DEFAULT '[]',
+    validation_stats JSONB DEFAULT '{}',
+    failure_reason TEXT,
+    dfm_report JSONB DEFAULT '{}',
+    engineering_report JSONB DEFAULT '{}',
+    cost_estimate JSONB DEFAULT '{}',
+    safety_report JSONB DEFAULT '{}',
+    alternatives JSONB DEFAULT '[]',
+    confidence_scores JSONB DEFAULT '{}',
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Agent logs
+ALTER TABLE designs ADD COLUMN IF NOT EXISTS validation_errors JSONB DEFAULT '[]';
+ALTER TABLE designs ADD COLUMN IF NOT EXISTS validation_stats JSONB DEFAULT '{}';
+ALTER TABLE designs ADD COLUMN IF NOT EXISTS failure_reason TEXT;
+ALTER TABLE designs ADD COLUMN IF NOT EXISTS status VARCHAR(50) NOT NULL DEFAULT 'PENDING';
+
 CREATE TABLE IF NOT EXISTS agent_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     design_id UUID REFERENCES designs(id) ON DELETE CASCADE,
@@ -34,7 +46,6 @@ CREATE TABLE IF NOT EXISTS agent_logs (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Export artifacts
 CREATE TABLE IF NOT EXISTS export_artifacts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     design_id UUID REFERENCES designs(id) ON DELETE CASCADE,
@@ -44,6 +55,6 @@ CREATE TABLE IF NOT EXISTS export_artifacts (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_designs_session ON designs(session_id);
-CREATE INDEX idx_agent_logs_design ON agent_logs(design_id);
-CREATE INDEX idx_exports_design ON export_artifacts(design_id);
+CREATE INDEX IF NOT EXISTS idx_designs_session ON designs(session_id);
+CREATE INDEX IF NOT EXISTS idx_agent_logs_design ON agent_logs(design_id);
+CREATE INDEX IF NOT EXISTS idx_exports_design ON export_artifacts(design_id);
