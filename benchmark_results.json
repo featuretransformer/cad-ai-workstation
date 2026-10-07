@@ -1,0 +1,129 @@
+{
+  "timestamp": "2026-10-06 22:42:11",
+  "levels": [
+    "L1",
+    "L2"
+  ],
+  "total_cases": 4,
+  "trials": [
+    {
+      "prompt_id": "L1-1",
+      "name": "Box Primitive",
+      "level": "L1",
+      "prompt": "Create a rectangular box 100mm \u00d7 60mm \u00d7 40mm",
+      "baseline": {
+        "mode": "baseline",
+        "prompt_id": "L1-1",
+        "success": true,
+        "cadir_valid": false,
+        "watertight": true,
+        "volume": 227438.83684890936,
+        "latency_sec": 3.99,
+        "error": ""
+      },
+      "enhanced": {
+        "mode": "enhanced",
+        "prompt_id": "L1-1",
+        "success": true,
+        "cadir_valid": true,
+        "watertight": true,
+        "volume": 229687.91079094843,
+        "latency_sec": 7.982,
+        "retrieved_examples_count": 3,
+        "dfm_score": 92,
+        "error": ""
+      }
+    },
+    {
+      "prompt_id": "L1-2",
+      "name": "Cylinder Primitive",
+      "level": "L1",
+      "prompt": "Create a cylinder with diameter 50mm and height 80mm",
+      "baseline": {
+        "mode": "baseline",
+        "prompt_id": "L1-2",
+        "success": true,
+        "cadir_valid": false,
+        "watertight": true,
+        "volume": 227438.83684890936,
+        "latency_sec": 3.579,
+        "error": ""
+      },
+      "enhanced": {
+        "mode": "enhanced",
+        "prompt_id": "L1-2",
+        "success": true,
+        "cadir_valid": true,
+        "watertight": true,
+        "volume": 45839.03962404217,
+        "latency_sec": 7.502,
+        "retrieved_examples_count": 3,
+        "dfm_score": 92,
+        "error": ""
+      }
+    },
+    {
+      "prompt_id": "L2-1",
+      "name": "Block with Through-Hole",
+      "level": "L2",
+      "prompt": "Create a rectangular block 100\u00d760\u00d740mm with a 20mm through-hole centered on the top face",
+      "baseline": {
+        "mode": "baseline",
+        "prompt_id": "L2-1",
+        "success": true,
+        "cadir_valid": false,
+        "watertight": true,
+        "volume": 227438.83684890936,
+        "latency_sec": 3.684,
+        "error": ""
+      },
+      "enhanced": {
+        "mode": "enhanced",
+        "prompt_id": "L2-1",
+        "success": true,
+        "cadir_valid": true,
+        "watertight": true,
+        "volume": 229687.91079094843,
+        "latency_sec": 7.625,
+        "retrieved_examples_count": 3,
+        "dfm_score": 92,
+        "error": ""
+      }
+    },
+    {
+      "prompt_id": "L2-2",
+      "name": "Cylinder with Chamfer",
+      "level": "L2",
+      "prompt": "Create a cylinder diameter 50mm, height 80mm, with a 2mm chamfer on the top edge",
+      "baseline": {
+        "mode": "baseline",
+        "prompt_id": "L2-2",
+        "success": true,
+        "cadir_valid": false,
+        "watertight": true,
+        "volume": 227438.83684890936,
+        "latency_sec": 3.53,
+        "error": ""
+      },
+      "enhanced": {
+        "mode": "enhanced",
+        "prompt_id": "L2-2",
+        "success": true,
+        "cadir_valid": true,
+        "watertight": true,
+        "volume": 7639.839937340362,
+        "latency_sec": 7.554,
+        "retrieved_examples_count": 3,
+        "dfm_score": 92,
+        "error": ""
+      }
+    }
+  ],
+  "summary": {
+    "baseline_success_rate": 100.0,
+    "enhanced_success_rate": 100.0,
+    "enhanced_cadir_valid_rate": 100.0,
+    "enhanced_watertight_rate": 100.0,
+    "relative_improvement_pct": 0.0
+  }
+}

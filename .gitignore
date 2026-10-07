@@ -1,0 +1,42 @@
+# Datasets
+datasets/
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.rar
+
+# Python environments
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node
+node_modules/
+.next/
+
+# Secrets
+.env
+
+# Generated files
+*.step
+*.stp
+*.iges
+*.igs
+*.stl
+*.glb
+*.gltf
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
