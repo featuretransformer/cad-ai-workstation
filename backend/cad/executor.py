@@ -20,17 +20,18 @@ def _validate_generated_code(code: str) -> None:
         tree = ast.parse(code)
     except SyntaxError as exc:
         raise ValueError(f"Generated CAD code is invalid Python: {exc}") from exc
+
     for node in ast.walk(tree):
-        if isinstance(node, (ast.Import, ast.ImportFrom)):
-            module = node.module if isinstance(node, ast.ImportFrom) else None
-            names = [alias.name.split(".")[0] for alias in (node.names or [])]
-            if module and module.split(".")[0] not in _ALLOWED_IMPORTS:
-                raise ValueError(f"Import not allowed: {module}")
-            if any(name not in _ALLOWED_IMPORTS for name in names):
+        if isinstance(node, ast.Import):
+            if any(alias.name.split(".")[0] not in _ALLOWED_IMPORTS for alias in node.names):
                 raise ValueError("Only build123d imports are allowed")
-        if isinstance(node, ast.Name) and node.id in _BLOCKED_NAMES:
+        elif isinstance(node, ast.ImportFrom):
+            module = (node.module or "").split(".")[0]
+            if module not in _ALLOWED_IMPORTS:
+                raise ValueError(f"Import not allowed: {node.module}")
+        elif isinstance(node, ast.Name) and node.id in _BLOCKED_NAMES:
             raise ValueError(f"Operation not allowed: {node.id}")
-        if isinstance(node, ast.Attribute) and node.attr in _BLOCKED_ATTRS:
+        elif isinstance(node, ast.Attribute) and node.attr in _BLOCKED_ATTRS:
             raise ValueError(f"Operation not allowed: {node.attr}")
 
 
@@ -77,10 +78,15 @@ def execute_cad_code(code: str, design_id: str, timeout: int = 60) -> dict:
     except Exception as exc:
         return {"success": False, "error": str(exc), "stdout": "", "stderr": ""}
     finally:
-        try: os.unlink(script_path)
-        except OSError: pass
+        try:
+            os.unlink(script_path)
+        except OSError:
+            pass
 
 
 def _is_json(line: str) -> bool:
-    try: json.loads(line); return True
-    except json.JSONDecodeError: return False
+    try:
+        json.loads(line)
+        return True
+    except json.JSONDecodeError:
+        return False
