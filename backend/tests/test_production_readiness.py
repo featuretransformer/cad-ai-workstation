@@ -108,8 +108,9 @@ result = box
     def test_executor_wrapper_has_restricted_open(self):
         """Executor wrapper must restrict file operations."""
         from cad.executor import EXECUTOR_WRAPPER
-        assert "safe_open" in EXECUTOR_WRAPPER
-        assert "PermissionError" in EXECUTOR_WRAPPER
+        content = EXECUTOR_WRAPPER.template if hasattr(EXECUTOR_WRAPPER, 'template') else str(EXECUTOR_WRAPPER)
+        assert "safe_open" in content
+        assert "PermissionError" in content
 
 
 class TestDatabaseMigrations:
@@ -145,7 +146,7 @@ class TestApiEndpoints:
     def test_cors_middleware_configured(self):
         """CORS middleware must be properly configured."""
         from main import app
-        middleware_types = [type(m).__name__ for m in app.user_middleware]
+        middleware_types = [m.cls.__name__ for m in app.user_middleware if hasattr(m, 'cls')]
         assert "CORSMiddleware" in middleware_types
 
 

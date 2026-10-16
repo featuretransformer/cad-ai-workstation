@@ -8,6 +8,8 @@ from pathlib import Path
 import sys
 import time
 
+from typing import Optional, List, Union
+
 # Ensure backend root is in sys.path
 root_dir = Path(__file__).resolve().parent.parent
 backend_dir = root_dir / "backend"
@@ -20,7 +22,7 @@ from config import settings
 
 
 def build_knowledge_index(
-    db_path: Optional_Path = None,
+    db_path: Optional[Union[Path, str]] = None,
     limit_per_dataset: int = 50,
     clear_existing: bool = False,
     target_datasets: Optional[List[str]] = None,

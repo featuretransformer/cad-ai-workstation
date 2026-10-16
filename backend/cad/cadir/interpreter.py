@@ -99,14 +99,16 @@ def generate_build123d_code(doc: CADIRDocument) -> str:
             cx = f.center.x if f.center else 0.0
             cy = f.center.y if f.center else 0.0
             cz = f.center.z if f.center else 0.0
+            rad = f.radius or (f.diameter / 2.0 if f.diameter else 10.0)
+            hgt = f.height or f.length or f.depth or 20.0
             if cx == 0 and cy == 0 and cz == 0:
                 code_lines.append(
-                    f"    Cylinder(radius={f.radius}, height={f.height}, mode={mode})"
+                    f"    Cylinder(radius={rad}, height={hgt}, mode={mode})"
                 )
             else:
                 code_lines.append(f"    with Locations(({cx}, {cy}, {cz})):")
                 code_lines.append(
-                    f"        Cylinder(radius={f.radius}, height={f.height}, mode={mode})"
+                    f"        Cylinder(radius={rad}, height={hgt}, mode={mode})"
                 )
 
         elif f_type == "sphere":

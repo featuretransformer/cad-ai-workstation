@@ -89,49 +89,63 @@ def search_knowledge_base(
 
     max_results = limit if limit is not None else query_obj.limit
 
-    sql_conditions = []
-    params: List[Any] = []
-
-    if query_obj.source_dataset:
-        sql_conditions.append("source_dataset = ?")
-        params.append(query_obj.source_dataset)
-
-    if query_obj.family:
-        sql_conditions.append("(family LIKE ? OR description LIKE ?)")
-        params.extend([f"%{query_obj.family}%", f"%{query_obj.family}%"])
-
-    if query_obj.difficulty:
-        sql_conditions.append("difficulty = ?")
-        params.append(query_obj.difficulty.lower())
-
-    where_clause = f"WHERE {' AND '.join(sql_conditions)}" if sql_conditions else ""
-
-    # Fetch candidate pool (up to 100)
-    query_sql = f"""
-        SELECT id, source_dataset, family, variant, difficulty,
-               feature_types, feature_count, sketch_count,
-               param_summary, cadir_json, description, code_snippet
-        FROM cad_examples
-        {where_clause}
-        LIMIT 100
-    """
-
+    raw_rows = []
     with index._get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute(query_sql, params)
-        raw_rows = cursor.fetchall()
 
-    # If strict query yielded zero results and family filter was set, fallback to broad query
-    if not raw_rows and query_obj.family:
-        with index._get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
+        # Fast path 1: If family is specified, query directly by indexed family column
+        if query_obj.family:
+            family_conds = ["family = ?"]
+            family_params = [query_obj.family.lower().strip()]
+            if query_obj.source_dataset:
+                family_conds.append("source_dataset = ?")
+                family_params.append(query_obj.source_dataset)
+            if query_obj.difficulty:
+                family_conds.append("difficulty = ?")
+                family_params.append(query_obj.difficulty.lower())
+
+            cursor.execute(f"""
                 SELECT id, source_dataset, family, variant, difficulty,
                        feature_types, feature_count, sketch_count,
                        param_summary, cadir_json, description, code_snippet
                 FROM cad_examples
+                WHERE {' AND '.join(family_conds)}
                 LIMIT 100
-            """)
+            """, family_params)
+            raw_rows = cursor.fetchall()
+
+            # Fast path 2: Prefix match on family index (e.g. 'pipe_')
+            if not raw_rows:
+                cursor.execute(f"""
+                    SELECT id, source_dataset, family, variant, difficulty,
+                           feature_types, feature_count, sketch_count,
+                           param_summary, cadir_json, description, code_snippet
+                    FROM cad_examples
+                    WHERE family LIKE ?
+                    LIMIT 100
+                """, [f"{query_obj.family.lower().strip()}%"])
+                raw_rows = cursor.fetchall()
+
+        # Fallback path if no family or no rows found yet
+        if not raw_rows:
+            sql_conditions = []
+            params: List[Any] = []
+            if query_obj.source_dataset:
+                sql_conditions.append("source_dataset = ?")
+                params.append(query_obj.source_dataset)
+            if query_obj.difficulty:
+                sql_conditions.append("difficulty = ?")
+                params.append(query_obj.difficulty.lower())
+
+            where_clause = f"WHERE {' AND '.join(sql_conditions)}" if sql_conditions else ""
+            cursor.execute(f"""
+                SELECT id, source_dataset, family, variant, difficulty,
+                       feature_types, feature_count, sketch_count,
+                       param_summary, cadir_json, description, code_snippet
+                FROM cad_examples
+                {where_clause}
+                LIMIT 100
+            """, params)
             raw_rows = cursor.fetchall()
 
     candidate_dicts = [dict(row) for row in raw_rows]

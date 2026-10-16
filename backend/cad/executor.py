@@ -13,6 +13,8 @@ import subprocess
 import sys
 import tempfile
 import textwrap
+from string import Template
+
 from pathlib import Path
 from typing import Dict, Set
 
@@ -27,7 +29,7 @@ FORBIDDEN_IMPORTS = {
 }
 
 # Wrapper that runs around user code to capture results
-EXECUTOR_WRAPPER = '''
+EXECUTOR_WRAPPER = Template(r'''
 import sys
 import os
 import json
@@ -36,14 +38,14 @@ import traceback
 # Restrict dangerous builtins
 import builtins
 _original_open = builtins.open
-_safe_open_paths = {r"{output_dir}"}
+_safe_open_paths = {$output_dir}
 
 def safe_open(file, mode='r', *args, **kwargs):
     """Restricted open - only allows writing to output directory."""
     fpath = os.path.abspath(file)
     if 'w' in mode or 'a' in mode:
         if not any(fpath.startswith(sp) for sp in _safe_open_paths):
-            raise PermissionError(f"Write access denied: {{file}}")
+            raise PermissionError(f"Write access denied: {file}")
     return _original_open(file, mode, *args, **kwargs)
 
 builtins.open = safe_open
@@ -52,12 +54,12 @@ try:
     from build123d import *
     from build123d import export_step, export_stl
 except ImportError as e:
-    print(json.dumps({{"success": False, "error": "build123d import failed: " + str(e)}}))
+    print(json.dumps({"success": False, "error": "build123d import failed: " + str(e)}))
     sys.exit(1)
 
 try:
     # ─── USER CODE ───────────────────────────────────────
-{user_code}
+$user_code
     # ─────────────────────────────────────────────────────
 
     # Collect result
@@ -71,7 +73,7 @@ try:
         raise ValueError("No result variable found. Assign your final geometry to `result`.")
 
     # Export files
-    output_dir = r"{output_dir}"
+    output_dir = $output_dir
     step_path = os.path.join(output_dir, "output.step")
     stl_path = os.path.join(output_dir, "output.stl")
 
@@ -81,24 +83,24 @@ try:
     # Geometry info
     bb = result_var.bounding_box()
     volume_val = float(result_var.volume) if hasattr(result_var, "volume") else 0.0
-    
-    info = {{
+
+    info = {
         "success": True,
         "volume": volume_val,
-        "bounding_box": {{
+        "bounding_box": {
             "xmin": float(bb.min.X), "xmax": float(bb.max.X),
             "ymin": float(bb.min.Y), "ymax": float(bb.max.Y),
             "zmin": float(bb.min.Z), "zmax": float(bb.max.Z),
-        }},
+        },
         "step_path": step_path,
         "stl_path": stl_path,
-    }}
+    }
     print(json.dumps(info))
 
 except Exception as e:
-    print(json.dumps({{"success": False, "error": str(e), "traceback": traceback.format_exc()}}))
+    print(json.dumps({"success": False, "error": str(e), "traceback": traceback.format_exc()}))
     sys.exit(1)
-'''
+''')
 
 
 def validate_code_ast(code: str) -> Dict[str, any]:
@@ -147,9 +149,9 @@ def execute_cad_code(code: str, design_id: str, timeout: int = 60) -> dict:
 
     # 3. Indent user code to fit inside the wrapper
     indented = textwrap.indent(code.strip(), "    ")
-    full_script = EXECUTOR_WRAPPER.format(
+    full_script = EXECUTOR_WRAPPER.substitute(
         user_code=indented,
-        output_dir=out_dir.as_posix(),
+        output_dir=repr(out_dir.as_posix()),
     )
 
     # 4. Write to temp file
@@ -165,7 +167,12 @@ def execute_cad_code(code: str, design_id: str, timeout: int = 60) -> dict:
             "PATH": os.environ.get("PATH", ""),
             "PYTHONDONTWRITEBYTECODE": "1",
             "PYTHONPATH": "",
-            # Remove dangerous env vars
+            "USERPROFILE": os.environ.get("USERPROFILE", ""),
+            "HOME": os.environ.get("HOME", ""),
+            "SystemRoot": os.environ.get("SystemRoot", ""),
+            "SystemDrive": os.environ.get("SystemDrive", ""),
+            "TEMP": os.environ.get("TEMP", ""),
+            "TMP": os.environ.get("TMP", ""),
         }
 
         proc = subprocess.run(

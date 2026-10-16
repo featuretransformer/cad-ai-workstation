@@ -75,6 +75,7 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
                 status="IN_PROGRESS"
             )
         except Exception as e:
+            db.rollback()
             print(f"Could not update status to IN_PROGRESS: {e}")
 
         publish_event(
@@ -117,6 +118,9 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
 
             "confidence_scores": {},
 
+            "cadir_document": None,
+            "retrieved_examples": [],
+
             "error_count": 0,
             "max_retries": settings.max_retries,
             "last_error": "",
@@ -127,9 +131,11 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
         # 3. Execute LangGraph ONCE
         # ---------------------------------------------------------
         final_state = dict(initial_state)
+        config = {"recursion_limit": 100}
 
         for event in cad_graph.stream(
             initial_state,
+            config=config,
             stream_mode="updates"
         ):
 
@@ -189,6 +195,7 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
                         payload=payload,
                     )
                 except Exception as e:
+                    db.rollback()
                     print(
                         f"Agent log error "
                         f"({node_name}): {e}"
@@ -241,6 +248,7 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
                 )
 
             except Exception as e:
+                db.rollback()
                 print(
                     f"Export save error "
                     f"({fmt}): {e}"
@@ -256,6 +264,24 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
             design_id,
             **update_data
         )
+
+        # ---------------------------------------------------------
+        # 6b. Continuous Learning: Index verified design into KB
+        # ---------------------------------------------------------
+        if final_state.get("geometry_valid"):
+            cadir_doc = final_state.get("cadir_document")
+            if cadir_doc and hasattr(cadir_doc, "id"):
+                try:
+                    from retrieval.index import KnowledgeIndex
+                    kb = KnowledgeIndex()
+                    kb.index_document(
+                        cadir_doc,
+                        source_dataset="continuous_learning",
+                        code_snippet=final_state.get("cad_code", "")
+                    )
+                    print(f"Continuous Learning: Successfully indexed verified design {design_id} into Knowledge Base.")
+                except Exception as ke:
+                    print(f"Continuous Learning indexing notice: {ke}")
 
         # ---------------------------------------------------------
         # 7. Final Redis event
@@ -303,6 +329,7 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
         # ---------------------------------------------------------
         # Mark FAILED
         # ---------------------------------------------------------
+        db.rollback()
         try:
             crud.update_design(
                 db,
@@ -310,6 +337,7 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
                 status="FAILED"
             )
         except Exception as db_error:
+            db.rollback()
             print(
                 f"Could not mark design FAILED: "
                 f"{db_error}"

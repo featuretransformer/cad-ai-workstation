@@ -25,12 +25,19 @@ def get_minio_client() -> Minio:
 async def init_storage():
     """Create bucket on startup if it doesn't exist."""
     try:
+        import socket
         s = get_settings()
+        host, _, port_str = s.minio_endpoint.partition(":")
+        port = int(port_str) if port_str else 9000
+        # Fast non-blocking check to avoid hanging startup if MinIO is offline
+        with socket.create_connection((host, port), timeout=0.5):
+            pass
+
         client = get_minio_client()
         if not client.bucket_exists(s.minio_bucket):
             client.make_bucket(s.minio_bucket)
     except Exception as e:
-        print(f"MinIO init warning: {e} (continuing without object storage)")
+        print(f"MinIO init notice: {e} (continuing without object storage)")
 
 
 def upload_file(local_path: str, object_name: str) -> str:

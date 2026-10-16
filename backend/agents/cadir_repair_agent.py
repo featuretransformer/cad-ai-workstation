@@ -78,6 +78,19 @@ def cadir_repair_node(state: AgentState) -> Dict[str, Any]:
                 if f.diameter and f.diameter > 50.0:
                     f.diameter = round(f.diameter * 0.7, 2)
 
+    # 4. Cylinder / Box Missing Height or Radius Repair
+    if "height" in all_error_text:
+        for f in repaired_doc.features:
+            if f.feature_type == "cylinder" and (f.height is None or f.height <= 0):
+                f.height = f.length or f.depth or 20.0
+            elif f.feature_type == "box" and (f.height is None or f.height <= 0):
+                f.height = 10.0
+
+    if "radius" in all_error_text:
+        for f in repaired_doc.features:
+            if f.feature_type in ("cylinder", "sphere") and (f.radius is None or f.radius <= 0):
+                f.radius = (f.diameter / 2.0) if f.diameter else 10.0
+
     # 4. Dependency Repair
     elif "dependency" in all_error_text or "cycle" in all_error_text:
         prev_id = None
@@ -92,6 +105,12 @@ def cadir_repair_node(state: AgentState) -> Dict[str, Any]:
                 f.distance = 10.0
             if f.length is not None and f.length <= 0:
                 f.length = 10.0
+
+    if hasattr(repaired_doc, "model_dump") and hasattr(doc, "model_dump"):
+        if repaired_doc.model_dump() == doc.model_dump():
+            attempts = state.get("max_retries", 5)
+    elif repaired_doc == doc:
+        attempts = state.get("max_retries", 5)
 
     return {
         "cadir_document": repaired_doc,

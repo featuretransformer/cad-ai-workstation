@@ -75,19 +75,44 @@ def validate_cadir_document(doc: CADIRDocument) -> CADIRValidationResult:
                 errors.append(f"Box feature '{fid}' requires positive 'height'.")
 
         elif f_type == "cylinder":
+            # Auto-normalize length/depth into height if height is missing
+            if (feature.height is None or feature.height <= 0) and feature.length and feature.length > 0:
+                feature.height = feature.length
+            elif (feature.height is None or feature.height <= 0) and feature.depth and feature.depth > 0:
+                feature.height = feature.depth
+            # Auto-normalize diameter into radius if radius is missing
+            if (feature.radius is None or feature.radius <= 0) and feature.diameter and feature.diameter > 0:
+                feature.radius = feature.diameter / 2.0
+
             if feature.radius is None or feature.radius <= 0:
                 errors.append(f"Cylinder feature '{fid}' requires positive 'radius'.")
             if feature.height is None or feature.height <= 0:
                 errors.append(f"Cylinder feature '{fid}' requires positive 'height'.")
 
         elif f_type == "sphere":
+            if (feature.radius is None or feature.radius <= 0) and feature.diameter and feature.diameter > 0:
+                feature.radius = feature.diameter / 2.0
             if feature.radius is None or feature.radius <= 0:
                 errors.append(f"Sphere feature '{fid}' requires positive 'radius'.")
 
         elif f_type == "extrude":
+            # If sketch_id is missing, normalize into cylinder or box primitive
             if not feature.sketch_id:
-                errors.append(f"Extrude feature '{fid}' requires a 'sketch_id'.")
-            if feature.distance is None or feature.distance <= 0:
+                if (feature.radius and feature.radius > 0) or (feature.diameter and feature.diameter > 0):
+                    feature.feature_type = "cylinder"
+                    f_type = "cylinder"
+                    if not feature.height:
+                        feature.height = feature.distance or feature.length or 10.0
+                    if not feature.radius and feature.diameter:
+                        feature.radius = feature.diameter / 2.0
+                elif feature.length and feature.width:
+                    feature.feature_type = "box"
+                    f_type = "box"
+                    if not feature.height:
+                        feature.height = feature.distance or 10.0
+                else:
+                    errors.append(f"Extrude feature '{fid}' requires a 'sketch_id'.")
+            if f_type == "extrude" and (feature.distance is None or feature.distance <= 0):
                 errors.append(f"Extrude feature '{fid}' requires positive 'distance'.")
 
         elif f_type == "revolve":

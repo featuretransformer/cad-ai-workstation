@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pathlib import Path
 from typing import List
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -33,13 +34,13 @@ class Settings(BaseSettings):
     cad_timeout_seconds: int = 60
     max_alternatives: int = 5
 
-    # Datasets & Knowledge
-    datasets_dir: str = "datasets"
-    processed_dir: str = "datasets/processed"
-    knowledge_db_path: str = "datasets/processed/knowledge.db"
+    # Datasets & Knowledge (dynamically rooted to workspace datasets)
+    datasets_dir: str = str((Path(__file__).resolve().parent.parent / "datasets").resolve())
+    processed_dir: str = str((Path(__file__).resolve().parent.parent / "datasets" / "processed").resolve())
+    knowledge_db_path: str = str((Path(__file__).resolve().parent.parent / "datasets" / "processed" / "knowledge.db").resolve())
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(".env", str(Path(__file__).resolve().parent / ".env")),
         extra="ignore",
     )
 

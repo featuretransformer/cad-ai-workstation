@@ -1,0 +1,814 @@
+{
+  "$defs": {
+    "CADIRArc": {
+      "properties": {
+        "primitive_type": {
+          "const": "arc",
+          "default": "arc",
+          "enum": [
+            "arc"
+          ],
+          "title": "Primitive Type",
+          "type": "string"
+        },
+        "start": {
+          "$ref": "#/$defs/Point3D"
+        },
+        "end": {
+          "$ref": "#/$defs/Point3D"
+        },
+        "center": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Point3D"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "radius": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Radius"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "CADIRArc",
+      "type": "object"
+    },
+    "CADIRCircle": {
+      "properties": {
+        "primitive_type": {
+          "const": "circle",
+          "default": "circle",
+          "enum": [
+            "circle"
+          ],
+          "title": "Primitive Type",
+          "type": "string"
+        },
+        "center": {
+          "$ref": "#/$defs/Point3D"
+        },
+        "radius": {
+          "description": "Radius must be strictly positive",
+          "exclusiveMinimum": 0.0,
+          "title": "Radius",
+          "type": "number"
+        }
+      },
+      "required": [
+        "radius"
+      ],
+      "title": "CADIRCircle",
+      "type": "object"
+    },
+    "CADIRFeature": {
+      "description": "Parametric feature node in the CAD construction tree.\nExplicitly tracks dependencies on preceding features.",
+      "properties": {
+        "id": {
+          "description": "Unique identifier (e.g. 'f1_base_box')",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "default": "",
+          "title": "Name",
+          "type": "string"
+        },
+        "feature_type": {
+          "enum": [
+            "box",
+            "cylinder",
+            "sphere",
+            "extrude",
+            "revolve",
+            "hole",
+            "pocket",
+            "fillet",
+            "chamfer",
+            "linear_pattern",
+            "polar_pattern",
+            "mirror",
+            "boolean_union",
+            "boolean_cut",
+            "boolean_intersect"
+          ],
+          "title": "Feature Type",
+          "type": "string"
+        },
+        "dependencies": {
+          "description": "IDs of predecessor features this feature relies upon",
+          "items": {
+            "type": "string"
+          },
+          "title": "Dependencies",
+          "type": "array"
+        },
+        "operation": {
+          "default": "new_body",
+          "enum": [
+            "new_body",
+            "join",
+            "cut",
+            "intersect"
+          ],
+          "title": "Operation",
+          "type": "string"
+        },
+        "target_geometry": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Reference to targeted parent feature, edge group, or face",
+          "title": "Target Geometry"
+        },
+        "suppressed": {
+          "default": false,
+          "title": "Suppressed",
+          "type": "boolean"
+        },
+        "length": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Length"
+        },
+        "width": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Width"
+        },
+        "height": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Height"
+        },
+        "radius": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Radius"
+        },
+        "center": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Point3D"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "axis": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Vector3D"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "sketch_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sketch Id"
+        },
+        "distance": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Distance"
+        },
+        "depth": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Depth"
+        },
+        "angle": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Angle"
+        },
+        "taper_angle": {
+          "default": 0.0,
+          "title": "Taper Angle",
+          "type": "number"
+        },
+        "symmetric": {
+          "default": false,
+          "title": "Symmetric",
+          "type": "boolean"
+        },
+        "diameter": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Diameter"
+        },
+        "hole_type": {
+          "default": "simple",
+          "enum": [
+            "simple",
+            "counterbore",
+            "countersink"
+          ],
+          "title": "Hole Type",
+          "type": "string"
+        },
+        "cbore_diameter": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cbore Diameter"
+        },
+        "cbore_depth": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cbore Depth"
+        },
+        "csink_diameter": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Csink Diameter"
+        },
+        "csink_angle": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Csink Angle"
+        },
+        "position": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Point3D"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "direction": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Vector3D"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "edge_selector": {
+          "default": "all",
+          "description": "Rule/query for target edges (e.g. 'all', 'top', 'bottom', 'vertical', 'edges_at_z_max')",
+          "title": "Edge Selector",
+          "type": "string"
+        },
+        "count": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Count"
+        },
+        "spacing": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Spacing"
+        },
+        "mirror_plane": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CADIRPlane"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "tool_feature_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tool Feature Id"
+        },
+        "params": {
+          "title": "Params",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "feature_type"
+      ],
+      "title": "CADIRFeature",
+      "type": "object"
+    },
+    "CADIRLine": {
+      "properties": {
+        "primitive_type": {
+          "const": "line",
+          "default": "line",
+          "enum": [
+            "line"
+          ],
+          "title": "Primitive Type",
+          "type": "string"
+        },
+        "start": {
+          "$ref": "#/$defs/Point3D"
+        },
+        "end": {
+          "$ref": "#/$defs/Point3D"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "CADIRLine",
+      "type": "object"
+    },
+    "CADIRPlane": {
+      "description": "Construction plane for 2D sketches.",
+      "properties": {
+        "origin": {
+          "$ref": "#/$defs/Point3D"
+        },
+        "normal": {
+          "$ref": "#/$defs/Vector3D"
+        },
+        "x_axis": {
+          "$ref": "#/$defs/Vector3D"
+        }
+      },
+      "title": "CADIRPlane",
+      "type": "object"
+    },
+    "CADIRPolygon": {
+      "properties": {
+        "primitive_type": {
+          "const": "polygon",
+          "default": "polygon",
+          "enum": [
+            "polygon"
+          ],
+          "title": "Primitive Type",
+          "type": "string"
+        },
+        "points": {
+          "description": "Minimum 3 vertices for a polygon",
+          "items": {
+            "$ref": "#/$defs/Point3D"
+          },
+          "minItems": 3,
+          "title": "Points",
+          "type": "array"
+        }
+      },
+      "required": [
+        "points"
+      ],
+      "title": "CADIRPolygon",
+      "type": "object"
+    },
+    "CADIRRectangle": {
+      "properties": {
+        "primitive_type": {
+          "const": "rectangle",
+          "default": "rectangle",
+          "enum": [
+            "rectangle"
+          ],
+          "title": "Primitive Type",
+          "type": "string"
+        },
+        "width": {
+          "description": "Width along local X",
+          "exclusiveMinimum": 0.0,
+          "title": "Width",
+          "type": "number"
+        },
+        "height": {
+          "description": "Height along local Y",
+          "exclusiveMinimum": 0.0,
+          "title": "Height",
+          "type": "number"
+        },
+        "center": {
+          "$ref": "#/$defs/Point3D"
+        }
+      },
+      "required": [
+        "width",
+        "height"
+      ],
+      "title": "CADIRRectangle",
+      "type": "object"
+    },
+    "CADIRSketchProfile": {
+      "description": "Closed or bounded planar profile comprised of 2D primitives.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "default": "",
+          "title": "Name",
+          "type": "string"
+        },
+        "plane": {
+          "$ref": "#/$defs/CADIRPlane"
+        },
+        "primitives": {
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/CADIRLine"
+              },
+              {
+                "$ref": "#/$defs/CADIRArc"
+              },
+              {
+                "$ref": "#/$defs/CADIRCircle"
+              },
+              {
+                "$ref": "#/$defs/CADIRRectangle"
+              },
+              {
+                "$ref": "#/$defs/CADIRPolygon"
+              },
+              {
+                "$ref": "#/$defs/CADIRSlot"
+              }
+            ]
+          },
+          "title": "Primitives",
+          "type": "array"
+        },
+        "is_closed": {
+          "default": true,
+          "title": "Is Closed",
+          "type": "boolean"
+        },
+        "inner_loops": {
+          "description": "Internal closed boundaries (holes/islands)",
+          "items": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/CADIRLine"
+                },
+                {
+                  "$ref": "#/$defs/CADIRArc"
+                },
+                {
+                  "$ref": "#/$defs/CADIRCircle"
+                },
+                {
+                  "$ref": "#/$defs/CADIRRectangle"
+                },
+                {
+                  "$ref": "#/$defs/CADIRPolygon"
+                },
+                {
+                  "$ref": "#/$defs/CADIRSlot"
+                }
+              ]
+            },
+            "type": "array"
+          },
+          "title": "Inner Loops",
+          "type": "array"
+        },
+        "constraints": {
+          "items": {
+            "type": "object"
+          },
+          "title": "Constraints",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "CADIRSketchProfile",
+      "type": "object"
+    },
+    "CADIRSlot": {
+      "properties": {
+        "primitive_type": {
+          "const": "slot",
+          "default": "slot",
+          "enum": [
+            "slot"
+          ],
+          "title": "Primitive Type",
+          "type": "string"
+        },
+        "length": {
+          "exclusiveMinimum": 0.0,
+          "title": "Length",
+          "type": "number"
+        },
+        "width": {
+          "exclusiveMinimum": 0.0,
+          "title": "Width",
+          "type": "number"
+        },
+        "center": {
+          "$ref": "#/$defs/Point3D"
+        }
+      },
+      "required": [
+        "length",
+        "width"
+      ],
+      "title": "CADIRSlot",
+      "type": "object"
+    },
+    "Point3D": {
+      "description": "3D Cartesian Point with parametric coordinates.",
+      "properties": {
+        "x": {
+          "default": 0.0,
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "default": 0.0,
+          "title": "Y",
+          "type": "number"
+        },
+        "z": {
+          "default": 0.0,
+          "title": "Z",
+          "type": "number"
+        }
+      },
+      "title": "Point3D",
+      "type": "object"
+    },
+    "Vector3D": {
+      "description": "3D Directional Vector.",
+      "properties": {
+        "x": {
+          "default": 0.0,
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "default": 0.0,
+          "title": "Y",
+          "type": "number"
+        },
+        "z": {
+          "default": 1.0,
+          "title": "Z",
+          "type": "number"
+        }
+      },
+      "title": "Vector3D",
+      "type": "object"
+    }
+  },
+  "description": "Canonical CAD Intermediate Representation (CADIR) Document.\nServes as the deterministic bridge between AI intent and build123d construction.",
+  "properties": {
+    "schema_version": {
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "component_family": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Component classification (e.g. 'bearing_housing', 'shaft', 'mounting_plate', 'bracket')",
+      "title": "Component Family"
+    },
+    "difficulty": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Complexity tier: L1, L2, L3, L4, L5",
+      "title": "Difficulty"
+    },
+    "units": {
+      "default": "mm",
+      "enum": [
+        "mm",
+        "cm",
+        "m",
+        "in"
+      ],
+      "title": "Units",
+      "type": "string"
+    },
+    "material": {
+      "default": "Structural Steel",
+      "title": "Material",
+      "type": "string"
+    },
+    "parameters": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "description": "Global parametric design variables referenced by features",
+      "title": "Parameters",
+      "type": "object"
+    },
+    "engineering_intent": {
+      "description": "Design intent: requirements, loads, factor of safety, functional constraints",
+      "title": "Engineering Intent",
+      "type": "object"
+    },
+    "sketches": {
+      "description": "2D sketch profiles",
+      "items": {
+        "$ref": "#/$defs/CADIRSketchProfile"
+      },
+      "title": "Sketches",
+      "type": "array"
+    },
+    "features": {
+      "description": "Ordered parametric feature sequence",
+      "items": {
+        "$ref": "#/$defs/CADIRFeature"
+      },
+      "title": "Features",
+      "type": "array"
+    },
+    "validation_requirements": {
+      "description": "Engineering verification criteria (e.g. max_mass, min_fos, envelope)",
+      "title": "Validation Requirements",
+      "type": "object"
+    }
+  },
+  "required": [
+    "id",
+    "name"
+  ],
+  "title": "CADIRDocument",
+  "type": "object"
+}
