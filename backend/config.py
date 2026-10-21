@@ -6,9 +6,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # LLM
+    # LLM (supports single key or comma-separated multi-keys)
     gemini_api_key: str = ""
+    gemini_api_keys: str = ""
     groq_api_key: str = ""
+    groq_api_keys: str = ""
     openai_api_key: str = ""
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.1:8b"
@@ -43,6 +45,30 @@ class Settings(BaseSettings):
         env_file=(".env", str(Path(__file__).resolve().parent / ".env")),
         extra="ignore",
     )
+
+    def get_groq_keys(self) -> List[str]:
+        """Returns all configured Groq API keys as a de-duplicated list."""
+        combined = f"{self.groq_api_key},{self.groq_api_keys}"
+        seen = set()
+        keys = []
+        for raw in combined.split(","):
+            k = raw.strip()
+            if k and k not in seen:
+                seen.add(k)
+                keys.append(k)
+        return keys
+
+    def get_gemini_keys(self) -> List[str]:
+        """Returns all configured Gemini API keys as a de-duplicated list."""
+        combined = f"{self.gemini_api_key},{self.gemini_api_keys}"
+        seen = set()
+        keys = []
+        for raw in combined.split(","):
+            k = raw.strip()
+            if k and k not in seen:
+                seen.add(k)
+                keys.append(k)
+        return keys
 
     def get_cors_origins(self) -> List[str]:
         """Parse CORS origins from comma-separated string."""
