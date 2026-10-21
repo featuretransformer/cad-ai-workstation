@@ -2,6 +2,7 @@
 LangGraph Multi-Agent CAD Generation Workflow.
 Connects input classification, intent parsing, few-shot dataset retrieval,
 hierarchical design planning (single-part vs multi-component assembly),
+prompt complexity classification, feature-level sequential decomposition,
 parametric CADIR synthesis, deterministic build123d code interpretation,
 sandboxed CAD execution, physical geometry validation, self-healing repair,
 and downstream engineering analysis reports.
@@ -20,6 +21,9 @@ from agents.state import AgentState
 from agents.input_classifier import classify_input_node
 from agents.supervisor import supervisor_node
 from agents.design_planner import design_planner_node
+from agents.complexity_classifier import complexity_classifier_node
+from agents.feature_planner import feature_planner_node
+from agents.incremental_design_agent import incremental_design_agent_node
 from agents.design_agent import design_agent_node
 from agents.assembly_nodes import (
     assembly_generator_node,
@@ -44,14 +48,37 @@ from agents.downstream_nodes import (
 )
 
 
-def route_design_planner(state: AgentState) -> Literal["assembly_generator", "design_agent"]:
+def route_design_planner(state: AgentState) -> Literal["assembly_generator", "complexity_classifier"]:
     """
     Routes from design planner: proceed to assembly generation if multi-component assembly,
-    or route to standard single-part design agent.
+    or route to complexity classifier for single-part workflows.
     """
     if state.get("is_assembly", False):
         return "assembly_generator"
+    return "complexity_classifier"
+
+
+def route_complexity(state: AgentState) -> Literal["feature_planner", "design_agent"]:
+    """
+    Routes from complexity classifier: proceed to feature planner for complex prompts,
+    or route to standard single-pass design agent for simple parts.
+    """
+    if state.get("is_complex_part", False):
+        return "feature_planner"
     return "design_agent"
+
+
+def route_incremental_step(state: AgentState) -> Literal["incremental_design_agent", "cadir_validator"]:
+    """
+    Routes after each step of incremental design:
+    loops back if more steps remain in feature_build_plan,
+    or exits to CADIR validator once all steps are merged.
+    """
+    plan = state.get("feature_build_plan", [])
+    current_step = state.get("current_build_step", 1)
+    if plan and current_step <= len(plan):
+        return "incremental_design_agent"
+    return "cadir_validator"
 
 
 def route_cadir_validation(state: AgentState) -> Literal["interpreter", "cadir_repair", "__end__"]:
@@ -94,6 +121,9 @@ def create_cad_workflow() -> StateGraph:
     workflow.add_node("input_classifier", classify_input_node)
     workflow.add_node("supervisor", supervisor_node)
     workflow.add_node("design_planner", design_planner_node)
+    workflow.add_node("complexity_classifier", complexity_classifier_node)
+    workflow.add_node("feature_planner", feature_planner_node)
+    workflow.add_node("incremental_design_agent", incremental_design_agent_node)
     workflow.add_node("design_agent", design_agent_node)
     workflow.add_node("assembly_generator", assembly_generator_node)
     workflow.add_node("assembly_executor", assembly_executor_node)
@@ -124,7 +154,7 @@ def create_cad_workflow() -> StateGraph:
         route_design_planner,
         {
             "assembly_generator": "assembly_generator",
-            "design_agent": "design_agent",
+            "complexity_classifier": "complexity_classifier",
         },
     )
 
@@ -133,8 +163,29 @@ def create_cad_workflow() -> StateGraph:
     workflow.add_edge("assembly_executor", "assembly_validator")
     workflow.add_edge("assembly_validator", "dfm_agent")
 
-    # Pathway B: Single-Part CADIR Pipeline
+    # Pathway B: Single-Part Complexity Branch
+    workflow.add_conditional_edges(
+        "complexity_classifier",
+        route_complexity,
+        {
+            "feature_planner": "feature_planner",
+            "design_agent": "design_agent",
+        },
+    )
+
+    # Pathway B.1: Simple Part (Single-Pass Design Agent)
     workflow.add_edge("design_agent", "cadir_validator")
+
+    # Pathway B.2: Complex Part (Hierarchical Feature Decomposition Loop)
+    workflow.add_edge("feature_planner", "incremental_design_agent")
+    workflow.add_conditional_edges(
+        "incremental_design_agent",
+        route_incremental_step,
+        {
+            "incremental_design_agent": "incremental_design_agent",
+            "cadir_validator": "cadir_validator",
+        },
+    )
 
     # Conditional Branch 1: CADIR Validation Check
     workflow.add_conditional_edges(

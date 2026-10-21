@@ -61,4 +61,11 @@ class AgentState(TypedDict, total=False):
     assembly_validation: Dict[str, Any]
     design_plan: Dict[str, Any]
 
-
+    # ─── Complex Prompt Decomposition Extensions ──────────────────────
+    complexity_score: float
+    is_complex_part: bool
+    feature_build_plan: List[Dict[str, Any]]
+    current_build_step: int
+    cumulative_cadir: Optional[Any]
+    build_step_results: List[Dict[str, Any]]
+    decomposition_used: bool

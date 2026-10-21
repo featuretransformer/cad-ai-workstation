@@ -20,6 +20,9 @@ AGENT_DISPLAY = {
     "input_classifier": "Input Classifier",
     "supervisor": "Supervisor",
     "design_planner": "Design Planner",
+    "complexity_classifier": "Complexity Classifier",
+    "feature_planner": "Feature Planner",
+    "incremental_design_agent": "Incremental Design Agent",
     "design_agent": "Design Agent",
     "assembly_generator": "Assembly Component Generator",
     "assembly_executor": "Assembly Executor",
@@ -136,6 +139,14 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
             "assembly_result": {},
             "assembly_validation": {},
             "design_plan": {},
+
+            "complexity_score": 0.0,
+            "is_complex_part": False,
+            "feature_build_plan": [],
+            "current_build_step": 1,
+            "cumulative_cadir": None,
+            "build_step_results": [],
+            "decomposition_used": False,
         }
 
         # ---------------------------------------------------------
@@ -388,6 +399,26 @@ def _safe_payload(node_name: str, output: dict) -> dict:
             "is_assembly": output.get("is_assembly", False),
             "design_plan": output.get("design_plan", {}),
         }
+    elif node_name == "complexity_classifier":
+        payload = {
+            "complexity_score": output.get("complexity_score", 0.0),
+            "is_complex": output.get("is_complex_part", False),
+        }
+    elif node_name == "feature_planner":
+        plan = output.get("feature_build_plan", [])
+        payload = {
+            "steps_count": len(plan),
+            "step_names": [s.get("group_name", "") for s in plan],
+        }
+    elif node_name == "incremental_design_agent":
+        res = output.get("build_step_results", [])
+        last_res = res[-1] if res else {}
+        cadir = output.get("cumulative_cadir")
+        payload = {
+            "current_step": output.get("current_build_step", 1) - 1,
+            "last_group": last_res.get("group_name", ""),
+            "features_count": len(cadir.features) if cadir and hasattr(cadir, "features") else 0,
+        }
     elif node_name == "design_agent":
         code = output.get("cad_code", "")
         payload = {"code_preview": code[:200] + "..." if len(code) > 200 else code}
@@ -432,6 +463,17 @@ def _agent_message(node_name: str, output: dict) -> str:
             plan = output.get("design_plan", {})
             return f"Assembly decomposition complete: {plan.get('component_count', 0)} components ({plan.get('total_instances', 0)} instances)"
         return "Single-part mechanical workflow planned"
+    elif node_name == "complexity_classifier":
+        score = output.get("complexity_score", 0.0)
+        is_c = output.get("is_complex_part", False)
+        return f"Complexity Score: {score} ({'Decomposition pipeline activated' if is_c else 'Direct single-pass synthesis'})"
+    elif node_name == "feature_planner":
+        plan = output.get("feature_build_plan", [])
+        return f"Feature Build Plan created: {len(plan)} sequential feature groups"
+    elif node_name == "incremental_design_agent":
+        res = output.get("build_step_results", [])
+        last_res = res[-1] if res else {}
+        return f"Step {last_res.get('step', '?')}: {last_res.get('group_name', '')} generated ({last_res.get('features_added', 0)} features merged)"
     elif node_name == "assembly_generator":
         comps = len(output.get("component_cadirs", {}))
         return f"Generated parametric CADIR for {comps} assembly components"

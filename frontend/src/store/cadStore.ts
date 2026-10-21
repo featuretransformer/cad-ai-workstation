@@ -1,6 +1,6 @@
 "use client";
 import { create } from "zustand";
-import type { Session, Design, AgentLog, WSEvent, ExportArtifact } from "@/lib/types";
+import type { Session, Design, WSEvent, ExportArtifact } from "@/lib/types";
 
 interface CADStore {
   // Sessions
@@ -12,6 +12,8 @@ interface CADStore {
   // Design
   activeDesign: Design | null;
   setActiveDesign: (d: Design | null) => void;
+  activeDesignId: string | null;
+  setActiveDesignId: (id: string | null) => void;
 
   // Agent activity
   agentEvents: WSEvent[];
@@ -49,6 +51,8 @@ export const useCADStore = create<CADStore>((set) => ({
 
   activeDesign: null,
   setActiveDesign: (activeDesign) => set({ activeDesign }),
+  activeDesignId: null,
+  setActiveDesignId: (activeDesignId) => set({ activeDesignId }),
 
   agentEvents: [],
   addAgentEvent: (e) => set((s) => ({ agentEvents: [...s.agentEvents.slice(-100), e] })),

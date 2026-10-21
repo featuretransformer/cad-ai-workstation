@@ -11,6 +11,10 @@ celery_app = Celery(
 )
 
 celery_app.conf.update(
+    task_default_queue="cad_generation",
+    task_routes={
+        "tasks.cad_tasks.*": {"queue": "cad_generation"},
+    },
     task_serializer="json",
     result_serializer="json",
     accept_content=["json"],

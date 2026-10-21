@@ -45,12 +45,12 @@ export function useCADSession() {
 
   /**
    * Polls /api/design/{design_id} until status is COMPLETE or FAILED.
-   * Used as fallback when WebSocket/Redis is unavailable.
+   * Used as fallback when WebSocket/Redis is unavailable or as a complementary watcher.
    */
   const startPolling = useCallback((designId: string) => {
     stopPolling();
     let attempts = 0;
-    const MAX_ATTEMPTS = 120; // 120 × 3s = 6 minutes max
+    const MAX_ATTEMPTS = 120; // 120 × 2s = 4 minutes max
 
     pollingRef.current = setInterval(async () => {
       attempts++;
@@ -63,9 +63,8 @@ export function useCADSession() {
           store.setIsGenerating(false);
           store.setActiveDesign(design);
           if (status === "COMPLETE") {
-            store.setGlbUrl(
-              `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/export/${designId}/download/glb`
-            );
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+            store.setGlbUrl(`${API_URL}/api/export/${designId}/download/glb?t=${Date.now()}`);
           }
         }
       } catch {
@@ -75,8 +74,20 @@ export function useCADSession() {
       if (attempts >= MAX_ATTEMPTS) {
         stopPolling();
         store.setIsGenerating(false);
+        try {
+          const finalDesign = (await api.getDesign(designId)) as Design;
+          if (finalDesign) {
+            store.setActiveDesign(finalDesign);
+            if (finalDesign.status === "COMPLETE") {
+              const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+              store.setGlbUrl(`${API_URL}/api/export/${designId}/download/glb?t=${Date.now()}`);
+            }
+          }
+        } catch {
+          // ignore
+        }
       }
-    }, 3000);
+    }, 2000);
   }, [store, stopPolling]);
 
   const generate = useCallback(async (prompt: string): Promise<GenerateResponse> => {
@@ -91,14 +102,13 @@ export function useCADSession() {
     try {
       const resp = (await api.generateDesign(store.activeSession.id, prompt)) as GenerateResponse;
       store.setCurrentTaskId(resp.task_id);
+      store.setActiveDesignId(resp.design_id);
 
-      // Start polling as a fallback completion detector (works even without WebSocket/Redis)
-      // If WebSocket delivers pipeline_complete first, polling will just see COMPLETE and stop.
+      // Start polling as a fallback completion detector
       startPolling(resp.design_id);
 
       return resp;
     } catch (err) {
-      // BUG #6 FIX: always reset isGenerating on API error so UI doesn't get stuck
       store.setIsGenerating(false);
       throw err;
     }

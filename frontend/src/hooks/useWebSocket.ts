@@ -13,39 +13,54 @@ export function useDesignWebSocket(designId: string | null) {
     if (!designId) return;
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
-    const ws = new WebSocket(`${WS_URL}/ws/${designId}`);
-    wsRef.current = ws;
+    try {
+      const ws = new WebSocket(`${WS_URL}/ws/${designId}`);
+      wsRef.current = ws;
 
-    ws.onmessage = (ev) => {
-      try {
-        const event: WSEvent = JSON.parse(ev.data);
-        addAgentEvent(event);
+      ws.onmessage = (ev) => {
+        try {
+          const event: WSEvent = JSON.parse(ev.data);
+          addAgentEvent(event);
 
-        if (event.type === "pipeline_complete") {
-          setIsGenerating(false);
-          // Refresh design from API
-          import("@/lib/api").then(({ api }) => {
-            api.getDesign(designId).then((d: unknown) => {
-              setActiveDesign(d as import("@/lib/types").Design);
-            });
-          });
-          // Set GLB URL for 3D viewer
-          const glbPath = event.export_paths?.glb;
-          if (glbPath) {
+          if (event.type === "pipeline_complete") {
+            setIsGenerating(false);
             const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-            setGlbUrl(`${API_URL}/api/export/${designId}/download/glb`);
-          }
-        }
-        if (event.type === "pipeline_error") {
-          setIsGenerating(false);
-        }
-      } catch {
-        // ignore parse errors
-      }
-    };
+            setGlbUrl(`${API_URL}/api/export/${designId}/download/glb?t=${Date.now()}`);
 
-    ws.onerror = () => ws.close();
-    ws.onclose = () => { wsRef.current = null; };
+            // Refresh design from API
+            import("@/lib/api").then(({ api }) => {
+              api.getDesign(designId).then((d: unknown) => {
+                if (d) setActiveDesign(d as import("@/lib/types").Design);
+              });
+            });
+          }
+          if (event.type === "pipeline_error") {
+            setIsGenerating(false);
+            import("@/lib/api").then(({ api }) => {
+              api.getDesign(designId).then((d: unknown) => {
+                if (d) setActiveDesign(d as import("@/lib/types").Design);
+              });
+            });
+          }
+        } catch {
+          // ignore parse errors
+        }
+      };
+
+      ws.onerror = () => {
+        try {
+          ws.close();
+        } catch {
+          // ignore
+        }
+      };
+      ws.onclose = () => {
+        wsRef.current = null;
+      };
+    } catch {
+      // WebSocket connection failed (e.g. backend offline)
+      wsRef.current = null;
+    }
   }, [designId, addAgentEvent, setIsGenerating, setActiveDesign, setGlbUrl]);
 
   useEffect(() => {

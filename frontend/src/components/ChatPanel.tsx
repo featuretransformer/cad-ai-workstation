@@ -28,12 +28,11 @@ export default function ChatPanel() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { isGenerating, activeDesign, setRightPanelTab } = useCADStore();
+  const { isGenerating, activeDesign, activeDesignId, setRightPanelTab } = useCADStore();
   const { generate } = useCADSession();
-  const { activeDesign: design } = useCADStore();
 
-  // Connect WebSocket when we have a design ID
-  useDesignWebSocket(activeDesign?.id ?? null);
+  // Connect WebSocket when we have a design ID (activeDesignId while generating, or activeDesign.id)
+  useDesignWebSocket(activeDesignId ?? activeDesign?.id ?? null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

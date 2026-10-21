@@ -43,3 +43,8 @@ node_modules/
 # IDE
 .vscode/
 .idea/
+
+# Build info and exports
+backend/exports/
+exports/
+*.tsbuildinfo

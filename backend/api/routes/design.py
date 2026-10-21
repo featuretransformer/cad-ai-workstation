@@ -31,14 +31,22 @@ def generate_cad(
     design = crud.create_design(db, session_id=data.session_id, prompt=data.prompt)
 
     task_id = str(design.id)
+    celery_dispatched = False
+
+    # Check if a Celery worker is actively online
     try:
-        # Try queueing through Celery
-        celery_task = run_cad_pipeline.delay(str(design.id), data.prompt)
-        task_id = celery_task.id
+        from tasks.celery_app import celery_app
+        ping_res = celery_app.control.ping(timeout=0.3)
+        if ping_res:
+            celery_task = run_cad_pipeline.delay(str(design.id), data.prompt)
+            task_id = celery_task.id
+            celery_dispatched = True
     except Exception as e:
-        # Fallback to FastAPI BackgroundTasks if Celery/Redis is not running
-        print(f"Celery dispatch failed: {e}. Executing via background task fallback.")
-        # task_id stays as design.id so frontend can poll /task/{task_id}/status
+        print(f"Celery check/dispatch notice: {e}")
+
+    # Fallback to FastAPI BackgroundTasks if Celery worker is offline or dispatch fails
+    if not celery_dispatched:
+        print(f"Executing CAD pipeline directly via BackgroundTasks for design {design.id}")
         background_tasks.add_task(_run_pipeline_sync, str(design.id), data.prompt)
 
     return schemas.GenerateResponse(
@@ -63,6 +71,7 @@ def get_task_status(task_id: str, db: Session = Depends(get_db)):
             return {
                 "task_id": task_id,
                 "status": getattr(design, "status", "PENDING"),
+                "geometry_valid": design.geometry_valid,
                 "design_id": str(design.id),
             }
     except (ValueError, Exception):
