@@ -295,7 +295,7 @@ class CADIRDocument(BaseModel):
     units: Literal["mm", "cm", "m", "in"] = "mm"
     material: str = "Structural Steel"
 
-    parameters: Dict[str, float] = Field(
+    parameters: Dict[str, Any] = Field(
         default_factory=dict,
         description="Global parametric design variables referenced by features",
     )

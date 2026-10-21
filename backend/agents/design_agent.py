@@ -30,6 +30,57 @@ from cad.cadir.schema import (
 from utils.llm import get_design_llm
 
 
+def _repair_truncated_json(text: str):
+    cleaned = text.strip()
+    idx = cleaned.find("{")
+    if idx == -1:
+        return None
+    cleaned = cleaned[idx:]
+
+    delims = [len(cleaned)]
+    for i in range(len(cleaned) - 1, -1, -1):
+        if cleaned[i] in (",", "{", "[", "}"):
+            delims.append(i)
+        if len(delims) >= 25:
+            break
+
+    for pos in delims:
+        sub = cleaned[:pos].rstrip(", \r\n\t")
+        open_braces = 0
+        open_brackets = 0
+        in_string = False
+        escape = False
+        for ch in sub:
+            if escape:
+                escape = False
+                continue
+            if ch == "\\" and in_string:
+                escape = True
+                continue
+            if ch == '"':
+                in_string = not in_string
+                continue
+            if in_string:
+                continue
+            if ch == '{':
+                open_braces += 1
+            elif ch == '}':
+                open_braces = max(0, open_braces - 1)
+            elif ch == '[':
+                open_brackets += 1
+            elif ch == ']':
+                open_brackets = max(0, open_brackets - 1)
+
+        repaired = sub + ("]" * open_brackets) + ("}" * open_braces)
+        try:
+            parsed = json.loads(repaired)
+            if isinstance(parsed, dict) and ("features" in parsed or "id" in parsed):
+                return repaired
+        except Exception:
+            continue
+
+    return None
+
 def _extract_json_from_text(raw_text: str) -> Optional[str]:
     """Extract valid JSON object from raw LLM text using balanced braces and markdown stripping."""
     cleaned = raw_text.strip()
@@ -42,6 +93,16 @@ def _extract_json_from_text(raw_text: str) -> Optional[str]:
             json.loads(cleaned)
             return cleaned
         except json.JSONDecodeError:
+            pass
+
+    # Prefer root repaired JSON if it contains features (prevents pulling out an inner child feature)
+    repaired_root = _repair_truncated_json(cleaned)
+    if repaired_root:
+        try:
+            parsed = json.loads(repaired_root)
+            if isinstance(parsed, dict) and "features" in parsed and len(parsed["features"]) > 0:
+                return repaired_root
+        except Exception:
             pass
 
     # Balanced brace extraction
@@ -85,6 +146,12 @@ def _extract_json_from_text(raw_text: str) -> Optional[str]:
             return candidate
         except json.JSONDecodeError:
             pass
+
+    # Fallback to truncated JSON recovery
+    repaired = _repair_truncated_json(cleaned)
+    if repaired:
+        return repaired
+
     return None
 
 
@@ -152,11 +219,37 @@ def _sanitize_raw_cadir(data: dict) -> dict:
         "new": "new_body",
     }
 
+    # Normalize root parameters
+    if "parameters" in data and isinstance(data["parameters"], dict):
+        clean_params = {}
+        for pk, pv in data["parameters"].items():
+            if isinstance(pv, (int, float)):
+                clean_params[pk] = float(pv)
+            elif isinstance(pv, list):
+                clean_params[pk] = pv
+            elif isinstance(pv, str):
+                try:
+                    clean_params[pk] = float(pv)
+                except ValueError:
+                    clean_params[pk] = pv
+        data["parameters"] = clean_params
+
     features = data.get("features", [])
     if isinstance(features, list):
         for i, f in enumerate(features):
             if not isinstance(f, dict):
                 continue
+
+            # Flatten nested parameters or params dicts if LLM generated them
+            for p_key in ("parameters", "params"):
+                if isinstance(f.get(p_key), dict):
+                    for sub_k, sub_v in f[p_key].items():
+                        if sub_k not in f or f[sub_k] is None:
+                            f[sub_k] = sub_v
+
+            # Map type -> feature_type
+            if "type" in f and not f.get("feature_type"):
+                f["feature_type"] = f["type"]
 
             ft = str(f.get("feature_type", "")).lower().strip()
             f["feature_type"] = TYPE_ALIASES.get(ft, ft)

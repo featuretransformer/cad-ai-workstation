@@ -22,6 +22,9 @@ GEOMETRIC_FEATURE_NOUNS = [
     "keyway", "keyways", "lug", "lugs", "cutout", "cutouts", "taper", "step", "steps",
     "counterbore", "countersink", "recess", "recesses", "spigot", "web", "webs",
     "cavity", "channel", "channels", "port", "ports", "lip", "collar",
+    "pipe", "pipes", "tube", "tubes", "passage", "passages", "connector", "connectors",
+    "cylinder", "cylinders", "shaft", "shafts", "plate", "plates", "bracket", "brackets",
+    "block", "blocks", "housing", "housings", "bushing", "bushings", "body",
 ]
 
 SPATIAL_RELATION_PHRASES = [
@@ -98,8 +101,11 @@ def evaluate_prompt_complexity(prompt: str) -> Dict[str, Any]:
     )
 
     # Trigger threshold:
-    # Requires at least 3 distinct features AND score >= 4.0, or >= 4 features
-    is_complex = bool((feature_count >= 3 and score >= 4.0) or (feature_count >= 4))
+    # Triggers decomposition if:
+    # - At least 2 features and score >= 4.5, OR
+    # - Overall score >= 7.0 (rich multi-dimension part), OR
+    # - At least 3 distinct features
+    is_complex = bool((feature_count >= 2 and score >= 4.5) or (score >= 7.0) or (feature_count >= 3))
 
     return {
         "complexity_score": round(score, 2),

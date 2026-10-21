@@ -99,7 +99,7 @@ class ResilientChatModel:
     Executes calls through multi-key pools and automatic cross-provider failover.
     """
 
-    def __init__(self, agent_type: str = "design", temperature: float = 0.15, default_max_tokens: int = 750):
+    def __init__(self, agent_type: str = "design", temperature: float = 0.15, default_max_tokens: int = 2048):
         self.agent_type = agent_type
         self.temperature = temperature
         self.default_max_tokens = default_max_tokens
