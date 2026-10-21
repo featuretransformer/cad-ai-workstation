@@ -20,6 +20,9 @@ from drawing.dimension_extractor import DimensionExtractor
 from drawing.feature_recognizer import FeatureRecognizer
 
 
+from agents.vision_analyzer import analyze_mechanical_image
+
+
 def classify_input_node(state: AgentState) -> Dict[str, Any]:
     """
     Classifies input modality and runs drawing pipeline if vector/image input is detected.
@@ -42,6 +45,7 @@ def classify_input_node(state: AgentState) -> Dict[str, Any]:
         input_type = "photo"
 
     updates: Dict[str, Any] = {"input_type": input_type}
+    parsed_intent: Dict[str, Any] = state.get("parsed_intent", {}).copy()
 
     # If drawing/sketch/photo with active drawing payload, invoke Drawing Understanding
     drawing_source = None
@@ -53,29 +57,47 @@ def classify_input_node(state: AgentState) -> Dict[str, Any]:
         drawing_source = img_data
 
     if drawing_source and input_type in ("drawing", "sketch", "photo"):
-        try:
-            parser = DrawingParser()
-            parsed = parser.parse(drawing_source)
-            if parsed.primitives:
-                v_identifier = ViewIdentifier()
-                views = v_identifier.identify_views(parsed)
+        # Vector / SVG Drawing Pipeline
+        if "<svg" in prompt or (file_path and str(file_path).lower().endswith(".svg")):
+            try:
+                parser = DrawingParser()
+                parsed = parser.parse(drawing_source)
+                if parsed.primitives:
+                    v_identifier = ViewIdentifier()
+                    views = v_identifier.identify_views(parsed)
 
-                dim_extractor = DimensionExtractor()
-                dims = dim_extractor.extract_dimensions(parsed.text_elements, primitives=parsed.primitives)
+                    dim_extractor = DimensionExtractor()
+                    dims = dim_extractor.extract_dimensions(parsed.text_elements, primitives=parsed.primitives)
 
-                recognizer = FeatureRecognizer()
-                cadir_doc = recognizer.recognize_features(
-                    drawing=parsed,
-                    views=views,
-                    dimensions=dims,
-                    input_type=input_type,
-                    doc_id=f"doc_{state.get('design_id', 'design')}",
-                )
-                updates["cadir_document"] = cadir_doc
-                if "clarification_needed" in cadir_doc.engineering_intent:
-                    updates["clarification_needed"] = cadir_doc.engineering_intent["clarification_needed"]
-        except Exception as e:
-            updates["drawing_parse_error"] = str(e)
+                    recognizer = FeatureRecognizer()
+                    cadir_doc = recognizer.recognize_features(
+                        drawing=parsed,
+                        views=views,
+                        dimensions=dims,
+                        input_type=input_type,
+                        doc_id=f"doc_{state.get('design_id', 'design')}",
+                    )
+                    updates["cadir_document"] = cadir_doc
+                    if "clarification_needed" in cadir_doc.engineering_intent:
+                        updates["clarification_needed"] = cadir_doc.engineering_intent["clarification_needed"]
+            except Exception as e:
+                updates["drawing_parse_error"] = str(e)
+        else:
+            # Raster Image / Multimodal Vision Understanding
+            try:
+                vision_res = analyze_mechanical_image(drawing_source, user_prompt=state.get("user_prompt", ""))
+                if vision_res.get("success"):
+                    if vision_res.get("component_family"):
+                        parsed_intent["component_family"] = vision_res["component_family"]
+                    if vision_res.get("dimensions"):
+                        parsed_intent["dimensions"] = vision_res["dimensions"]
+                    if vision_res.get("is_assembly") is not None:
+                        parsed_intent["is_assembly"] = vision_res["is_assembly"]
+                    if vision_res.get("detected_components"):
+                        parsed_intent["detected_components"] = vision_res["detected_components"]
+                    updates["parsed_intent"] = parsed_intent
+            except Exception as ve:
+                updates["vision_parse_error"] = str(ve)
 
     conf = {**state.get("confidence_scores", {})}
     conf["input_classifier"] = 0.98

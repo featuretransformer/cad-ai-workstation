@@ -104,7 +104,8 @@ def cad_executor_node(state: AgentState) -> Dict[str, Any]:
     # Generate multi-format exports (STEP, STL, GLB)
     export_paths = {}
     if success and res.get("step_path") and res.get("stl_path"):
-        export_paths = generate_all_exports(design_id, res["step_path"], res["stl_path"])
+        prompt_txt = state.get("user_prompt", "")
+        export_paths = generate_all_exports(design_id, res["step_path"], res["stl_path"], prompt=prompt_txt, cad_code=code)
 
     conf = {**state.get("confidence_scores", {})}
     conf["cad_executor"] = 1.0 if success else 0.0

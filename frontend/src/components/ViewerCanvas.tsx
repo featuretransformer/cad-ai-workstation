@@ -1,17 +1,83 @@
 "use client";
-import { Suspense, useRef, useEffect } from "react";
+import React, { Suspense, useRef, useEffect, useState, Component, ErrorInfo, ReactNode } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Grid, Environment, useGLTF, Center } from "@react-three/drei";
+import { OrbitControls, Grid, Environment, Center } from "@react-three/drei";
+import { GLTFLoader } from "three-stdlib";
 import { useCADStore } from "@/store/cadStore";
 import * as THREE from "three";
 
+interface ErrorBoundaryProps {
+  fallback: ReactNode;
+  children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
+}
+
+class ModelErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  public state: ErrorBoundaryState = { hasError: false };
+
+  public static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.warn("CAD Model loading caught by ModelErrorBoundary:", error?.message || error);
+  }
+
+  public componentDidUpdate(prevProps: ErrorBoundaryProps) {
+    if (prevProps.children !== this.props.children && this.state.hasError) {
+      this.setState({ hasError: false, error: undefined });
+    }
+  }
+
+  public render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
 function CADModel({ url, wireframe }: { url: string; wireframe: boolean }) {
-  const { scene } = useGLTF(url);
+  const [modelScene, setModelScene] = useState<THREE.Group | null>(null);
+  const [loadFailed, setLoadFailed] = useState<boolean>(false);
   const ref = useRef<THREE.Group>(null);
 
   useEffect(() => {
-    if (!scene) return;
-    scene.traverse((child) => {
+    let isCancelled = false;
+    setLoadFailed(false);
+    setModelScene(null);
+
+    const loader = new GLTFLoader();
+    loader.load(
+      url,
+      (gltf) => {
+        if (!isCancelled) {
+          const cloned = gltf.scene.clone(true);
+          setModelScene(cloned);
+          setLoadFailed(false);
+        }
+      },
+      undefined,
+      (err) => {
+        console.warn("CAD Model GLB fetch/parse notice:", err?.message || err);
+        if (!isCancelled) {
+          setLoadFailed(true);
+        }
+      }
+    );
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [url]);
+
+  useEffect(() => {
+    if (!modelScene) return;
+    modelScene.traverse((child) => {
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         if (Array.isArray(mesh.material)) {
@@ -23,11 +89,15 @@ function CADModel({ url, wireframe }: { url: string; wireframe: boolean }) {
         }
       }
     });
-  }, [scene, wireframe]);
+  }, [modelScene, wireframe]);
+
+  if (loadFailed || !modelScene) {
+    return <PlaceholderModel />;
+  }
 
   return (
     <Center>
-      <primitive ref={ref} object={scene} />
+      <primitive ref={ref} object={modelScene} />
     </Center>
   );
 }
@@ -112,11 +182,13 @@ export default function ViewerCanvas() {
         />
 
         <Suspense fallback={<PlaceholderModel />}>
-          {glbUrl ? (
-            <CADModel url={glbUrl} wireframe={wireframe} />
-          ) : (
-            <PlaceholderModel />
-          )}
+          <ModelErrorBoundary key={glbUrl || "none"} fallback={<PlaceholderModel />}>
+            {glbUrl ? (
+              <CADModel key={glbUrl} url={glbUrl} wireframe={wireframe} />
+            ) : (
+              <PlaceholderModel />
+            )}
+          </ModelErrorBoundary>
         </Suspense>
 
         <OrbitControls makeDefault enableDamping dampingFactor={0.05} />

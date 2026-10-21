@@ -49,13 +49,22 @@ def stl_to_glb(stl_path: str, glb_path: str) -> bool:
         return False
 
 
-def generate_all_exports(design_id: str, step_path: str, stl_path: str) -> dict:
+def generate_all_exports(
+    design_id: str,
+    step_path: str,
+    stl_path: str,
+    prompt: str = "",
+    cad_code: str = "",
+    parameters: dict = None,
+) -> dict:
     """
-    Given STEP + STL paths, generate GLB and return all file paths.
-    Tries STEP→GLB first, falls back to STL→GLB if the first attempt fails.
+    Given STEP + STL paths, generates GLB, 2D technical drawing sheet,
+    and standalone parametric Python script.
     """
     base_dir = Path(step_path).parent
     glb_path = str(base_dir / "output.glb")
+    drawing_path = str(base_dir / "drawing_sheet.png")
+    py_path = str(base_dir / "model_parametric.py")
 
     export_paths = {
         "step": step_path,
@@ -81,6 +90,26 @@ def generate_all_exports(design_id: str, step_path: str, stl_path: str) -> dict:
         export_paths["glb"] = glb_path
     else:
         logger.warning("GLB output unavailable for design %s — viewers will use STL fallback.", design_id)
+
+    # Attempt 3: 2D Engineering Drawing Sheet
+    try:
+        from cad.drawing_exporter import generate_drawing_sheet
+        if os.path.exists(stl_path):
+            drw = generate_drawing_sheet(stl_path, design_id=design_id, title=prompt or "Mechanical Component", output_path=drawing_path)
+            if drw and os.path.exists(drw):
+                export_paths["drawing"] = drw
+    except Exception as de:
+        logger.warning("Drawing sheet generation failed: %s", de)
+
+    # Attempt 4: Parametric Python Script
+    try:
+        from cad.parametric_exporter import export_parametric_python_script
+        if cad_code:
+            p_script = export_parametric_python_script(design_id, prompt, cad_code, parameters=parameters, output_path=py_path)
+            if p_script and os.path.exists(py_path):
+                export_paths["python"] = py_path
+    except Exception as pe:
+        logger.warning("Parametric script export failed: %s", pe)
 
     return export_paths
 

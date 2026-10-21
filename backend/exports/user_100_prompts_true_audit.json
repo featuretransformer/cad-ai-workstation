@@ -1,0 +1,2132 @@
+[
+  {
+    "id": "E01",
+    "name": "Cylindrical spacer sleeve",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      24.0,
+      23.99,
+      30.0
+    ],
+    "volume": 10061.42,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E02",
+    "name": "Stepped shaft",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "PARTIAL",
+    "category": "Feature / Chamfer Inaccuracy",
+    "issues": [
+      "Shoulder edge incorrectly chamfered/radiused; prompt specified chamfers only at the two outer end edges."
+    ],
+    "dims": [
+      30.0,
+      29.99,
+      100.0
+    ],
+    "volume": 40531.31,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E03",
+    "name": "Rectangular mounting plate",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "PARTIAL",
+    "category": "Kernel Artifact (Drill Point)",
+    "issues": [
+      "Hole feature generated drill-point conical exit artifacts on bottom face instead of clean through-cylinder."
+    ],
+    "dims": [
+      120.0,
+      80.0,
+      8.0
+    ],
+    "volume": 76076.16,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E04",
+    "name": "L-shaped angle bracket",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Missing Feature",
+    "issues": [
+      "Vertical leg missing second \u00d88mm hole (only 1 malformed hole generated instead of 2 holes spaced 30mm apart)."
+    ],
+    "dims": [
+      60.0,
+      50.0,
+      56.0
+    ],
+    "volume": 32571.29,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E05",
+    "name": "Circular flange disc",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      100.0,
+      99.97,
+      10.0
+    ],
+    "volume": 70721.55,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E06",
+    "name": "Solid cylindrical roller",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Omitted Feature",
+    "issues": [
+      "Circumferential groove (2mm wide x 1mm deep) completely omitted; plain cylinder generated."
+    ],
+    "dims": [
+      40.0,
+      39.99,
+      60.0
+    ],
+    "volume": 75243.46,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E07",
+    "name": "Rectangular block with a blind pocket",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "PARTIAL",
+    "category": "Dimension Discrepancy",
+    "issues": [
+      "Pocket depth is 6mm (vol 83900mm\u00b3) instead of specified 12mm depth (expected vol ~80300mm\u00b3)."
+    ],
+    "dims": [
+      70.0,
+      50.0,
+      25.0
+    ],
+    "volume": 83900.0,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E08",
+    "name": "Hexagonal nut blank",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Incorrect Primitive Topology",
+    "issues": [
+      "Generated round cylinder/washer instead of regular hexagonal prism 13mm across flats."
+    ],
+    "dims": [
+      13.0,
+      13.0,
+      8.0
+    ],
+    "volume": 739.88,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E09",
+    "name": "Pin with retaining groove",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Omitted Feature",
+    "issues": [
+      "Retaining groove (1.5mm x 0.8mm) completely omitted; plain cylindrical pin generated."
+    ],
+    "dims": [
+      10.0,
+      10.0,
+      55.0
+    ],
+    "volume": 4254.19,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E10",
+    "name": "U-channel section",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Gross Topological Error",
+    "issues": [
+      "Prompt fell back to default 5-hole rectangular mounting plate. Actual shape does not match requested geometry.",
+      "Generated solid closed rectangular block (115186 mm\u00b3) instead of open thin-walled U-channel (expected ~28200 mm\u00b3)."
+    ],
+    "dims": [
+      100.0,
+      40.0,
+      30.0
+    ],
+    "volume": 115186.4,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E11",
+    "name": "Hollow pipe segment",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Dimension Inversion & Missing Groove",
+    "issues": [
+      "Length and diameter swapped: generated 120mm OD x 24mm height ring instead of \u00d832mm OD x 120mm length pipe. Circumferential groove missing."
+    ],
+    "dims": [
+      120.0,
+      119.96,
+      24.0
+    ],
+    "volume": 212233.41,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E12",
+    "name": "Circular cover plate",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Missing Subtractive Features",
+    "issues": [
+      "Generated completely solid blind disc: missing \u00d820mm center hole, missing 4 mounting holes, missing annular recess."
+    ],
+    "dims": [
+      90.0,
+      89.97,
+      6.0
+    ],
+    "volume": 37525.69,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E13",
+    "name": "Rectangular mounting boss",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "PARTIAL",
+    "category": "Dimension Discrepancy",
+    "issues": [
+      "Boss height is 7.5mm instead of specified 15mm (total height 19.5mm instead of 27mm)."
+    ],
+    "dims": [
+      60.0,
+      40.0,
+      19.5
+    ],
+    "volume": 30178.25,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E14",
+    "name": "Clevis lug",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Fallback to Default Plate",
+    "issues": [
+      "Prompt fell back to default 5-hole rectangular mounting plate. Actual shape does not match requested geometry.",
+      "Generated flat 5-hole plate (30x20x8mm) instead of clevis lug with two 20mm-tall upright ears and coaxial \u00d88mm pin hole."
+    ],
+    "dims": [
+      30.0,
+      20.0,
+      8.0
+    ],
+    "volume": 4458.46,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E15",
+    "name": "Triangular gusset bracket",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Missing Feature",
+    "issues": [
+      "Triangular gusset plate (6mm thick, 60mm legs) missing; inside corner of L-bracket is unreinforced."
+    ],
+    "dims": [
+      60.0,
+      40.0,
+      64.2
+    ],
+    "volume": 27887.65,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E16",
+    "name": "Square enclosure lid",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Subtractive vs Additive Inversion",
+    "issues": [
+      "Center feature is a subtracted hole instead of a raised central rectangular pad (40x30x2mm)."
+    ],
+    "dims": [
+      100.0,
+      100.0,
+      5.0
+    ],
+    "volume": 45076.1,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E17",
+    "name": "Spherical-ended handle knob",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Fallback to Default Plate",
+    "issues": [
+      "Prompt fell back to default 5-hole rectangular mounting plate. Actual shape does not match requested geometry.",
+      "Generated rectangular 5-hole block (32x12x25mm) instead of \u00d832mm sphere on \u00d812x25mm stem."
+    ],
+    "dims": [
+      32.0,
+      12.0,
+      25.0
+    ],
+    "volume": 9160.75,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E18",
+    "name": "Cable gland body",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Gross Geometric Truncation",
+    "issues": [
+      "Generated 10mm single round ring instead of 3-stage cable gland (hex wrench body + front nose + threaded cylinder, 34mm length)."
+    ],
+    "dims": [
+      24.0,
+      23.99,
+      10.0
+    ],
+    "volume": 1912.4,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E19",
+    "name": "Simple finned heat sink",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Missing Features (Fins Omitted)",
+    "issues": [
+      "Generated tiny 30x30x8mm solid block with zero fins instead of 100x60x6mm base with 8 parallel cooling fins (35mm tall)."
+    ],
+    "dims": [
+      30.0,
+      30.0,
+      8.0
+    ],
+    "volume": 7200.0,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "E20",
+    "name": "Cylindrical knob with radial holes",
+    "tier": "Easy",
+    "level": "Level 1 (Easy)",
+    "status": "FAIL",
+    "category": "Fallback to Default Plate",
+    "issues": [
+      "Generated rectangular 5-hole block instead of \u00d840x25mm cylindrical knob with axial bore and 2 radial holes."
+    ],
+    "dims": [
+      40.0,
+      25.0,
+      8.0
+    ],
+    "volume": 7481.82,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M01",
+    "name": "Pillow-block bearing housing",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Incorrect Primitive Topology",
+    "issues": [
+      "Generated flat circular ring (120x120x12mm) instead of pillow-block housing (120x50x12mm base, pedestal, \u00d852mm seat, slots)."
+    ],
+    "dims": [
+      120.0,
+      119.96,
+      12.0
+    ],
+    "volume": 112041.65,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M02",
+    "name": "Flanged straight pipe connector",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      80.0,
+      79.98,
+      150.0
+    ],
+    "volume": 171778.1,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M03",
+    "name": "90-degree hollow pipe elbow",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Failed Sweep / Solid Cylinder Fallback",
+    "issues": [
+      "Generated solid round cylinder (90x90x42mm) instead of 90\u00b0 swept hollow pipe elbow with collars and bolt holes."
+    ],
+    "dims": [
+      90.0,
+      89.97,
+      42.0
+    ],
+    "volume": 233612.51,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M04",
+    "name": "Machinist V-block",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Missing V-Groove (Fallback Plate)",
+    "issues": [
+      "Generated solid block with 5 holes instead of machinist V-block with central 90\u00b0 V-groove."
+    ],
+    "dims": [
+      100.0,
+      50.0,
+      40.0
+    ],
+    "volume": 190049.04,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M05",
+    "name": "Adjustable slotted mounting bracket",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Omitted Slots & Fillet",
+    "issues": [
+      "Generated L-bracket with round holes; 4 elongated slots (24x9mm and 20x9mm) and corner fillet completely missing."
+    ],
+    "dims": [
+      100.0,
+      60.0,
+      64.0
+    ],
+    "volume": 91278.83,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M06",
+    "name": "Spur gear with hub",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Omitted Involute Teeth",
+    "issues": [
+      "Generated smooth cylinder blank with hub; all 24 gear teeth omitted."
+    ],
+    "dims": [
+      48.0,
+      47.99,
+      20.0
+    ],
+    "volume": 23927.04,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M07",
+    "name": "Single-start worm and wheel test pair",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Single-start worm and wheel test pair",
+      "Fell back to Three-Finger Gripper assembly instead of worm and worm-wheel gear pair."
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_m07_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m07_finger) ===",
+      "Finger Pivot Pin (comp_eval_m07_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m07_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m07_actuator) ==="
+    ]
+  },
+  {
+    "id": "M08",
+    "name": "Bearing end cap",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      100.0,
+      99.97,
+      60.0
+    ],
+    "volume": 316136.06,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M09",
+    "name": "Machinable vise jaw",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "PARTIAL",
+    "category": "Omitted Serrations",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Machinable vise jaw",
+      "V-profile serrations omitted; generated basic block with mounting holes."
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_m09_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m09_finger) ===",
+      "Finger Pivot Pin (comp_eval_m09_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m09_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m09_actuator) ==="
+    ]
+  },
+  {
+    "id": "M10",
+    "name": "Flanged reducer",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Omitted Conical Transition & Flanges",
+    "issues": [
+      "Generated short cylinder (60x60x36mm) instead of flanged conical reducer (70mm long, \u00d890/\u00d860 flanges, smooth conical bore)."
+    ],
+    "dims": [
+      60.0,
+      59.98,
+      36.0
+    ],
+    "volume": 36336.79,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M11",
+    "name": "Hydraulic cylinder barrel end cap",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "PARTIAL",
+    "category": "Omitted Groove",
+    "issues": [
+      "Annular seal groove on register face omitted."
+    ],
+    "dims": [
+      50.0,
+      49.98,
+      80.0
+    ],
+    "volume": 156668.32,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M12",
+    "name": "Ribbed motor mounting plate",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "PARTIAL",
+    "category": "Omitted Ribs",
+    "issues": [
+      "Underside reinforcement ribs omitted; generated plate with motor register."
+    ],
+    "dims": [
+      140.0,
+      100.0,
+      8.0
+    ],
+    "volume": 104121.76,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M13",
+    "name": "Two-piece shaft coupling",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Assembly Separation Failure",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Two-piece shaft coupling",
+      "Flexible center disc and two separate hubs fused or fell back; distinct 3-body assembly not preserved."
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_m13_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m13_finger) ===",
+      "Finger Pivot Pin (comp_eval_m13_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m13_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m13_actuator) ==="
+    ]
+  },
+  {
+    "id": "M14",
+    "name": "Four-hole flanged bearing sleeve",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "PARTIAL",
+    "category": "Omitted Internal Groove",
+    "issues": [
+      "Internal retaining ring groove inside bore omitted."
+    ],
+    "dims": [
+      50.0,
+      49.98,
+      30.0
+    ],
+    "volume": 58534.24,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M15",
+    "name": "Sheet-metal electrical enclosure",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Solid Block instead of Sheet-Metal Assembly",
+    "issues": [
+      "Folded thin-sheet geometry and removable cover absent; generated solid block envelope."
+    ],
+    "dims": [
+      2.0,
+      180.0,
+      120.0
+    ],
+    "volume": 43152.9,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M16",
+    "name": "Two-stage shaft with bearing seats and keyways",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Truncated Shaft Sections & Missing Keyways",
+    "issues": [
+      "4-section shaft generated as 2-section; bearing seats and keyways missing."
+    ],
+    "dims": [
+      30.0,
+      29.99,
+      160.0
+    ],
+    "volume": 101214.57,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M17",
+    "name": "T-slot fixture plate",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Omitted T-Slots",
+    "issues": [
+      "T-slot fixture plate undercut cavities omitted; generated plain plate with holes."
+    ],
+    "dims": [
+      200.0,
+      150.0,
+      16.0
+    ],
+    "volume": 444616.71,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M18",
+    "name": "Hollow Y-manifold",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Omitted Branching Geometry",
+    "issues": [
+      "Generated single straight cylinder (40x40x32mm) instead of hollow Y-manifold with 3 flanged branches."
+    ],
+    "dims": [
+      40.0,
+      39.99,
+      32.0
+    ],
+    "volume": 17396.66,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M19",
+    "name": "Pump impeller basic geometry",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Omitted Vanes & Shrouds",
+    "issues": [
+      "Generated flat circular disc with central hole; all 6 curved impeller vanes and shrouds omitted."
+    ],
+    "dims": [
+      100.0,
+      99.97,
+      20.0
+    ],
+    "volume": 147152.06,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M20",
+    "name": "Toggle clamp linkage parts",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Toggle clamp linkage parts",
+      "Fell back to Three-Finger Gripper assembly instead of toggle clamp mechanism."
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_m20_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m20_finger) ===",
+      "Finger Pivot Pin (comp_eval_m20_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m20_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m20_actuator) ==="
+    ]
+  },
+  {
+    "id": "M21",
+    "name": "Threaded flange adapter (nominal threads)",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "PARTIAL",
+    "category": "Feature Simplification",
+    "issues": [
+      "Thread zone spigot and flange proportions inaccurate; cylindrical envelope without relief."
+    ],
+    "dims": [
+      60.0,
+      59.98,
+      35.0
+    ],
+    "volume": 95982.43,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M22",
+    "name": "Dowel-located two-part housing",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Assembly Separation Failure",
+    "issues": [
+      "Two-part split housing exported as single combined solid; diagonal dowel holes not aligned."
+    ],
+    "dims": [
+      100.0,
+      99.97,
+      18.0
+    ],
+    "volume": 71610.74,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M23",
+    "name": "Shaft support with oil groove",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "PARTIAL",
+    "category": "Omitted Internal Feature",
+    "issues": [
+      "Internal annular oil groove in bearing bore omitted."
+    ],
+    "dims": [
+      80.0,
+      79.98,
+      45.0
+    ],
+    "volume": 98864.2,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M24",
+    "name": "Cam disc with offset follower track",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Omitted Eccentric Features",
+    "issues": [
+      "Eccentric circular pocket and offset follower boss omitted; generated concentric disc."
+    ],
+    "dims": [
+      100.0,
+      99.97,
+      12.0
+    ],
+    "volume": 93509.22,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M25",
+    "name": "Small conveyor idler roller assembly",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Small conveyor idler roller assembly",
+      "Idler roller assembly fell back to Three-Finger Gripper or fused components."
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_m25_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m25_finger) ===",
+      "Finger Pivot Pin (comp_eval_m25_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m25_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m25_actuator) ==="
+    ]
+  },
+  {
+    "id": "M26",
+    "name": "Gearbox mounting foot",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Missing Complex Geometry",
+    "issues": [
+      "Dual side-wall bearing bores and stiffening ribs omitted; generated basic block."
+    ],
+    "dims": [
+      120.0,
+      119.96,
+      10.0
+    ],
+    "volume": 62727.31,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M27",
+    "name": "Split clamp collar",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Omitted Radial Cut",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Split clamp collar",
+      "Radial split (3mm) through collar not cut; ring remains closed and un-split."
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_m27_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m27_finger) ===",
+      "Finger Pivot Pin (comp_eval_m27_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m27_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m27_actuator) ==="
+    ]
+  },
+  {
+    "id": "M28",
+    "name": "Adjustable slotted link",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Omitted Slot & Pockets",
+    "issues": [
+      "Longitudinal slot and relief pockets omitted; generated solid flat bar."
+    ],
+    "dims": [
+      180.0,
+      25.0,
+      8.0
+    ],
+    "volume": 35481.82,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "M29",
+    "name": "Compact pneumatic cylinder body and piston",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Compact pneumatic cylinder body and piston",
+      "Pneumatic cylinder assembly components fused or fell back to 3-finger gripper."
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_m29_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m29_finger) ===",
+      "Finger Pivot Pin (comp_eval_m29_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m29_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m29_actuator) ==="
+    ]
+  },
+  {
+    "id": "M30",
+    "name": "Circular indexing plate with detents",
+    "tier": "Medium",
+    "level": "Level 2 (Medium)",
+    "status": "PARTIAL",
+    "category": "Missing Subassembly Component",
+    "issues": [
+      "Separate spring-plunger housing block omitted; detent ring holes simplified."
+    ],
+    "dims": [
+      150.0,
+      149.95,
+      25.0
+    ],
+    "volume": 438713.56,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "C01",
+    "name": "Three-finger gripper, pivot-driven",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c01_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c01_finger) ===",
+      "Finger Pivot Pin (comp_eval_c01_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c01_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c01_actuator) ==="
+    ]
+  },
+  {
+    "id": "C02",
+    "name": "Two-stage parallel-axis gearbox",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      142.0,
+      90.0,
+      32.5
+    ],
+    "volume": 301253.62,
+    "is_assembly": true,
+    "components": [
+      "Gearbox Base Plate (comp_eval_c02_housing) ===",
+      "Drive Pinion Gear & Shaft (comp_eval_c02_pinion) ===",
+      "Driven Spur Gear & Shaft (comp_eval_c02_gear) ==="
+    ]
+  },
+  {
+    "id": "C03",
+    "name": "Lead-screw linear actuator",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Lead-screw linear actuator"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c03_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c03_finger) ===",
+      "Finger Pivot Pin (comp_eval_c03_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c03_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c03_actuator) ==="
+    ]
+  },
+  {
+    "id": "C04",
+    "name": "Belt-driven pulley transmission",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Belt-driven pulley transmission"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c04_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c04_finger) ===",
+      "Finger Pivot Pin (comp_eval_c04_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c04_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c04_actuator) ==="
+    ]
+  },
+  {
+    "id": "C05",
+    "name": "Universal joint assembly",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Universal joint assembly"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c05_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c05_finger) ===",
+      "Finger Pivot Pin (comp_eval_c05_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c05_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c05_actuator) ==="
+    ]
+  },
+  {
+    "id": "C06",
+    "name": "Bench vise assembly",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Bench vise assembly"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c06_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c06_finger) ===",
+      "Finger Pivot Pin (comp_eval_c06_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c06_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c06_actuator) ==="
+    ]
+  },
+  {
+    "id": "C07",
+    "name": "Four-bar linkage mechanism",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Four-bar linkage mechanism"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c07_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c07_finger) ===",
+      "Finger Pivot Pin (comp_eval_c07_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c07_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c07_actuator) ==="
+    ]
+  },
+  {
+    "id": "C08",
+    "name": "Rack-and-pinion linear actuator",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Rack-and-pinion linear actuator"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c08_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c08_finger) ===",
+      "Finger Pivot Pin (comp_eval_c08_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c08_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c08_actuator) ==="
+    ]
+  },
+  {
+    "id": "C09",
+    "name": "Bearing-supported roller conveyor module",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      500.0,
+      499.84,
+      50.0
+    ],
+    "volume": 9809882.91,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "C10",
+    "name": "Pneumatically actuated two-jaw gripper",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c10_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c10_finger) ===",
+      "Finger Pivot Pin (comp_eval_c10_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c10_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c10_actuator) ==="
+    ]
+  },
+  {
+    "id": "C11",
+    "name": "Multi-piece pump housing with impeller",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Multi-piece pump housing with impeller"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c11_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c11_finger) ===",
+      "Finger Pivot Pin (comp_eval_c11_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c11_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c11_actuator) ==="
+    ]
+  },
+  {
+    "id": "C12",
+    "name": "Small planetary gearbox",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Small planetary gearbox"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c12_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c12_finger) ===",
+      "Finger Pivot Pin (comp_eval_c12_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c12_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c12_actuator) ==="
+    ]
+  },
+  {
+    "id": "C13",
+    "name": "Gear-driven scissor lift",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Gear-driven scissor lift"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c13_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c13_finger) ===",
+      "Finger Pivot Pin (comp_eval_c13_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c13_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c13_actuator) ==="
+    ]
+  },
+  {
+    "id": "C14",
+    "name": "Four-station rotary indexing table",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      250.0,
+      249.92,
+      90.0
+    ],
+    "volume": 4414274.55,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "C15",
+    "name": "Shaft-mounted disc brake assembly",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Shaft-mounted disc brake assembly"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c15_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c15_finger) ===",
+      "Finger Pivot Pin (comp_eval_c15_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c15_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c15_actuator) ==="
+    ]
+  },
+  {
+    "id": "C16",
+    "name": "Chain-and-sprocket transmission",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      12.0,
+      12.0,
+      24.0
+    ],
+    "volume": 2635.31,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "C17",
+    "name": "Ball-screw supported CNC axis",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      400.0,
+      399.88,
+      12.0
+    ],
+    "volume": 1412934.6,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "C18",
+    "name": "Adjustable camera/inspection gimbal",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Adjustable camera/inspection gimbal"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c18_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c18_finger) ===",
+      "Finger Pivot Pin (comp_eval_c18_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c18_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c18_actuator) ==="
+    ]
+  },
+  {
+    "id": "C19",
+    "name": "Screw-driven pipe clamp",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Screw-driven pipe clamp"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c19_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c19_finger) ===",
+      "Finger Pivot Pin (comp_eval_c19_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c19_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c19_actuator) ==="
+    ]
+  },
+  {
+    "id": "C20",
+    "name": "Robotic wrist flange with cable routing",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Fallback to 5-Hole Plate",
+    "issues": [
+      "Prompt fell back to default 5-hole rectangular mounting plate. Actual shape does not match requested geometry."
+    ],
+    "dims": [
+      100.0,
+      99.97,
+      35.0
+    ],
+    "volume": 274075.95,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "C21",
+    "name": "Modular fixture plate and locating system",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Modular fixture plate and locating system"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c21_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c21_finger) ===",
+      "Finger Pivot Pin (comp_eval_c21_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c21_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c21_actuator) ==="
+    ]
+  },
+  {
+    "id": "C22",
+    "name": "Compact hydraulic power unit layout",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Compact hydraulic power unit layout"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c22_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c22_finger) ===",
+      "Finger Pivot Pin (comp_eval_c22_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c22_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c22_actuator) ==="
+    ]
+  },
+  {
+    "id": "C23",
+    "name": "Small compressor piston-crank assembly",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Small compressor piston-crank assembly"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c23_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c23_finger) ===",
+      "Finger Pivot Pin (comp_eval_c23_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c23_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c23_actuator) ==="
+    ]
+  },
+  {
+    "id": "C24",
+    "name": "Camshaft with three followers",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      220.0,
+      219.93,
+      120.0
+    ],
+    "volume": 4558154.88,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "C25",
+    "name": "Vertical-axis wind turbine rotor assembly",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Vertical-axis wind turbine rotor assembly"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c25_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c25_finger) ===",
+      "Finger Pivot Pin (comp_eval_c25_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c25_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c25_actuator) ==="
+    ]
+  },
+  {
+    "id": "C26",
+    "name": "Filter housing with replaceable cartridge",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      120.0,
+      119.96,
+      10.0
+    ],
+    "volume": 84717.19,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "C27",
+    "name": "Two-axis worm-driven positioning stage",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Two-axis worm-driven positioning stage"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c27_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c27_finger) ===",
+      "Finger Pivot Pin (comp_eval_c27_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c27_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c27_actuator) ==="
+    ]
+  },
+  {
+    "id": "C28",
+    "name": "Automotive suspension corner mock-up",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Automotive suspension corner mock-up"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c28_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c28_finger) ===",
+      "Finger Pivot Pin (comp_eval_c28_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c28_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c28_actuator) ==="
+    ]
+  },
+  {
+    "id": "C29",
+    "name": "Twin-cylinder reciprocating pump crank assembly",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Twin-cylinder reciprocating pump crank assembly"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c29_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c29_finger) ===",
+      "Finger Pivot Pin (comp_eval_c29_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c29_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c29_actuator) ==="
+    ]
+  },
+  {
+    "id": "C30",
+    "name": "Modular robotic end-effector tool changer",
+    "tier": "Complex",
+    "level": "Level 3 (Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Modular robotic end-effector tool changer"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_c30_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c30_finger) ===",
+      "Finger Pivot Pin (comp_eval_c30_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c30_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c30_actuator) ==="
+    ]
+  },
+  {
+    "id": "H01",
+    "name": "Three-finger synchronized gripper with actuator",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_h01_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h01_finger) ===",
+      "Finger Pivot Pin (comp_eval_h01_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h01_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h01_actuator) ==="
+    ]
+  },
+  {
+    "id": "H02",
+    "name": "Two-stage helical gearbox with housing and bearings",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      142.0,
+      90.0,
+      32.5
+    ],
+    "volume": 301253.62,
+    "is_assembly": true,
+    "components": [
+      "Gearbox Base Plate (comp_eval_h02_housing) ===",
+      "Drive Pinion Gear & Shaft (comp_eval_h02_pinion) ===",
+      "Driven Spur Gear & Shaft (comp_eval_h02_gear) ==="
+    ]
+  },
+  {
+    "id": "H03",
+    "name": "Automated pick-and-place linkage head",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Automated pick-and-place linkage head"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_h03_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h03_finger) ===",
+      "Finger Pivot Pin (comp_eval_h03_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h03_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h03_actuator) ==="
+    ]
+  },
+  {
+    "id": "H04",
+    "name": "Compact CNC spindle cartridge",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      20.0,
+      19.99,
+      150.0
+    ],
+    "volume": 46969.56,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "H05",
+    "name": "Four-axis robot arm mechanical mock-up",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      200.0,
+      199.94,
+      200.0
+    ],
+    "volume": 6279175.57,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "H06",
+    "name": "Hydraulic vise with synchronized moving jaws",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Hydraulic vise with synchronized moving jaws"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_h06_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h06_finger) ===",
+      "Finger Pivot Pin (comp_eval_h06_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h06_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h06_actuator) ==="
+    ]
+  },
+  {
+    "id": "H07",
+    "name": "Differential gearbox assembly",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Differential gearbox assembly"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_h07_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h07_finger) ===",
+      "Finger Pivot Pin (comp_eval_h07_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h07_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h07_actuator) ==="
+    ]
+  },
+  {
+    "id": "H08",
+    "name": "Cam-indexed assembly station",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Cam-indexed assembly station"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_h08_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h08_finger) ===",
+      "Finger Pivot Pin (comp_eval_h08_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h08_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h08_actuator) ==="
+    ]
+  },
+  {
+    "id": "H09",
+    "name": "Screw compressor rotor pair and casing concept",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Screw compressor rotor pair and casing concept"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_h09_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h09_finger) ===",
+      "Finger Pivot Pin (comp_eval_h09_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h09_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h09_actuator) ==="
+    ]
+  },
+  {
+    "id": "H10",
+    "name": "Multi-cylinder cranktrain assembly",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      80.0,
+      79.98,
+      95.0
+    ],
+    "volume": 476766.01,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "H11",
+    "name": "Robotic gripper with interchangeable fingers and quick-change mount",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_h11_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h11_finger) ===",
+      "Finger Pivot Pin (comp_eval_h11_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h11_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h11_actuator) ==="
+    ]
+  },
+  {
+    "id": "H12",
+    "name": "Planetary gearbox with selectable carrier arrangement",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Planetary gearbox with selectable carrier arrangement"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_h12_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h12_finger) ===",
+      "Finger Pivot Pin (comp_eval_h12_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h12_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h12_actuator) ==="
+    ]
+  },
+  {
+    "id": "H13",
+    "name": "Ball-screw XY gantry with Z head",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      450.0,
+      449.86,
+      350.0
+    ],
+    "volume": 55638854.81,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "H14",
+    "name": "Automated material handling gripper with pneumatic circuit layout",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_h14_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h14_finger) ===",
+      "Finger Pivot Pin (comp_eval_h14_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h14_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h14_actuator) ==="
+    ]
+  },
+  {
+    "id": "H15",
+    "name": "Centrifugal pump serviceable assembly with seal stack",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Centrifugal pump serviceable assembly with seal stack"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_h15_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h15_finger) ===",
+      "Finger Pivot Pin (comp_eval_h15_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h15_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h15_actuator) ==="
+    ]
+  },
+  {
+    "id": "H16",
+    "name": "Compact machine-tool turret indexing assembly",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      220.0,
+      219.93,
+      20.0
+    ],
+    "volume": 758403.0,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "H17",
+    "name": "Compact internal-combustion engine valvetrain mock-up",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      6.0,
+      6.0,
+      24.0
+    ],
+    "volume": 642.93,
+    "is_assembly": false,
+    "components": null
+  },
+  {
+    "id": "H18",
+    "name": "Mechanical press linkage and guarded frame",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Mechanical press linkage and guarded frame"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_h18_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h18_finger) ===",
+      "Finger Pivot Pin (comp_eval_h18_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h18_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h18_actuator) ==="
+    ]
+  },
+  {
+    "id": "H19",
+    "name": "Modular automated inspection fixture",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "PASS",
+    "category": "True Pass",
+    "issues": [],
+    "dims": [
+      170.0,
+      150.0,
+      217.5
+    ],
+    "volume": 603707.22,
+    "is_assembly": true,
+    "components": [
+      "Base Plate (comp_base) ===",
+      "Primary Datum Support (comp_datum_1) ===",
+      "Secondary Datum Support A (comp_datum_2) ===",
+      "Secondary Datum Support B (comp_datum_3) ===",
+      "Side Locator Left (comp_locator_side_1) ===",
+      "Side Locator Right (comp_locator_side_2) ===",
+      "Pneumatic Clamp Front (comp_clamp_1) ===",
+      "Pneumatic Clamp Back (comp_clamp_2) ===",
+      "Vertical Probing Column (comp_probe_column) ===",
+      "Sensor Bracket Zone 1 (comp_sensor_bracket_1) ===",
+      "Sensor Bracket Zone 2 (comp_sensor_bracket_2) ===",
+      "Sensor Bracket Zone 3 (comp_sensor_bracket_3) ===",
+      "Sensor Bracket Zone 4 (comp_sensor_bracket_4) ==="
+    ]
+  },
+  {
+    "id": "H20",
+    "name": "Integrated machine assembly challenge",
+    "tier": "Complex",
+    "level": "Level 4 (Highly Complex)",
+    "status": "FAIL",
+    "category": "Assembly Fallback to Gripper",
+    "issues": [
+      "Erronously synthesized as 3-Finger Gripper (5 components: base plate, fingers, pins, actuator). Expected: Integrated machine assembly challenge"
+    ],
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "volume": 237331.26,
+    "is_assembly": true,
+    "components": [
+      "Base Mounting Plate (comp_eval_h20_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h20_finger) ===",
+      "Finger Pivot Pin (comp_eval_h20_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h20_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h20_actuator) ==="
+    ]
+  }
+]

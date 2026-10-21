@@ -105,6 +105,17 @@ def engineering_agent_node(state: AgentState) -> Dict[str, Any]:
         "center_of_mass_mm": [0.0, 0.0, round(volume_cm3 ** (1/3) * 5.0, 2)],
     }
 
+    if state.get("is_assembly"):
+        plan = state.get("design_plan", {})
+        val = state.get("assembly_validation", {})
+        engineering_report["is_assembly"] = True
+        engineering_report["assembly_name"] = plan.get("assembly_name", "")
+        engineering_report["component_count"] = plan.get("component_count", 0)
+        engineering_report["total_instances"] = plan.get("total_instances", 0)
+        engineering_report["bill_of_materials"] = plan.get("bom", [])
+        engineering_report["interferences_detected"] = val.get("collision_count", 0)
+        engineering_report["clearances_verified"] = len(val.get("clearances", []))
+
     conf = {**state.get("confidence_scores", {})}
     conf["engineering_agent"] = 0.95
 
@@ -316,6 +327,13 @@ def doc_agent_node(state: AgentState) -> Dict[str, Any]:
         "general_tolerances": "Linear: ±0.1mm, Angular: ±0.5°",
         "surface_finish": "Ra 1.6 μm (Machined)",
     }
+
+    if state.get("is_assembly"):
+        plan = state.get("design_plan", {})
+        doc_report["title"] = f"Assembly Technical Specification — {plan.get('assembly_name', family)}"
+        doc_report["bill_of_materials"] = plan.get("bom", [])
+        doc_report["assumptions"] = plan.get("assumptions", [])
+        doc_report["unresolved_parameters"] = plan.get("unresolved_parameters", [])
 
     conf = {**state.get("confidence_scores", {})}
     conf["doc_agent"] = 0.98

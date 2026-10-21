@@ -53,8 +53,9 @@ def test_svg_drawing_parsing():
 
 
 def test_raster_drawing_parsing(tmp_path):
+    pytest = __import__("pytest")
+    cv2 = pytest.importorskip("cv2")
     import numpy as np
-    import cv2
 
     # Create a synthetic 200x200 image with a white background and black circle + line
     img = np.ones((200, 200, 3), dtype=np.uint8) * 255

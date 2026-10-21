@@ -6,10 +6,11 @@ import type { ExportArtifact } from "@/lib/types";
 import { Download, FileBox, Layers, Code2, Box } from "lucide-react";
 
 const FORMAT_META: Record<string, { label: string; icon: React.ReactNode; desc: string }> = {
-  step: { label: "STEP", icon: <FileBox size={16} />, desc: "ISO 10303 — universal CAD exchange" },
-  stl: { label: "STL", icon: <Layers size={16} />, desc: "Mesh — 3D printing / slicer" },
-  glb: { label: "GLB", icon: <Box size={16} />, desc: "Binary glTF — web/game engine" },
-  dxf: { label: "DXF", icon: <Code2 size={16} />, desc: "Drawing exchange — 2D CAM" },
+  step: { label: "STEP (3D CAD)", icon: <FileBox size={16} />, desc: "ISO 10303 B-Rep — for SolidWorks / Fusion 360" },
+  stl: { label: "STL (Mesh)", icon: <Layers size={16} />, desc: "Triangulated Mesh — 3D printing / slicer" },
+  glb: { label: "GLB (Web)", icon: <Box size={16} />, desc: "Binary glTF — real-time 3D viewport" },
+  py: { label: "Parametric Python", icon: <Code2 size={16} />, desc: "Editable build123d source code with variables" },
+  drawing: { label: "2D Drawing Sheet", icon: <FileBox size={16} />, desc: "Multi-view ISO technical drawing (PNG)" },
 };
 
 export default function ExportPanel() {
@@ -46,7 +47,7 @@ export default function ExportPanel() {
       </div>
 
       {Object.entries(FORMAT_META).map(([fmt, meta]) => {
-        const available = availableFormats.includes(fmt);
+        const available = availableFormats.includes(fmt) || ["step", "stl", "glb", "py", "drawing"].includes(fmt);
         const artifact = exports.find(e => e.format.toLowerCase() === fmt);
         const sizeKB = artifact ? (artifact.file_size_bytes / 1024).toFixed(1) : null;
 

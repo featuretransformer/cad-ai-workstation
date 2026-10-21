@@ -1,0 +1,3158 @@
+[
+  {
+    "id": "E01",
+    "name": "Cylindrical spacer sleeve",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 10061.42,
+    "dims": [
+      24.0,
+      23.99,
+      30.0
+    ],
+    "bounds": [
+      [
+        -12.0,
+        -12.0,
+        0.0
+      ],
+      [
+        12.0,
+        12.0,
+        30.0
+      ]
+    ]
+  },
+  {
+    "id": "E02",
+    "name": "Stepped shaft",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 40531.31,
+    "dims": [
+      30.0,
+      29.99,
+      100.0
+    ],
+    "bounds": [
+      [
+        -15.0,
+        -15.0,
+        0.0
+      ],
+      [
+        15.0,
+        15.0,
+        100.0
+      ]
+    ]
+  },
+  {
+    "id": "E03",
+    "name": "Rectangular mounting plate",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 76076.16,
+    "dims": [
+      120.0,
+      80.0,
+      8.0
+    ],
+    "bounds": [
+      [
+        -60.0,
+        -40.0,
+        0.0
+      ],
+      [
+        60.0,
+        40.0,
+        8.0
+      ]
+    ]
+  },
+  {
+    "id": "E04",
+    "name": "L-shaped angle bracket",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 32571.29,
+    "dims": [
+      60.0,
+      50.0,
+      56.0
+    ],
+    "bounds": [
+      [
+        -30.0,
+        -25.0,
+        0.0
+      ],
+      [
+        30.0,
+        25.0,
+        56.0
+      ]
+    ]
+  },
+  {
+    "id": "E05",
+    "name": "Circular flange disc",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 70721.55,
+    "dims": [
+      100.0,
+      99.97,
+      10.0
+    ],
+    "bounds": [
+      [
+        -50.0,
+        -49.98,
+        0.0
+      ],
+      [
+        50.0,
+        49.98,
+        10.0
+      ]
+    ]
+  },
+  {
+    "id": "E06",
+    "name": "Solid cylindrical roller",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 75243.46,
+    "dims": [
+      40.0,
+      39.99,
+      60.0
+    ],
+    "bounds": [
+      [
+        -20.0,
+        -19.99,
+        -30.0
+      ],
+      [
+        20.0,
+        19.99,
+        30.0
+      ]
+    ]
+  },
+  {
+    "id": "E07",
+    "name": "Rectangular block with a blind pocket",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 83900.0,
+    "dims": [
+      70.0,
+      50.0,
+      25.0
+    ],
+    "bounds": [
+      [
+        -35.0,
+        -25.0,
+        0.0
+      ],
+      [
+        35.0,
+        25.0,
+        25.0
+      ]
+    ]
+  },
+  {
+    "id": "E08",
+    "name": "Hexagonal nut blank",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 739.88,
+    "dims": [
+      13.0,
+      13.0,
+      8.0
+    ],
+    "bounds": [
+      [
+        -6.5,
+        -6.5,
+        -4.0
+      ],
+      [
+        6.5,
+        6.5,
+        4.0
+      ]
+    ]
+  },
+  {
+    "id": "E09",
+    "name": "Pin with retaining groove",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 4254.19,
+    "dims": [
+      10.0,
+      10.0,
+      55.0
+    ],
+    "bounds": [
+      [
+        -5.0,
+        -5.0,
+        -27.5
+      ],
+      [
+        5.0,
+        5.0,
+        27.5
+      ]
+    ]
+  },
+  {
+    "id": "E10",
+    "name": "U-channel section",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 115186.4,
+    "dims": [
+      100.0,
+      40.0,
+      30.0
+    ],
+    "bounds": [
+      [
+        -50.0,
+        -20.0,
+        -15.0
+      ],
+      [
+        50.0,
+        20.0,
+        15.0
+      ]
+    ]
+  },
+  {
+    "id": "E11",
+    "name": "Hollow pipe segment",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 212233.41,
+    "dims": [
+      120.0,
+      119.96,
+      24.0
+    ],
+    "bounds": [
+      [
+        -60.0,
+        -59.98,
+        -12.0
+      ],
+      [
+        60.0,
+        59.98,
+        12.0
+      ]
+    ]
+  },
+  {
+    "id": "E12",
+    "name": "Circular cover plate",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 37525.69,
+    "dims": [
+      90.0,
+      89.97,
+      6.0
+    ],
+    "bounds": [
+      [
+        -45.0,
+        -44.99,
+        -3.0
+      ],
+      [
+        45.0,
+        44.99,
+        3.0
+      ]
+    ]
+  },
+  {
+    "id": "E13",
+    "name": "Rectangular mounting boss",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 30178.25,
+    "dims": [
+      60.0,
+      40.0,
+      19.5
+    ],
+    "bounds": [
+      [
+        -30.0,
+        -20.0,
+        0.0
+      ],
+      [
+        30.0,
+        20.0,
+        19.5
+      ]
+    ]
+  },
+  {
+    "id": "E14",
+    "name": "Clevis lug",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 4458.46,
+    "dims": [
+      30.0,
+      20.0,
+      8.0
+    ],
+    "bounds": [
+      [
+        -15.0,
+        -10.0,
+        -4.0
+      ],
+      [
+        15.0,
+        10.0,
+        4.0
+      ]
+    ]
+  },
+  {
+    "id": "E15",
+    "name": "Triangular gusset bracket",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 27887.65,
+    "dims": [
+      60.0,
+      40.0,
+      64.2
+    ],
+    "bounds": [
+      [
+        -30.0,
+        -20.0,
+        -1.2
+      ],
+      [
+        30.0,
+        20.0,
+        63.0
+      ]
+    ]
+  },
+  {
+    "id": "E16",
+    "name": "Square enclosure lid",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 45076.1,
+    "dims": [
+      100.0,
+      100.0,
+      5.0
+    ],
+    "bounds": [
+      [
+        -50.0,
+        -50.0,
+        -2.5
+      ],
+      [
+        50.0,
+        50.0,
+        2.5
+      ]
+    ]
+  },
+  {
+    "id": "E17",
+    "name": "Spherical-ended handle knob",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 9160.75,
+    "dims": [
+      32.0,
+      12.0,
+      25.0
+    ],
+    "bounds": [
+      [
+        -16.0,
+        -6.0,
+        -12.5
+      ],
+      [
+        16.0,
+        6.0,
+        12.5
+      ]
+    ]
+  },
+  {
+    "id": "E18",
+    "name": "Cable gland body",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 1912.4,
+    "dims": [
+      24.0,
+      23.99,
+      10.0
+    ],
+    "bounds": [
+      [
+        -12.0,
+        -12.0,
+        -5.0
+      ],
+      [
+        12.0,
+        12.0,
+        5.0
+      ]
+    ]
+  },
+  {
+    "id": "E19",
+    "name": "Simple finned heat sink",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 7200.0,
+    "dims": [
+      30.0,
+      30.0,
+      8.0
+    ],
+    "bounds": [
+      [
+        -15.0,
+        -15.0,
+        -4.0
+      ],
+      [
+        15.0,
+        15.0,
+        4.0
+      ]
+    ]
+  },
+  {
+    "id": "E20",
+    "name": "Cylindrical knob with radial holes",
+    "tier": "Easy",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 7481.82,
+    "dims": [
+      40.0,
+      25.0,
+      8.0
+    ],
+    "bounds": [
+      [
+        -20.0,
+        -12.5,
+        -4.0
+      ],
+      [
+        20.0,
+        12.5,
+        4.0
+      ]
+    ]
+  },
+  {
+    "id": "M01",
+    "name": "Pillow-block bearing housing",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 112041.65,
+    "dims": [
+      120.0,
+      119.96,
+      12.0
+    ],
+    "bounds": [
+      [
+        -60.0,
+        -59.98,
+        0.0
+      ],
+      [
+        60.0,
+        59.98,
+        12.0
+      ]
+    ]
+  },
+  {
+    "id": "M02",
+    "name": "Flanged straight pipe connector",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 171778.1,
+    "dims": [
+      80.0,
+      79.98,
+      150.0
+    ],
+    "bounds": [
+      [
+        -40.0,
+        -39.99,
+        0.0
+      ],
+      [
+        40.0,
+        39.99,
+        150.0
+      ]
+    ]
+  },
+  {
+    "id": "M03",
+    "name": "90-degree hollow pipe elbow",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 233612.51,
+    "dims": [
+      90.0,
+      89.97,
+      42.0
+    ],
+    "bounds": [
+      [
+        -45.0,
+        -44.99,
+        -24.0
+      ],
+      [
+        45.0,
+        44.99,
+        18.0
+      ]
+    ]
+  },
+  {
+    "id": "M04",
+    "name": "Machinist V-block",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 190049.04,
+    "dims": [
+      100.0,
+      50.0,
+      40.0
+    ],
+    "bounds": [
+      [
+        -50.0,
+        -25.0,
+        -20.0
+      ],
+      [
+        50.0,
+        25.0,
+        20.0
+      ]
+    ]
+  },
+  {
+    "id": "M05",
+    "name": "Adjustable slotted mounting bracket",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 91278.83,
+    "dims": [
+      100.0,
+      60.0,
+      64.0
+    ],
+    "bounds": [
+      [
+        -50.0,
+        -30.0,
+        -4.0
+      ],
+      [
+        50.0,
+        30.0,
+        60.0
+      ]
+    ]
+  },
+  {
+    "id": "M06",
+    "name": "Spur gear with hub",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": false,
+    "volume": 23927.04,
+    "dims": [
+      48.0,
+      47.99,
+      20.0
+    ],
+    "bounds": [
+      [
+        -24.0,
+        -23.99,
+        0.0
+      ],
+      [
+        24.0,
+        23.99,
+        20.0
+      ]
+    ]
+  },
+  {
+    "id": "M07",
+    "name": "Single-start worm and wheel test pair",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_m07_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m07_finger) ===",
+      "Finger Pivot Pin (comp_eval_m07_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m07_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m07_actuator) ==="
+    ]
+  },
+  {
+    "id": "M08",
+    "name": "Bearing end cap",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 316136.06,
+    "dims": [
+      100.0,
+      99.97,
+      60.0
+    ],
+    "bounds": [
+      [
+        -50.0,
+        -49.98,
+        -40.0
+      ],
+      [
+        50.0,
+        49.98,
+        20.0
+      ]
+    ]
+  },
+  {
+    "id": "M09",
+    "name": "Machinable vise jaw",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_m09_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m09_finger) ===",
+      "Finger Pivot Pin (comp_eval_m09_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m09_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m09_actuator) ==="
+    ]
+  },
+  {
+    "id": "M10",
+    "name": "Flanged reducer",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 36336.79,
+    "dims": [
+      60.0,
+      59.98,
+      36.0
+    ],
+    "bounds": [
+      [
+        -30.0,
+        -29.99,
+        -18.0
+      ],
+      [
+        30.0,
+        29.99,
+        18.0
+      ]
+    ]
+  },
+  {
+    "id": "M11",
+    "name": "Hydraulic cylinder barrel end cap",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 156668.32,
+    "dims": [
+      50.0,
+      49.98,
+      80.0
+    ],
+    "bounds": [
+      [
+        -25.0,
+        -24.99,
+        -40.0
+      ],
+      [
+        25.0,
+        24.99,
+        40.0
+      ]
+    ]
+  },
+  {
+    "id": "M12",
+    "name": "Ribbed motor mounting plate",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 104121.76,
+    "dims": [
+      140.0,
+      100.0,
+      8.0
+    ],
+    "bounds": [
+      [
+        -70.0,
+        -50.0,
+        -4.0
+      ],
+      [
+        70.0,
+        50.0,
+        4.0
+      ]
+    ]
+  },
+  {
+    "id": "M13",
+    "name": "Two-piece shaft coupling",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_m13_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m13_finger) ===",
+      "Finger Pivot Pin (comp_eval_m13_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m13_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m13_actuator) ==="
+    ]
+  },
+  {
+    "id": "M14",
+    "name": "Four-hole flanged bearing sleeve",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 58534.24,
+    "dims": [
+      50.0,
+      49.98,
+      30.0
+    ],
+    "bounds": [
+      [
+        -25.0,
+        -24.99,
+        -15.0
+      ],
+      [
+        25.0,
+        24.99,
+        15.0
+      ]
+    ]
+  },
+  {
+    "id": "M15",
+    "name": "Sheet-metal electrical enclosure",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 43152.9,
+    "dims": [
+      2.0,
+      180.0,
+      120.0
+    ],
+    "bounds": [
+      [
+        -1.0,
+        -90.0,
+        -60.0
+      ],
+      [
+        1.0,
+        90.0,
+        60.0
+      ]
+    ]
+  },
+  {
+    "id": "M16",
+    "name": "Two-stage shaft with bearing seats and keyways",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 101214.57,
+    "dims": [
+      30.0,
+      29.99,
+      160.0
+    ],
+    "bounds": [
+      [
+        -15.0,
+        -15.0,
+        0.0
+      ],
+      [
+        15.0,
+        15.0,
+        160.0
+      ]
+    ]
+  },
+  {
+    "id": "M17",
+    "name": "T-slot fixture plate",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 444616.71,
+    "dims": [
+      200.0,
+      150.0,
+      16.0
+    ],
+    "bounds": [
+      [
+        -100.0,
+        -75.0,
+        -8.0
+      ],
+      [
+        100.0,
+        75.0,
+        8.0
+      ]
+    ]
+  },
+  {
+    "id": "M18",
+    "name": "Hollow Y-manifold",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 17396.66,
+    "dims": [
+      40.0,
+      39.99,
+      32.0
+    ],
+    "bounds": [
+      [
+        -20.0,
+        -19.99,
+        -16.0
+      ],
+      [
+        20.0,
+        19.99,
+        16.0
+      ]
+    ]
+  },
+  {
+    "id": "M19",
+    "name": "Pump impeller basic geometry",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 147152.06,
+    "dims": [
+      100.0,
+      99.97,
+      20.0
+    ],
+    "bounds": [
+      [
+        -50.0,
+        -49.98,
+        0.0
+      ],
+      [
+        50.0,
+        49.98,
+        20.0
+      ]
+    ]
+  },
+  {
+    "id": "M20",
+    "name": "Toggle clamp linkage parts",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_m20_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m20_finger) ===",
+      "Finger Pivot Pin (comp_eval_m20_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m20_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m20_actuator) ==="
+    ]
+  },
+  {
+    "id": "M21",
+    "name": "Threaded flange adapter (nominal threads)",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 95982.43,
+    "dims": [
+      60.0,
+      59.98,
+      35.0
+    ],
+    "bounds": [
+      [
+        -30.0,
+        -29.99,
+        -17.5
+      ],
+      [
+        30.0,
+        29.99,
+        17.5
+      ]
+    ]
+  },
+  {
+    "id": "M22",
+    "name": "Dowel-located two-part housing",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 71610.74,
+    "dims": [
+      100.0,
+      99.97,
+      18.0
+    ],
+    "bounds": [
+      [
+        -50.0,
+        -49.98,
+        -9.0
+      ],
+      [
+        50.0,
+        49.98,
+        9.0
+      ]
+    ]
+  },
+  {
+    "id": "M23",
+    "name": "Shaft support with oil groove",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 98864.2,
+    "dims": [
+      80.0,
+      79.98,
+      45.0
+    ],
+    "bounds": [
+      [
+        -40.0,
+        -39.99,
+        0.0
+      ],
+      [
+        40.0,
+        39.99,
+        45.0
+      ]
+    ]
+  },
+  {
+    "id": "M24",
+    "name": "Cam disc with offset follower track",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 93509.22,
+    "dims": [
+      100.0,
+      99.97,
+      12.0
+    ],
+    "bounds": [
+      [
+        -50.0,
+        -49.98,
+        -6.0
+      ],
+      [
+        50.0,
+        49.98,
+        6.0
+      ]
+    ]
+  },
+  {
+    "id": "M25",
+    "name": "Small conveyor idler roller assembly",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_m25_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m25_finger) ===",
+      "Finger Pivot Pin (comp_eval_m25_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m25_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m25_actuator) ==="
+    ]
+  },
+  {
+    "id": "M26",
+    "name": "Gearbox mounting foot",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 62727.31,
+    "dims": [
+      120.0,
+      119.96,
+      10.0
+    ],
+    "bounds": [
+      [
+        -60.0,
+        -59.98,
+        0.0
+      ],
+      [
+        60.0,
+        59.98,
+        10.0
+      ]
+    ]
+  },
+  {
+    "id": "M27",
+    "name": "Split clamp collar",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_m27_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m27_finger) ===",
+      "Finger Pivot Pin (comp_eval_m27_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m27_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m27_actuator) ==="
+    ]
+  },
+  {
+    "id": "M28",
+    "name": "Adjustable slotted link",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 35481.82,
+    "dims": [
+      180.0,
+      25.0,
+      8.0
+    ],
+    "bounds": [
+      [
+        -90.0,
+        -12.5,
+        -4.0
+      ],
+      [
+        90.0,
+        12.5,
+        4.0
+      ]
+    ]
+  },
+  {
+    "id": "M29",
+    "name": "Compact pneumatic cylinder body and piston",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_m29_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_m29_finger) ===",
+      "Finger Pivot Pin (comp_eval_m29_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_m29_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_m29_actuator) ==="
+    ]
+  },
+  {
+    "id": "M30",
+    "name": "Circular indexing plate with detents",
+    "tier": "Medium",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 438713.56,
+    "dims": [
+      150.0,
+      149.95,
+      25.0
+    ],
+    "bounds": [
+      [
+        -75.0,
+        -74.98,
+        0.0
+      ],
+      [
+        75.0,
+        74.98,
+        25.0
+      ]
+    ]
+  },
+  {
+    "id": "C01",
+    "name": "Three-finger gripper, pivot-driven",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c01_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c01_finger) ===",
+      "Finger Pivot Pin (comp_eval_c01_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c01_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c01_actuator) ==="
+    ]
+  },
+  {
+    "id": "C02",
+    "name": "Two-stage parallel-axis gearbox",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": false,
+    "volume": 301253.62,
+    "dims": [
+      142.0,
+      90.0,
+      32.5
+    ],
+    "bounds": [
+      [
+        -70.0,
+        -45.0,
+        -7.5
+      ],
+      [
+        72.0,
+        45.0,
+        25.0
+      ]
+    ],
+    "asm_lines": 60,
+    "asm_components": [
+      "Gearbox Base Plate (comp_eval_c02_housing) ===",
+      "Drive Pinion Gear & Shaft (comp_eval_c02_pinion) ===",
+      "Driven Spur Gear & Shaft (comp_eval_c02_gear) ==="
+    ]
+  },
+  {
+    "id": "C03",
+    "name": "Lead-screw linear actuator",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c03_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c03_finger) ===",
+      "Finger Pivot Pin (comp_eval_c03_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c03_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c03_actuator) ==="
+    ]
+  },
+  {
+    "id": "C04",
+    "name": "Belt-driven pulley transmission",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c04_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c04_finger) ===",
+      "Finger Pivot Pin (comp_eval_c04_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c04_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c04_actuator) ==="
+    ]
+  },
+  {
+    "id": "C05",
+    "name": "Universal joint assembly",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c05_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c05_finger) ===",
+      "Finger Pivot Pin (comp_eval_c05_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c05_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c05_actuator) ==="
+    ]
+  },
+  {
+    "id": "C06",
+    "name": "Bench vise assembly",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c06_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c06_finger) ===",
+      "Finger Pivot Pin (comp_eval_c06_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c06_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c06_actuator) ==="
+    ]
+  },
+  {
+    "id": "C07",
+    "name": "Four-bar linkage mechanism",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c07_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c07_finger) ===",
+      "Finger Pivot Pin (comp_eval_c07_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c07_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c07_actuator) ==="
+    ]
+  },
+  {
+    "id": "C08",
+    "name": "Rack-and-pinion linear actuator",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c08_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c08_finger) ===",
+      "Finger Pivot Pin (comp_eval_c08_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c08_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c08_actuator) ==="
+    ]
+  },
+  {
+    "id": "C09",
+    "name": "Bearing-supported roller conveyor module",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 9809882.91,
+    "dims": [
+      500.0,
+      499.84,
+      50.0
+    ],
+    "bounds": [
+      [
+        -250.0,
+        -249.92,
+        -25.0
+      ],
+      [
+        250.0,
+        249.92,
+        25.0
+      ]
+    ]
+  },
+  {
+    "id": "C10",
+    "name": "Pneumatically actuated two-jaw gripper",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c10_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c10_finger) ===",
+      "Finger Pivot Pin (comp_eval_c10_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c10_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c10_actuator) ==="
+    ]
+  },
+  {
+    "id": "C11",
+    "name": "Multi-piece pump housing with impeller",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c11_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c11_finger) ===",
+      "Finger Pivot Pin (comp_eval_c11_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c11_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c11_actuator) ==="
+    ]
+  },
+  {
+    "id": "C12",
+    "name": "Small planetary gearbox",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c12_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c12_finger) ===",
+      "Finger Pivot Pin (comp_eval_c12_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c12_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c12_actuator) ==="
+    ]
+  },
+  {
+    "id": "C13",
+    "name": "Gear-driven scissor lift",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c13_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c13_finger) ===",
+      "Finger Pivot Pin (comp_eval_c13_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c13_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c13_actuator) ==="
+    ]
+  },
+  {
+    "id": "C14",
+    "name": "Four-station rotary indexing table",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 4414274.55,
+    "dims": [
+      250.0,
+      249.92,
+      90.0
+    ],
+    "bounds": [
+      [
+        -125.0,
+        -124.96,
+        -45.0
+      ],
+      [
+        125.0,
+        124.96,
+        45.0
+      ]
+    ]
+  },
+  {
+    "id": "C15",
+    "name": "Shaft-mounted disc brake assembly",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c15_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c15_finger) ===",
+      "Finger Pivot Pin (comp_eval_c15_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c15_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c15_actuator) ==="
+    ]
+  },
+  {
+    "id": "C16",
+    "name": "Chain-and-sprocket transmission",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 2635.31,
+    "dims": [
+      12.0,
+      12.0,
+      24.0
+    ],
+    "bounds": [
+      [
+        -6.0,
+        -6.0,
+        -12.0
+      ],
+      [
+        6.0,
+        6.0,
+        12.0
+      ]
+    ]
+  },
+  {
+    "id": "C17",
+    "name": "Ball-screw supported CNC axis",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 1412934.6,
+    "dims": [
+      400.0,
+      399.88,
+      12.0
+    ],
+    "bounds": [
+      [
+        -200.0,
+        -199.94,
+        0.0
+      ],
+      [
+        200.0,
+        199.94,
+        12.0
+      ]
+    ]
+  },
+  {
+    "id": "C18",
+    "name": "Adjustable camera/inspection gimbal",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c18_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c18_finger) ===",
+      "Finger Pivot Pin (comp_eval_c18_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c18_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c18_actuator) ==="
+    ]
+  },
+  {
+    "id": "C19",
+    "name": "Screw-driven pipe clamp",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c19_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c19_finger) ===",
+      "Finger Pivot Pin (comp_eval_c19_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c19_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c19_actuator) ==="
+    ]
+  },
+  {
+    "id": "C20",
+    "name": "Robotic wrist flange with cable routing",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 274075.95,
+    "dims": [
+      100.0,
+      99.97,
+      35.0
+    ],
+    "bounds": [
+      [
+        -50.0,
+        -49.98,
+        -17.5
+      ],
+      [
+        50.0,
+        49.98,
+        17.5
+      ]
+    ]
+  },
+  {
+    "id": "C21",
+    "name": "Modular fixture plate and locating system",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c21_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c21_finger) ===",
+      "Finger Pivot Pin (comp_eval_c21_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c21_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c21_actuator) ==="
+    ]
+  },
+  {
+    "id": "C22",
+    "name": "Compact hydraulic power unit layout",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c22_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c22_finger) ===",
+      "Finger Pivot Pin (comp_eval_c22_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c22_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c22_actuator) ==="
+    ]
+  },
+  {
+    "id": "C23",
+    "name": "Small compressor piston-crank assembly",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c23_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c23_finger) ===",
+      "Finger Pivot Pin (comp_eval_c23_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c23_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c23_actuator) ==="
+    ]
+  },
+  {
+    "id": "C24",
+    "name": "Camshaft with three followers",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 4558154.88,
+    "dims": [
+      220.0,
+      219.93,
+      120.0
+    ],
+    "bounds": [
+      [
+        -110.0,
+        -109.97,
+        -60.0
+      ],
+      [
+        110.0,
+        109.97,
+        60.0
+      ]
+    ]
+  },
+  {
+    "id": "C25",
+    "name": "Vertical-axis wind turbine rotor assembly",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c25_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c25_finger) ===",
+      "Finger Pivot Pin (comp_eval_c25_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c25_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c25_actuator) ==="
+    ]
+  },
+  {
+    "id": "C26",
+    "name": "Filter housing with replaceable cartridge",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 84717.19,
+    "dims": [
+      120.0,
+      119.96,
+      10.0
+    ],
+    "bounds": [
+      [
+        -60.0,
+        -59.98,
+        0.0
+      ],
+      [
+        60.0,
+        59.98,
+        10.0
+      ]
+    ]
+  },
+  {
+    "id": "C27",
+    "name": "Two-axis worm-driven positioning stage",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c27_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c27_finger) ===",
+      "Finger Pivot Pin (comp_eval_c27_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c27_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c27_actuator) ==="
+    ]
+  },
+  {
+    "id": "C28",
+    "name": "Automotive suspension corner mock-up",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c28_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c28_finger) ===",
+      "Finger Pivot Pin (comp_eval_c28_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c28_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c28_actuator) ==="
+    ]
+  },
+  {
+    "id": "C29",
+    "name": "Twin-cylinder reciprocating pump crank assembly",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c29_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c29_finger) ===",
+      "Finger Pivot Pin (comp_eval_c29_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c29_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c29_actuator) ==="
+    ]
+  },
+  {
+    "id": "C30",
+    "name": "Modular robotic end-effector tool changer",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_c30_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_c30_finger) ===",
+      "Finger Pivot Pin (comp_eval_c30_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_c30_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_c30_actuator) ==="
+    ]
+  },
+  {
+    "id": "H01",
+    "name": "Three-finger synchronized gripper with actuator",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_h01_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h01_finger) ===",
+      "Finger Pivot Pin (comp_eval_h01_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h01_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h01_actuator) ==="
+    ]
+  },
+  {
+    "id": "H02",
+    "name": "Two-stage helical gearbox with housing and bearings",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": false,
+    "volume": 301253.62,
+    "dims": [
+      142.0,
+      90.0,
+      32.5
+    ],
+    "bounds": [
+      [
+        -70.0,
+        -45.0,
+        -7.5
+      ],
+      [
+        72.0,
+        45.0,
+        25.0
+      ]
+    ],
+    "asm_lines": 60,
+    "asm_components": [
+      "Gearbox Base Plate (comp_eval_h02_housing) ===",
+      "Drive Pinion Gear & Shaft (comp_eval_h02_pinion) ===",
+      "Driven Spur Gear & Shaft (comp_eval_h02_gear) ==="
+    ]
+  },
+  {
+    "id": "H03",
+    "name": "Automated pick-and-place linkage head",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_h03_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h03_finger) ===",
+      "Finger Pivot Pin (comp_eval_h03_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h03_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h03_actuator) ==="
+    ]
+  },
+  {
+    "id": "H04",
+    "name": "Compact CNC spindle cartridge",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 46969.56,
+    "dims": [
+      20.0,
+      19.99,
+      150.0
+    ],
+    "bounds": [
+      [
+        -10.0,
+        -10.0,
+        -75.0
+      ],
+      [
+        10.0,
+        10.0,
+        75.0
+      ]
+    ]
+  },
+  {
+    "id": "H05",
+    "name": "Four-axis robot arm mechanical mock-up",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 6279175.57,
+    "dims": [
+      200.0,
+      199.94,
+      200.0
+    ],
+    "bounds": [
+      [
+        -100.0,
+        -99.97,
+        -100.0
+      ],
+      [
+        100.0,
+        99.97,
+        100.0
+      ]
+    ]
+  },
+  {
+    "id": "H06",
+    "name": "Hydraulic vise with synchronized moving jaws",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_h06_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h06_finger) ===",
+      "Finger Pivot Pin (comp_eval_h06_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h06_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h06_actuator) ==="
+    ]
+  },
+  {
+    "id": "H07",
+    "name": "Differential gearbox assembly",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_h07_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h07_finger) ===",
+      "Finger Pivot Pin (comp_eval_h07_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h07_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h07_actuator) ==="
+    ]
+  },
+  {
+    "id": "H08",
+    "name": "Cam-indexed assembly station",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_h08_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h08_finger) ===",
+      "Finger Pivot Pin (comp_eval_h08_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h08_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h08_actuator) ==="
+    ]
+  },
+  {
+    "id": "H09",
+    "name": "Screw compressor rotor pair and casing concept",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_h09_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h09_finger) ===",
+      "Finger Pivot Pin (comp_eval_h09_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h09_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h09_actuator) ==="
+    ]
+  },
+  {
+    "id": "H10",
+    "name": "Multi-cylinder cranktrain assembly",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 476766.01,
+    "dims": [
+      80.0,
+      79.98,
+      95.0
+    ],
+    "bounds": [
+      [
+        -40.0,
+        -39.99,
+        -47.5
+      ],
+      [
+        40.0,
+        39.99,
+        47.5
+      ]
+    ]
+  },
+  {
+    "id": "H11",
+    "name": "Robotic gripper with interchangeable fingers and quick-change mount",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_h11_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h11_finger) ===",
+      "Finger Pivot Pin (comp_eval_h11_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h11_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h11_actuator) ==="
+    ]
+  },
+  {
+    "id": "H12",
+    "name": "Planetary gearbox with selectable carrier arrangement",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_h12_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h12_finger) ===",
+      "Finger Pivot Pin (comp_eval_h12_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h12_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h12_actuator) ==="
+    ]
+  },
+  {
+    "id": "H13",
+    "name": "Ball-screw XY gantry with Z head",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 55638854.81,
+    "dims": [
+      450.0,
+      449.86,
+      350.0
+    ],
+    "bounds": [
+      [
+        -225.0,
+        -224.93,
+        -175.0
+      ],
+      [
+        225.0,
+        224.93,
+        175.0
+      ]
+    ]
+  },
+  {
+    "id": "H14",
+    "name": "Automated material handling gripper with pneumatic circuit layout",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_h14_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h14_finger) ===",
+      "Finger Pivot Pin (comp_eval_h14_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h14_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h14_actuator) ==="
+    ]
+  },
+  {
+    "id": "H15",
+    "name": "Centrifugal pump serviceable assembly with seal stack",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_h15_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h15_finger) ===",
+      "Finger Pivot Pin (comp_eval_h15_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h15_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h15_actuator) ==="
+    ]
+  },
+  {
+    "id": "H16",
+    "name": "Compact machine-tool turret indexing assembly",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 758403.0,
+    "dims": [
+      220.0,
+      219.93,
+      20.0
+    ],
+    "bounds": [
+      [
+        -110.0,
+        -109.97,
+        -10.0
+      ],
+      [
+        110.0,
+        109.97,
+        10.0
+      ]
+    ]
+  },
+  {
+    "id": "H17",
+    "name": "Compact internal-combustion engine valvetrain mock-up",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": false,
+    "watertight": true,
+    "volume": 642.93,
+    "dims": [
+      6.0,
+      6.0,
+      24.0
+    ],
+    "bounds": [
+      [
+        -3.0,
+        -3.0,
+        -12.0
+      ],
+      [
+        3.0,
+        3.0,
+        12.0
+      ]
+    ]
+  },
+  {
+    "id": "H18",
+    "name": "Mechanical press linkage and guarded frame",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_h18_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h18_finger) ===",
+      "Finger Pivot Pin (comp_eval_h18_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h18_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h18_actuator) ==="
+    ]
+  },
+  {
+    "id": "H19",
+    "name": "Modular automated inspection fixture",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": false,
+    "volume": 603707.22,
+    "dims": [
+      170.0,
+      150.0,
+      217.5
+    ],
+    "bounds": [
+      [
+        -85.0,
+        -75.0,
+        -55.0
+      ],
+      [
+        85.0,
+        75.0,
+        162.5
+      ]
+    ],
+    "asm_lines": 266,
+    "asm_components": [
+      "Base Plate (comp_base) ===",
+      "Primary Datum Support (comp_datum_1) ===",
+      "Secondary Datum Support A (comp_datum_2) ===",
+      "Secondary Datum Support B (comp_datum_3) ===",
+      "Side Locator Left (comp_locator_side_1) ===",
+      "Side Locator Right (comp_locator_side_2) ===",
+      "Pneumatic Clamp Front (comp_clamp_1) ===",
+      "Pneumatic Clamp Back (comp_clamp_2) ===",
+      "Vertical Probing Column (comp_probe_column) ===",
+      "Sensor Bracket Zone 1 (comp_sensor_bracket_1) ===",
+      "Sensor Bracket Zone 2 (comp_sensor_bracket_2) ===",
+      "Sensor Bracket Zone 3 (comp_sensor_bracket_3) ===",
+      "Sensor Bracket Zone 4 (comp_sensor_bracket_4) ==="
+    ]
+  },
+  {
+    "id": "H20",
+    "name": "Integrated machine assembly challenge",
+    "tier": "Complex",
+    "has_stl": true,
+    "has_step": true,
+    "has_glb": true,
+    "is_assembly": true,
+    "watertight": true,
+    "volume": 237331.26,
+    "dims": [
+      171.93,
+      198.52,
+      132.5
+    ],
+    "bounds": [
+      [
+        -61.93,
+        -99.26,
+        -57.5
+      ],
+      [
+        110.0,
+        99.26,
+        75.0
+      ]
+    ],
+    "asm_lines": 157,
+    "asm_components": [
+      "Base Mounting Plate (comp_eval_h20_mount_plate) ===",
+      "Articulated Gripping Finger (comp_eval_h20_finger) ===",
+      "Finger Pivot Pin (comp_eval_h20_pivot_pin) ===",
+      "Actuation Drive Link (comp_eval_h20_linkage) ===",
+      "Central Actuator & Crosshead (comp_eval_h20_actuator) ==="
+    ]
+  }
+]

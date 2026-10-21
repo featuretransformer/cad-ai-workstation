@@ -1,0 +1,346 @@
+# 100 Mechanical CAD Generation Test Prompts
+
+**Purpose:** Benchmark a text-to-CAD workstation from basic geometry to advanced, multi-part mechanical assemblies.
+
+## How to run this benchmark
+
+- Run each prompt independently. Do not send multiple prompts in one request.
+- Use millimetres (mm) unless a prompt explicitly specifies otherwise.
+- Unless the system supports a different intended workflow, request separate editable components for assemblies and a STEP export for the final result.
+- For every result, record: whether code/geometry generated; solid count; bounding dimensions; dimensional accuracy; feature correctness; assembly alignment; collisions/clearances; STEP export and re-import; retries; and generation time.
+- Do not award a pass merely because a model renders. Check the stated geometry and assembly requirements. Treat a motion or stress requirement as unverified unless the system actually performs the relevant analysis.
+- Standards-based items use nominal geometry for CAD testing. Do not assume a generated model is certified for manufacture or safety-critical use.
+
+---
+
+# Level 1 — Easy (20 prompts)
+
+### E01 — Cylindrical spacer sleeve
+Create one cylindrical spacer sleeve, 30 mm long, with an outside diameter of 24 mm and a through-bore of 12 mm. Keep both end faces flat and parallel, and add a 0.5 mm × 45° chamfer to every circular edge. Produce one valid solid with a continuous open bore, not a filled cylinder or separate inner and outer solids. Export a STEP file.
+
+### E02 — Stepped shaft
+Create a stepped shaft with a total length of 100 mm. From the left end, use a Ø20 mm section 25 mm long, a Ø30 mm shoulder section 35 mm long, and a Ø16 mm end section 40 mm long. Keep the three sections coaxial and make the shoulders square. Add 1 mm × 45° chamfers only to the two outer end edges; preserve the shoulder edges.
+
+### E03 — Rectangular mounting plate
+Model a 120 × 80 × 8 mm rectangular plate. Add four Ø9 mm through-holes, with hole centres 12 mm from each adjacent edge. The hole pattern must be symmetric about both plate centre lines. Keep the top and bottom faces planar and create exactly one solid.
+
+### E04 — L-shaped angle bracket
+Create an L-bracket from two perpendicular plates, each 60 mm long and 50 mm high/wide as appropriate, with 6 mm wall thickness and a 50 mm common width. Unite the plates into one connected solid. Add two Ø8 mm through-holes on each leg, centred across the 50 mm width and spaced 30 mm apart. Do not leave an internal gap at the corner.
+
+### E05 — Circular flange disc
+Create a circular flange 100 mm in outside diameter and 10 mm thick with a Ø30 mm central through-bore. Add six Ø8 mm through-holes on a 70 mm pitch-circle diameter, equally spaced at 60° intervals. Centre the hole pattern on the flange and keep all holes open through the thickness.
+
+### E06 — Solid cylindrical roller
+Create a solid roller 60 mm long and Ø40 mm in diameter. Add a 2 mm-wide × 1 mm-deep circumferential groove centred along the length. Break both end perimeter edges with a 1 mm × 45° chamfer. The groove must not cut through the roller or split it into multiple bodies.
+
+### E07 — Rectangular block with a blind pocket
+Model a 70 × 50 × 25 mm solid block. Cut a centred rectangular pocket measuring 30 × 20 mm and 12 mm deep into the top face. Keep a flat pocket floor and uniform 20 mm margins to the two 30 mm-long side ends, as applicable from the centred placement. The pocket must be subtractive and the result must remain one solid.
+
+### E08 — Hexagonal nut blank
+Create a regular hexagonal prism 13 mm across flats and 8 mm thick, with a centred Ø6.8 mm through-bore. Add a 0.5 mm × 45° chamfer to the six outside top and bottom edges and a 0.4 mm × 45° chamfer to both bore entrances. Model nominal CAD geometry only; a helical thread is not required.
+
+### E09 — Pin with retaining groove
+Create a straight pin Ø10 mm and 55 mm long. Add a circumferential retaining groove 1.5 mm wide and 0.8 mm deep, positioned 8 mm from one end. Apply a 0.5 mm × 45° chamfer to both end edges. Preserve a cylindrical main body and one groove at the specified axial location.
+
+### E10 — U-channel section
+Create a straight U-channel 100 mm long, 40 mm wide, 30 mm tall, and 3 mm thick. The bottom web and two side walls must form one connected solid with a constant wall thickness. Keep the channel open along its entire length and do not accidentally close either end.
+
+### E11 — Hollow pipe segment
+Create a straight pipe 120 mm long, with Ø32 mm outside diameter and Ø24 mm inside diameter. Both openings must pass completely through the part. Add an external 2 mm-wide circumferential groove centred 20 mm from one end, with a radial depth of 1 mm. Preserve at least 2 mm wall thickness everywhere.
+
+### E12 — Circular cover plate
+Model a Ø90 mm circular cover plate, 6 mm thick, with a Ø20 mm centre hole and four Ø6 mm mounting holes on a 70 mm pitch circle. Add a shallow annular recess on the top face, from Ø38 mm to Ø50 mm, 1.5 mm deep. Keep the centre hole open and produce one solid.
+
+### E13 — Rectangular mounting boss
+Create a 60 × 40 × 12 mm base plate with a centred cylindrical boss Ø24 mm and 15 mm high on its top face. Add a Ø10 mm vertical through-hole through both the boss and base. Add four Ø6 mm mounting holes in the plate, each centre 8 mm from the nearest corner. Unite the boss and plate into one solid.
+
+### E14 — Clevis lug
+Create a clevis-style lug with a 30 × 20 × 8 mm base and two parallel ears, each 20 mm tall, 8 mm thick, and 20 mm wide, separated by a 12 mm clear gap. Each ear has a coaxial Ø8 mm transverse hole whose centre is 12 mm above the base top. The ears and base must form one connected component; the two holes must align exactly.
+
+### E15 — Triangular gusset bracket
+Create a right-triangular gusset plate 6 mm thick with 60 mm horizontal and vertical legs. Attach it to a 60 × 40 × 6 mm L-shaped base-and-wall bracket so the gusset reinforces the inside corner. Add two Ø6 mm mounting holes in the base and two in the upright wall. Unite the gusset and bracket into one solid.
+
+### E16 — Square enclosure lid
+Create a 100 × 100 × 5 mm square lid with four Ø5.5 mm corner mounting holes, each centre 8 mm from both adjacent edges. Add a raised central rectangular pad 40 × 30 × 2 mm. Keep the pad centred and the lid underside flat.
+
+### E17 — Spherical-ended handle knob
+Create a handle knob comprising a Ø32 mm spherical outer head joined to a Ø12 mm cylindrical stem 25 mm long. Include a centred M8 nominal mounting bore 12 mm deep from the bottom of the stem, represented as a Ø6.8 mm pilot hole if helical threads are unsupported. Ensure the sphere and stem overlap sufficiently to form one solid.
+
+### E18 — Cable gland body
+Create a cable gland body with a hexagonal wrench section 24 mm across flats and 10 mm long, a front cylindrical nose Ø18 mm × 12 mm, and a rear threaded-interface cylinder Ø20 mm × 12 mm. Cut a centred Ø10 mm cable passage through the entire part. Represent external threads by a smooth nominal cylinder; keep the passage continuous.
+
+### E19 — Simple finned heat sink
+Create an aluminium-style heat-sink geometry with a 100 × 60 × 6 mm base and eight parallel fins. Each fin is 2 mm thick, 35 mm tall above the base, and 60 mm long; space the fins evenly across the 100 mm base width with equal side margins. Join all fins to the base as one solid and keep the channels open along the fin length.
+
+### E20 — Cylindrical knob with radial holes
+Create a Ø40 mm × 25 mm cylindrical knob with a Ø8 mm axial bore. Add two Ø4 mm radial holes at 90° around the circumference, each intersecting the axial bore and centred 12.5 mm from the bottom face. Add 1 mm × 45° chamfers to the outer top and bottom circular edges only.
+
+---
+
+# Level 2 — Medium (30 prompts)
+
+### M01 — Pillow-block bearing housing
+Create a single-piece pillow-block housing with a 120 × 50 × 12 mm mounting base and a raised bearing pedestal 50 mm wide. Place a centred Ø52 mm bearing seat through the pedestal, with the bore axis parallel to the base length direction. Add two Ø12 mm mounting slots, each 24 mm long overall, centred 80 mm apart along the base. Include 6 mm fillets at the pedestal-to-base junction and retain adequate material around the bearing seat.
+
+### M02 — Flanged straight pipe connector
+Create a 150 mm-long hollow connector with pipe OD 40 mm and ID 30 mm. Add a 12 mm-thick flange, Ø80 mm OD, at each end; keep both flange faces perpendicular to the pipe axis. Each flange has four Ø9 mm through-holes on an Ø60 mm pitch circle. Fuse the flanges to the pipe and retain a continuous Ø30 mm flow passage.
+
+### M03 — 90-degree hollow pipe elbow
+Model a 90° elbow with a constant Ø32 mm outside diameter and Ø24 mm inside diameter along a centreline bend radius of 48 mm. Provide 25 mm straight tangents at both ends. Add circular end collars of Ø44 mm OD and 8 mm axial thickness, each with two Ø6 mm bolt holes on a Ø34 mm pitch circle. Ensure the inner passage follows the bend and has no blocked openings or invalid self-intersections.
+
+### M04 — Machinist V-block
+Create a 100 × 50 × 40 mm V-block. Cut a 90° V-groove along the full 100 mm length, centred across the 50 mm width, with the groove apex 10 mm above the bottom face. Add two Ø10 mm vertical mounting holes through the base, 70 mm apart and symmetrically placed. Add a shallow 2 mm-deep × 8 mm-wide relief groove around the top edges only if it does not break the V surfaces.
+
+### M05 — Adjustable slotted mounting bracket
+Create a 100 × 60 × 8 mm base with an upright plate 60 mm wide, 45 mm tall, and 8 mm thick at one short edge. Add two horizontal slots 24 × 9 mm in the base and two vertical slots 20 × 9 mm in the upright. Slot ends must be semicircular, dimensions refer to overall slot length and width, and the bracket must be one connected solid with a 6 mm internal corner fillet.
+
+### M06 — Spur gear with hub
+Generate a 24-tooth external spur gear using module 2 mm and a 20° pressure angle, with a 12 mm face width and Ø12 mm through-bore. Provide a centred hub Ø30 mm OD × 8 mm long on one side and a 1 mm keyway in the bore is not required; instead cut a 4 mm-wide × 2 mm-deep keyway into the bore wall. Use an actual or well-documented approximate involute tooth profile, maintain circular pitch consistency, and avoid intersecting or disconnected teeth.
+
+### M07 — Single-start worm and wheel test pair
+Create a simplified gear-pair assembly consisting of a single-start worm and a 20-tooth worm wheel with module 2 mm nominal sizing. The worm axis and wheel axis must be perpendicular and offset for plausible meshing. Include a Ø12 mm worm shaft with 35 mm usable length and a wheel hub with Ø10 mm bore. This is a geometry/placement test; label mesh geometry as approximate unless a true worm-gear profile is implemented, and do not claim validated transmission behaviour.
+
+### M08 — Bearing end cap
+Create a circular end cap Ø100 mm and 12 mm thick with a central Ø40 mm counterbore 5 mm deep and a Ø30 mm through-hole. Add six Ø7 mm bolt holes on a Ø80 mm pitch circle. Create a 2 mm-wide annular sealing groove on the underside between Ø62 mm and Ø70 mm, 1.5 mm deep. All features must remain non-intersecting except for intentional bores and grooves.
+
+### M09 — Machinable vise jaw
+Model a 120 × 25 × 35 mm vise jaw. Cut two Ø10 mm counterbored mounting holes through the 35 mm height, with Ø16 mm counterbores 5 mm deep, spaced 80 mm apart. Add six vertical serration grooves on the clamping face, 2 mm pitch and 1 mm depth, with 60° V profiles. Keep the mounting holes fully enclosed by the jaw's material except where they open onto their intended faces.
+
+### M10 — Flanged reducer
+Create a concentric hollow reducer from Ø60 mm OD/Ø48 mm ID at the large end to Ø36 mm OD/Ø28 mm ID at the small end, with 70 mm overall length and a 50 mm-long conical transition between 10 mm straight end lands. Add 10 mm-thick end flanges: Ø90 mm at the large end and Ø60 mm at the small end, each with four Ø8 mm holes on respective Ø72 mm and Ø46 mm pitch circles. The internal fluid passage must transition smoothly without a solid plug.
+
+### M11 — Hydraulic cylinder barrel end cap
+Create an end cap for a nominal Ø50 mm hydraulic cylinder bore. The cap has an outer flange Ø80 mm × 10 mm thick, a cylindrical register Ø50 mm × 8 mm long, and a central rod opening Ø20 mm through. Add four Ø8.5 mm bolt holes on an Ø64 mm pitch circle. Add a concentric seal groove on the register face, 3 mm wide and 2 mm deep, maintaining clear material around the rod opening.
+
+### M12 — Ribbed motor mounting plate
+Create a 140 × 100 × 8 mm plate with a centred raised motor register Ø70 mm × 5 mm high and a Ø35 mm central clearance hole. Add four Ø9 mm mounting holes on a 105 × 70 mm rectangular pattern. Reinforce the underside with four ribs 6 mm thick and 18 mm tall, arranged as two orthogonal pairs without blocking the mounting holes. Fuse ribs and plate into one solid.
+
+### M13 — Two-piece shaft coupling
+Create a coupling assembly with two separate hubs, each Ø40 mm OD and 25 mm long, with a Ø12 mm shaft bore and a 4 mm-wide × 2 mm-deep keyway. Join the hubs through a 10 mm-thick flexible-style centre disc Ø55 mm with six equally spaced Ø6 mm holes on a Ø42 mm pitch circle. Keep the two hubs coaxial with a 2 mm axial gap to the centre disc on each side; preserve distinct components for assembly inspection.
+
+### M14 — Four-hole flanged bearing sleeve
+Create a bearing sleeve with Ø50 mm OD, Ø30 mm bore, and 40 mm body length. Add an integral mounting flange Ø90 mm × 8 mm thick at one end. Cut four Ø9 mm holes on a Ø68 mm pitch circle through the flange. Add a 2 mm-deep retaining ring groove inside the bore, 6 mm from the non-flanged end, while keeping at least 2 mm wall thickness.
+
+### M15 — Sheet-metal electrical enclosure
+Model a simplified folded enclosure made from 2 mm-thick sheet geometry, external dimensions 180 × 120 × 80 mm, open at the front. Add four 15 mm-deep inward mounting returns at the front edges, each with Ø5 mm holes. Include a separate 2 mm-thick removable front cover with six matching holes. Keep enclosure body and cover separate and make their mating perimeter align without interference.
+
+### M16 — Two-stage shaft with bearing seats and keyways
+Create a 160 mm-long stepped shaft with sections Ø20 × 30 mm, Ø30 × 50 mm, Ø25 × 40 mm, and Ø16 × 40 mm. Add two bearing seats Ø25 mm, each 20 mm long, on the Ø25 section; add two 5 mm-wide × 2.5 mm-deep keyways on designated Ø30 and Ø25 seats, each 30 mm long. Include 1.5 mm shoulder fillets where space permits and 0.5 mm end chamfers. Keep all sections coaxial.
+
+### M17 — T-slot fixture plate
+Create a 200 × 150 × 16 mm fixture plate with four parallel T-slots along the 200 mm direction. Each slot has a 10 mm-wide opening and a 16 mm-wide undercut cavity 6 mm deep from the underside of the top skin, leaving a 4 mm top lip geometry as appropriate to the section. Space slot centre lines evenly with 32 mm spacing. Add four Ø8 mm mounting holes near the corners without breaking into the slots.
+
+### M18 — Hollow Y-manifold
+Create a hollow Y-manifold with one inlet branch OD 40 mm/ID 30 mm and two outlet branches OD 32 mm/ID 24 mm. Use smooth branch junctions and centreline angles of ±35° relative to the inlet, with 50 mm straight lengths from each branch junction to the open ends. Add end flanges 8 mm thick with two Ø6 mm holes on a Ø46 mm pitch circle for the inlet and two Ø5.5 mm holes on a Ø38 mm pitch circle for each outlet. Validate that all three passages connect internally.
+
+### M19 — Pump impeller basic geometry
+Create a centrifugal impeller with a Ø100 mm shroud envelope, Ø25 mm central hub bore, and 20 mm axial height. Add six backward-curved vanes between a 30 mm inner radius and a 48 mm outer radius, with vane thickness 3 mm and consistent spacing. Include a 6 mm-thick rear disc and a 4 mm-thick front shroud with an inlet opening Ø40 mm. This is a geometric prototype; do not claim hydraulic performance from shape alone.
+
+### M20 — Toggle clamp linkage parts
+Create a simplified toggle clamp as an assembly with a 120 × 40 × 8 mm base, a 50 × 30 × 8 mm upright support, two 8 mm-thick links of lengths 65 mm and 45 mm, and a 100 mm handle. Use Ø8 mm pivot holes and shoulder pins at all specified joints. Arrange the links in a near-straight toggle position with a 5° over-centre condition and keep separate components. Motion validation is required only if the application supports kinematic simulation.
+
+### M21 — Threaded flange adapter (nominal threads)
+Create an adapter with a Ø60 mm × 10 mm flange, a 35 mm-long cylindrical spigot Ø32 mm, and a centred Ø20 mm flow bore throughout. Add four Ø7 mm flange holes on a Ø45 mm pitch circle. On the spigot, reserve a 20 mm-long nominal external M32×2 thread zone; represent it with a cylindrical envelope if true helical threads are unsupported. Preserve a continuous flow passage.
+
+### M22 — Dowel-located two-part housing
+Create a base housing 100 × 70 × 18 mm and a separate cap 100 × 70 × 12 mm. Together they enclose a cylindrical cavity Ø40 mm along the 100 mm axis. Add four M8 nominal clearance holes (Ø9 mm) through the cap and matching threaded-hole pilot bores Ø6.8 mm in the base. Add two Ø6 mm dowel holes at diagonally opposite positions, aligned between the two halves. Export the two parts as separate solids and as an assembled STEP.
+
+### M23 — Shaft support with oil groove
+Create a bearing support block 80 × 60 × 45 mm with a horizontal Ø30 mm bearing bore through its 80 mm length. Add a 2 mm-wide annular oil groove in the bore, 15 mm from one side face, at 1 mm depth into the bore wall. Add four Ø10 mm base mounting holes on a 60 × 40 mm pattern. Include 4 mm external edge fillets without changing the bore diameter or breaking through the mounting-hole walls unintentionally.
+
+### M24 — Cam disc with offset follower track
+Create a Ø100 mm × 12 mm cam disc around a central Ø20 mm bore. Add an eccentric circular pocket of Ø30 mm, 4 mm deep, whose centre is offset 15 mm from the shaft axis. Add a raised follower boss Ø18 mm × 5 mm on the opposite side, positioned 25 mm from the shaft axis. Include a 4 mm keyway in the central bore. Treat this as a geometric cam test; no motion law is implied by the eccentric pocket alone.
+
+### M25 — Small conveyor idler roller assembly
+Create an idler roller assembly 250 mm overall width with a 200 mm-long roller shell Ø60 mm OD and 4 mm wall thickness. Fit end hubs Ø40 mm OD × 20 mm long into both ends, with Ø12 mm axle bores. Add a Ø12 mm axle passing through the assembly, with retaining shoulders Ø18 mm at the ends. Keep shell, two hubs and axle separate, coaxial, and correctly positioned; verify the roller shell is hollow.
+
+### M26 — Gearbox mounting foot
+Create a mounting foot 120 × 80 × 10 mm with a vertical pedestal 70 × 50 × 45 mm. Place two coaxial bearing bores Ø35 mm through the pedestal along its 70 mm width, one on each side wall, with the bore centre 28 mm above the base. Add four Ø11 mm mounting slots in the base, each 24 × 11 mm overall. Add two ribs 6 mm thick between the pedestal and base without intruding into the bearing bore.
+
+### M27 — Split clamp collar
+Create a split shaft collar with outer diameter 50 mm, axial width 20 mm, and central bore Ø25 mm. Cut a radial split 3 mm wide from the outside to the bore. Add two Ø6.5 mm clamp-bolt holes perpendicular to the split, spaced 32 mm apart, and counterbores Ø10 mm × 4 mm deep on one side. The split must fully interrupt the ring, and the two bolt holes must be aligned to allow a clamping fastener to pass through.
+
+### M28 — Adjustable slotted link
+Create a 180 mm-long flat link 25 mm wide and 8 mm thick. Add a Ø12 mm hole at each end with centres 20 mm from each end. Cut a central longitudinal slot 70 mm overall length and 8 mm width, centred along the link. Add shallow 1 mm-deep relief pockets 18 × 15 mm near both ends. Maintain a minimum 5 mm ligament between slot edges and the side boundaries.
+
+### M29 — Compact pneumatic cylinder body and piston
+Create a simplified pneumatic cylinder assembly with a barrel OD 40 mm, ID 32 mm, and 100 mm length; separate end caps 10 mm thick at both ends; a piston Ø31.5 mm × 12 mm; and a Ø10 mm piston rod 80 mm long. Add two side air ports Ø6 mm to the barrel near opposite ends, each intersecting the bore. Add cap tie-rod holes at four corners on a 30 × 30 mm square pattern. Keep parts separate and arrange a plausible extended configuration without claiming pressure-rated design.
+
+### M30 — Circular indexing plate with detents
+Create an indexing plate Ø150 mm × 12 mm, with a centred Ø25 mm bore and twelve Ø8 mm holes evenly spaced on an Ø110 mm pitch circle. Add a shallow annular recess Ø80–Ø100 mm, 2 mm deep, on the top face. Add a separate spring-plunger housing block 30 × 20 × 18 mm with a Ø8 mm plunger guide and two Ø5 mm mounting holes. Position the housing so the plunger axis points toward the pitch-circle detent holes; preserve separate bodies.
+
+---
+
+# Level 3 — Complex (30 prompts)
+
+### C01 — Three-finger gripper, pivot-driven
+Design a three-finger mechanical gripper assembly with a Ø90 mm circular mounting flange, 8 mm flange thickness, and four Ø8 mm bolt holes on an Ø70 mm pitch circle. Add three identical fingers arranged 120° apart around the central axis; each finger is 75 mm from pivot centre to tip, 12 mm wide, and 8 mm thick, with a Ø8 mm pivot hole. Include three support ears, three connecting links, and a central actuator slider with a Ø16 mm guide. Keep each part separate, define consistent pivot axes and clearances, and state any assumed linkage geometry. Do not claim synchronized motion unless the actual joints and motion have been validated.
+
+### C02 — Two-stage parallel-axis gearbox
+Create a gearbox assembly with a 180 × 130 × 12 mm base plate, two parallel shafts separated by 90 mm, and a separate two-piece housing. Stage one uses a 20-tooth module-2 spur gear driving a 40-tooth gear; stage two uses a 16-tooth module-2 gear driving a 32-tooth gear on the output shaft. Use a consistent 20° pressure angle and 12 mm face width. Add four bearing seats sized for nominal Ø20 mm and Ø25 mm bearings, shaft shoulders, keys, and a bolted cover. Preserve separate gears, shafts, bearings as simplified solids, housing and fasteners; verify shaft spacing against gear centre distances.
+
+### C03 — Lead-screw linear actuator
+Create an actuator with a 250 × 70 × 12 mm base, two parallel guide rods Ø12 mm spaced 45 mm apart, a central nominal Ø16 mm lead screw, and a travelling carriage 70 × 60 × 25 mm. Place the carriage on two guide bushings and include a nut block with a nominal 16 mm screw interface. Add end supports with coaxial screw-bearing bores and mounting holes. Model the screw thread as a simplified helix or a documented cylindrical representation if true threads are unsupported. Keep parts separate, align axes, and provide a 120 mm nominal carriage travel envelope.
+
+### C04 — Belt-driven pulley transmission
+Create an assembly with a motor shaft Ø12 mm, a 60 mm pitch-diameter driving pulley, a 120 mm pitch-diameter driven pulley, and a 400 mm centre distance. Use a nominal 10 mm-wide belt path and show the belt as a separate closed loop or a clearly labelled simplified representation. Include two shaft supports on a common base plate and keyways in both pulleys. Keep shafts parallel, pulleys coplanar, and the belt path clear of the shafts and supports. State that the belt geometry is an envelope unless a manufacturable tooth profile is implemented.
+
+### C05 — Universal joint assembly
+Create a cross-type universal joint connecting two Ø20 mm shafts at a 30° angle. Include two yokes, a central cross/spider with four Ø8 mm trunnions, and four bearing-cap cylinders. Each yoke has two ears 8 mm thick with aligned Ø8 mm bearing holes and a 20 mm clear gap. Include shaft clamps or keyed hubs. Keep the yoke axes intersecting at the spider centre, trunnions coaxial with their bearing holes, and all parts separately identifiable.
+
+### C06 — Bench vise assembly
+Design a bench vise with a 180 × 100 × 20 mm base, fixed jaw 100 mm wide and 45 mm tall, moving jaw of matching width and height, and a nominal 20 mm lead screw providing 100 mm travel. Add two guide bars Ø16 mm spaced 60 mm apart, a separate screw nut block, a thrust collar and a 120 mm-long handle with end knobs. Provide mounting slots in the base and replaceable jaw plates with two mounting screws each. Show a fully open and a closed configuration or one clear assembly state with an indicated travel envelope.
+
+### C07 — Four-bar linkage mechanism
+Create a planar four-bar linkage mounted to a 140 × 50 × 8 mm base. Fixed pivot centres are 80 mm apart. Use a 35 mm input crank, a 100 mm coupler and a 70 mm output rocker, each 8 mm thick with Ø8 mm end holes. Use Ø8 mm shoulder pins and 2 mm axial spacers. Arrange a valid, non-colliding initial pose in the plane and include 1 mm side clearance between moving links and supports. Preserve components and explicitly define the pivot centres; if no kinematics engine exists, validate only the initial geometry and linkage closure.
+
+### C08 — Rack-and-pinion linear actuator
+Build a rack-and-pinion assembly with a module-2, 20-tooth pinion, 12 mm face width, and Ø12 mm shaft bore. Create a 180 mm-long straight rack with matching module and nominal 12 mm face width, plus a guide housing and two mounting ears. Set the pinion axis perpendicular to rack travel and locate the centre distance according to the selected gear geometry. Add a shaft support with Ø12 mm bore and a keyway in the pinion hub. Keep teeth meshed without visibly penetrating each other; state whether teeth are true involutes or approximate geometry.
+
+### C09 — Bearing-supported roller conveyor module
+Design a short conveyor roller module 500 mm long overall with four rollers Ø50 mm × 350 mm, spaced 100 mm apart. Each roller has a 3 mm shell wall, end hubs, and Ø12 mm axle. Create two side rails 500 × 50 × 8 mm, with aligned axle mounting holes; add cross-members between the rails and foot mounting plates. Keep rollers parallel and equidistant, axles coaxial with their rail holes, and rotating envelopes free of rail interference. Keep the rollers, axles, rails and frame separate.
+
+### C10 — Pneumatically actuated two-jaw gripper
+Create a two-jaw parallel gripper with a 100 × 70 × 12 mm base, a compact cylinder with Ø25 mm bore and 40 mm stroke, and two jaw sliders guided symmetrically around the centreline. Each jaw has a 60 × 20 × 12 mm body and replaceable 4 mm-thick gripping pad. Use mirrored slotted links to convert piston motion into opposing jaw translation; specify pin diameters and pivot locations. Model a valid closed and open position or one state plus the travel envelope, and keep jaws, links, pins, cylinder and base as separate components.
+
+### C11 — Multi-piece pump housing with impeller
+Create a centrifugal pump assembly with a two-piece casing, Ø100 mm impeller envelope, Ø25 mm shaft, two bearing supports, and inlet/outlet pipe interfaces. The casing has a volute-style chamber surrounding the impeller, a Ø40 mm inlet eye and a tangential Ø32 mm outlet passage. Include a rear cover, shaft seal region and bolt holes around the casing perimeter. Keep casing halves, impeller, shaft and covers separate. Validate solid geometry and passage continuity where supported; do not claim calculated flow performance without CFD or validated hydraulic analysis.
+
+### C12 — Small planetary gearbox
+Create a planetary gear assembly with a sun gear of 20 teeth, three planet gears of 15 teeth each, and an internal ring gear of 50 teeth; use module 1.5 mm, 20° pressure angle, and 10 mm face width. Confirm tooth-count and centre-distance compatibility before generating geometry; if the selected values are inconsistent for the intended arrangement, report the issue and propose a corrected set instead of forcing an invalid mesh. Include a carrier plate, three planet pins, input shaft, ring housing and output interface. Preserve each gear as a separate component and define coaxial axes and equal planet spacing.
+
+### C13 — Gear-driven scissor lift
+Create a tabletop scissor-lift assembly with a 200 × 150 mm base and a matching top platform. Use two crossed link pairs, each link 160 mm long, 20 mm wide and 8 mm thick, with Ø8 mm pivot holes. Add sliding end pins in 10 mm-wide slots, a central lead-screw actuator, screw nut block and four guide features. Provide a low-height state with no link self-intersection and clearly defined pivots and sliders. A complete motion study is only required if the software includes kinematics; otherwise verify the selected pose and travel clearances.
+
+### C14 — Four-station rotary indexing table
+Create a rotary indexing table with a Ø250 mm top plate and four workholding stations spaced at 90°. Each station has a 60 × 50 mm mounting grid with four Ø8 mm holes. Support the table on a Ø100 mm central bearing, a 20 mm vertical shaft and a base housing 180 × 180 × 40 mm. Add an indexing ring with four radial detents, a separate locking pin, and a simplified drive crank/link. Define the four station coordinates, avoid interference with the housing, and preserve table, shaft, base, detent ring and lock components.
+
+### C15 — Shaft-mounted disc brake assembly
+Design a disc brake assembly around a Ø20 mm shaft. Create a brake rotor Ø160 mm × 8 mm with a Ø20 mm hub bore and four Ø8 mm mounting holes on a Ø50 mm pitch circle. Add a caliper body, two opposing friction pads, two guide pins and a mounting bracket attached to a 100 × 60 × 10 mm base. Centre the pads on the rotor friction annulus and keep appropriate assembly gaps without intersecting the rotor. Include a caliper opening that permits rotor installation; do not calculate braking performance unless supported by an explicit analysis.
+
+### C16 — Chain-and-sprocket transmission
+Create two parallel-shaft sprockets connected by a simplified roller chain. Use 12-tooth and 24-tooth sprockets with a shared nominal chain pitch of 12.7 mm and a shaft centre distance of 250 mm. Provide 12 mm-wide tooth regions, Ø12 mm and Ø20 mm shaft bores respectively, plus keyways. Represent the chain as linked rollers and plates or a simplified loop with clearly documented approximation. Ensure both sprockets share a plane and the chain path does not intersect the shafts or surrounding frame.
+
+### C17 — Ball-screw supported CNC axis
+Design a compact CNC linear axis with a 400 × 100 × 12 mm base, two Ø16 mm linear guide rails spaced 70 mm apart, four bearing blocks, and a central ball-screw envelope Ø16 mm. Add a 100 × 80 × 20 mm moving carriage, end support blocks with coaxial screw seats, and a nut housing attached to the carriage. Provide 250 mm nominal travel and end-stop positions. Keep moving carriage and blocks aligned to the rails, represent the screw thread realistically if supported, and validate collision-free motion envelopes or clearly identify motion as unverified.
+
+### C18 — Adjustable camera/inspection gimbal
+Create a two-axis gimbal supporting a 100 × 80 × 60 mm instrument housing. Include a base plate 140 × 120 × 8 mm, a yaw ring around a vertical Ø12 mm pivot, and a pitch yoke with two Ø10 mm coaxial pivots. Add clamp knobs, bearing sleeves and hard stops to limit yaw to ±90° and pitch to ±45°. Keep axes orthogonal and intersecting at the intended rotation centre; preserve the housing, yoke, ring, pivots and base as separate components.
+
+### C19 — Screw-driven pipe clamp
+Create a pipe clamp for a nominal Ø60 mm tube. Use a 180 mm-long base, two uprights, a fixed semicircular saddle radius 32 mm, and a moving pressure shoe with a matching concave contact face. Include a vertical Tr16-style screw represented by a nominal shaft, a rotating handle and a swivel pad; set a maximum clamp opening of 40 mm. Add four base mounting holes and rounded edges at the contact shoe. Keep screw and shoe coaxial, the clamping travel unobstructed, and the pipe contact region free of unintended interference.
+
+### C20 — Robotic wrist flange with cable routing
+Design a three-part robotic wrist module with a Ø100 mm robot-side flange, a central hollow shaft Ø35 mm OD/Ø25 mm ID, and a tool-side flange Ø80 mm. Use six Ø8 mm mounting holes on an Ø80 mm pitch circle on the robot flange and four Ø6.5 mm holes on an Ø60 mm pitch circle on the tool flange. Add a bearing housing, retaining shoulder, and an internal cable passage through the rotating axis. Maintain concentricity across the shaft and flanges and keep the cable channel continuous.
+
+### C21 — Modular fixture plate and locating system
+Create a 300 × 200 × 20 mm fixture plate with a 25 mm grid of Ø10 mm reamed holes, omitting holes that fall within 15 mm of the plate perimeter. Add four separate locating pins Ø10 mm × 20 mm high, two adjustable supports with M12 nominal threaded stems, and two clamp arms with pivot pins. Include a workpiece block 120 × 80 × 25 mm located against two datum faces. Ensure pins engage matching plate holes, clamps reach the workpiece without collisions, and each fixture component remains separate.
+
+### C22 — Compact hydraulic power unit layout
+Create a simplified hydraulic power unit assembly with a 250 × 180 × 10 mm base, a motor cylindrical envelope Ø100 mm × 180 mm, a pump housing, a 1.5 L rectangular reservoir 180 × 100 × 90 mm, two pipe ports and an independent filter canister. Add four motor mounting slots and an aligned motor-pump coupling guard. Arrange the components with service clearances and accessible fasteners; use separate solids for functional components. Treat the reservoir as a closed-wall volume, and label all plumbing as layout geometry rather than pressure-rated design.
+
+### C23 — Small compressor piston-crank assembly
+Create a simplified single-cylinder compressor mechanism with a cylinder bore Ø40 mm, stroke 35 mm and connecting rod centre distance 75 mm. Include a crankshaft with crank throw 17.5 mm, piston Ø39.5 mm, piston pin Ø8 mm, connecting rod with Ø8 mm eye holes, and a cylinder block with mounting feet. Add a head plate with inlet and outlet port openings. Place the crank, rod and piston in a geometrically consistent mid-stroke configuration, preserve moving parts separately, and verify the crank throw agrees with half the stroke.
+
+### C24 — Camshaft with three followers
+Create a 220 mm-long camshaft with three cam lobes spaced along its axis and angularly phased at 0°, 120° and 240°. Each lobe has a 24 mm base-circle diameter and 5 mm nominal lift; use a smooth sinusoidal lift profile if the CAD system supports profile-based cam geometry, otherwise clearly label an approximate lobe profile. Add two Ø20 mm bearing journals, a Ø12 mm drive end and three separate roller followers Ø16 mm on Ø8 mm axles. Position each follower tangent to its lobe and keep follower axes parallel.
+
+### C25 — Vertical-axis wind turbine rotor assembly
+Create a simplified vertical-axis rotor with three curved blades spanning 400 mm in height and 180 mm maximum rotor diameter. Use a central shaft Ø20 mm, top and bottom end plates Ø160 mm × 8 mm, and three equally spaced blade supports at 120°. Each blade is 2 mm thick with a defined curved profile and end attachment tabs. Add two shaft bearings and a base frame. Keep all blades aligned, preserve separate components, and identify aerodynamic performance as unverified without analysis.
+
+### C26 — Filter housing with replaceable cartridge
+Create a filter housing with a cylindrical chamber Ø120 mm internal diameter and 180 mm internal height, a 10 mm-thick bolted lid and a bottom base. Add inlet and outlet ports Ø25 mm oriented tangentially at two different elevations, a removable filter cartridge Ø80 mm × 150 mm, and a central sealing stem Ø12 mm. Use eight lid fasteners on a Ø140 mm bolt circle and an annular gasket groove. Keep fluid volume connected around the cartridge as intended, with removable parts and no accidental blocked ports.
+
+### C27 — Two-axis worm-driven positioning stage
+Create an XY positioning stage with two stacked 180 × 160 × 12 mm plates, each driven by a separate screw-and-nut mechanism. The lower stage travels 80 mm along X and the upper stage travels 60 mm along Y. Add four guide rods Ø12 mm per stage and bearing blocks, with two orthogonal nominal Ø12 mm lead screws. Keep the upper stage carried by the lower moving stage, maintain guide parallelism and screw alignment, and provide distinct base, carriages, rods, screws, nuts and supports.
+
+### C28 — Automotive suspension corner mock-up
+Create a simplified suspension corner assembly for packaging evaluation: a hub carrier, hub with five-lug Ø12 mm bolt holes on a Ø114.3 mm pattern, a coil-over strut, lower control arm, upper link and steering tie rod. Use a Ø60 mm hub centre, 280 mm nominal vertical distance between upper/lower suspension hard points, and a 250 mm control-arm span. Define pivot axes and separate parts; represent wheel/brake envelopes as separate simplified solids. Ensure components do not overlap unrealistically in the static pose. Do not claim roadworthiness or validate suspension dynamics.
+
+### C29 — Twin-cylinder reciprocating pump crank assembly
+Design a two-cylinder pump mechanism with cylinders spaced 100 mm apart, each Ø32 mm bore and 30 mm stroke. Use a shared crankshaft with 15 mm crank throws phased 180° apart, two connecting rods of 65 mm centre distance, pistons Ø31.5 mm, and two cylinder blocks on a common 220 × 100 mm base. Add a front bearing support, rear bearing support, and separate head plates with two valve-port holes each. Place the pistons in consistent crank positions and verify each throw equals half the stroke.
+
+### C30 — Modular robotic end-effector tool changer
+Create a tool changer with a robot-side plate Ø100 mm × 12 mm, a tool-side plate Ø90 mm × 12 mm, three tapered locating pins, three matching receptacles, and a central locking sleeve Ø40 mm. Add four Ø8 mm mounting holes on the robot plate and six Ø6.5 mm holes on the tool plate. Include a simplified cam-lock ring and two air/electrical utility pass-throughs. Define an alignment scheme that prevents incorrect rotational assembly and preserve plates, locators, sleeve, locking ring and fasteners as separate components.
+
+---
+
+# Level 4 — Highly Complex (20 prompts)
+
+### H01 — Three-finger synchronized gripper with actuator
+Design a complete three-finger gripper using a Ø100 mm mounting flange, four Ø8 mm robot-interface holes on a Ø80 mm pitch circle, and a central Ø25 mm actuator guide. Each of the three identical fingers has a 90 mm reach, replaceable 4 mm-thick pad, two-link pivoted motion, and a Ø8 mm finger pivot. A central translating actuator with 30 mm stroke drives a common synchronizing plate connected to all three fingers through equal-length links. Arrange fingers at 120° intervals. Provide an open and closed assembly configuration, consistent link lengths and axes, separate editable components, and collision/clearance checks. If the mechanism cannot be proven to synchronize, report it as a geometric concept rather than validated kinematics.
+
+### H02 — Two-stage helical gearbox with housing and bearings
+Design a two-stage helical gearbox with an input speed-reduction ratio target of approximately 6:1. Use stage ratios 2:1 and 3:1; choose compatible tooth counts, module, helix angle, centre distance, face width and shaft layout rather than forcing incompatible arbitrary values. Include input, intermediate and output shafts, six gears as applicable to the selected layout, keyed hubs, bearing pairs, spacers, seals, a split casing, bolted cover, drain plug and mounting feet. Make gear axes and helix directions consistent for the intended shaft arrangement. Provide a component tree, an exploded arrangement and a closed housing assembly. Label gear contact and transmission performance unverified unless calculated.
+
+### H03 — Automated pick-and-place linkage head
+Create a compact pick-and-place head with a base plate, two servo mounting envelopes, a parallelogram linkage, a vertical guided slide, and a two-jaw gripper. Specify a 160 mm horizontal reach and 80 mm vertical travel. Use 8 mm-thick links with reamed Ø8 mm pivot holes and shoulder pins; define all pivot centre distances so the parallelogram remains geometrically consistent. Add linear guide blocks, actuator brackets, cable-clearance envelopes and end stops. Preserve each component and produce a collision-free reference pose. If motion simulation is unavailable, identify the assembly as a kinematic layout, not a verified automated cycle.
+
+### H04 — Compact CNC spindle cartridge
+Design a spindle cartridge around an Ø20 mm tool interface and a 150 mm-long spindle shaft. Include two spaced angular-contact bearing envelope seats, a cylindrical cartridge housing, a drawbar passage Ø8 mm, a nose flange Ø90 mm, and a drive pulley or motor interface at the rear. Include a front labyrinth/seal region, bearing retainers, spacers and a removable nose cap. Define concentric axes and shoulder stacks; avoid interference between shaft, bearings and housing. Provide separate parts and a sectioned inspection configuration. Do not claim spindle-speed, thermal or bearing-life suitability without additional calculations.
+
+### H05 — Four-axis robot arm mechanical mock-up
+Create a four-axis articulated robot mock-up with a 200 × 200 × 20 mm base, a shoulder joint, elbow joint, wrist rotation and tool flange. Use nominal arm-link lengths of 250 mm and 220 mm; each link should be a hollow structural body with 4 mm walls. Include bearing housings, shaft interfaces, motor-envelope cylinders, cable-routing passages and hard stops. Define joint axes and a reachable reference pose with no self-collision. Keep links, joints, covers and tool flange as separate components. Treat reach and interference as geometric checks only unless actual kinematics is implemented.
+
+### H06 — Hydraulic vise with synchronized moving jaws
+Design a hydraulic vise assembly with a 250 × 120 × 25 mm base, two opposing jaws, a 160 mm maximum opening, and a pair of Ø25 mm hydraulic cylinder envelopes. Include two guide rails, four guide blocks, jaw plates with replaceable serrated inserts, a fluid manifold and hose-port geometry. Specify how both jaws are synchronized through a rack-and-pinion or mechanically linked mechanism; choose one approach and model the required parts. Preserve independent components and check the entire open and closed travel envelope. Do not claim clamping force without pressure and structural calculations.
+
+### H07 — Differential gearbox assembly
+Create an automotive-style bevel differential with a ring gear, pinion shaft, differential carrier, two side gears, two spider gears, cross pin, two output shafts, bearing envelopes and a split housing. Set a nominal final-drive ratio of 4:1 by selecting a compatible ring/pinion tooth-count pair. Define bevel gear axes, gear centre relationships and carrier clearances; model gear teeth realistically where supported or clearly mark approximate teeth. Keep gear and shaft components separate. Provide a sectioned view and check for basic geometric interferences. Do not claim accurate tooth contact or vehicle performance unless the selected gear geometry is fully validated.
+
+### H08 — Cam-indexed assembly station
+Design a mechanical indexing station with a four-position rotary table Ø240 mm, a cam-driven follower mechanism, a locking pin, a geared input shaft, two bearing supports and a rigid 300 × 300 mm base frame. Define four table stops 90° apart and include adjustable station fixtures with 50 × 40 mm mounting grids. Use separate rollers and follower axes, maintain a clear tool zone over each station, and add guards around the drive envelope. Model one valid index position and the critical interfaces. Describe the intended index sequence; mark timing and impact loads unverified unless simulation/calculation is performed.
+
+### H09 — Screw compressor rotor pair and casing concept
+Create a simplified twin-screw compressor geometry with two intermeshing helical rotor envelopes, parallel axes, 100 mm rotor length, and a surrounding split housing. Include inlet and outlet chambers, bearing seats at both ends, seal regions, drive-end shafts and bolted covers. Use a consistent rotor centre distance and ensure the two helical envelopes do not grossly interpenetrate. If a true conjugate screw profile is beyond the backend, generate a clearly labelled geometric concept and report the limitation rather than presenting it as manufacturable. Export the split housing and rotor assembly separately.
+
+### H10 — Multi-cylinder cranktrain assembly
+Design an inline four-cylinder cranktrain concept with four cylinder bores Ø80 mm spaced 95 mm centre-to-centre, 70 mm stroke, 140 mm connecting-rod centre distance, four pistons, four rods and a common crankshaft. Include a crankcase envelope, main-bearing saddles, main caps, front pulley and flywheel. Phase crank throws consistently for an inline-four configuration and place pistons at geometrically consistent positions. Preserve moving components and provide a sectioned inspection view. Check that rods, crank webs and cylinder envelopes avoid obvious interference; do not claim a complete engine or combustion simulation.
+
+### H11 — Robotic gripper with interchangeable fingers and quick-change mount
+Create a robot-mounted gripper with a circular interface Ø100 mm, a central actuator, a three-finger synchronized linkage and an interchangeable tool tip on each finger. Each tool tip must be removable using two M6 nominal fasteners and a locating shoulder. Add three finger-base carriers, pivot pins, connecting links, actuator slider, a synchronizing spider and a protective cover. Define a datum-based interface so replacement tips preserve their contact position. Include open/closed poses, component-level exports, collision checks and a clear assembly tree. Do not assume gripping-force capability without material and load calculations.
+
+### H12 — Planetary gearbox with selectable carrier arrangement
+Create a compact planetary transmission with a sun gear, three planet gears, an internal ring gear and a carrier. Target a 4:1 reduction in one configuration; determine a feasible tooth-count set and indicate which member is input, output and fixed. Include input/output shafts, a ring housing, carrier pins, bearings, spacers and a bolted casing. Verify tooth-count compatibility, equal planet spacing, coaxial axes and gear centre distances before generating teeth. Provide separate parts and a sectional assembly. If gear meshing is approximated, state that the ratio is kinematic intent rather than verified involute contact.
+
+### H13 — Ball-screw XY gantry with Z head
+Design a compact XYZ CNC gantry with a 450 × 350 mm base envelope, X travel 300 mm, Y travel 200 mm and Z travel 100 mm. Use paired guide rails on X and Y, a central ball-screw envelope per axis, bearing supports, nut mounts, a moving bridge, a Z carriage and a Ø65 mm spindle envelope. Choose rail spacings and mounting patterns that support the stated travel without rail-block run-off. Define nested moving coordinate frames so Y rides on X and Z rides on the bridge. Include end stops and motor-mount envelopes. Check travel limits and collision envelopes; stiffness and machining accuracy remain unverified without analysis.
+
+### H14 — Automated material handling gripper with pneumatic circuit layout
+Create an end-effector assembly with a three-finger or parallel-jaw grip module, a rotary actuator envelope, two pneumatic cylinders, hose routing and a robot mounting flange. Use a 120 mm mounting flange, Ø8 mm interface holes on an Ø90 mm pitch circle and clearances for two 8 mm-OD hoses. Model valves and fittings as simplified component envelopes, not internal functional valve mechanisms. Route hoses without passing through solid parts or bending to zero radius, include strain-relief brackets, and produce a component tree and assembly export. Explicitly distinguish CAD routing validation from pneumatic performance validation.
+
+### H15 — Centrifugal pump serviceable assembly with seal stack
+Design a serviceable centrifugal pump with a volute casing, removable front cover, Ø100 mm impeller, Ø25 mm shaft, motor coupling, two bearing supports and a mechanical-seal stack. Inlet bore is Ø40 mm and outlet bore is Ø32 mm; include a casing drain port Ø8 mm at the lowest point of the selected orientation. Add a bolted casing joint, gasket groove, shaft shoulders, seal seat and coupling keyway. Ensure the impeller has assembly clearance inside the casing and the flow passages connect. Generate an exploded service view and validate geometry, not hydraulic performance or seal life.
+
+### H16 — Compact machine-tool turret indexing assembly
+Create an eight-station tool turret with a Ø220 mm indexing face and eight tool-holder bores Ø20 mm arranged on a Ø160 mm pitch circle. Include a central spindle, bearing stack, index lock pin, detent ring, drive gear, base housing and bolted tool holders. Define one indexed position per 45° and a locking interface that aligns the station bore with a fixed tool axis. Ensure the turret can rotate within the housing envelope and does not interfere with the lock pin when unlocked. Keep the parts separately editable and provide a sectional configuration; index repeatability is unverified without tolerancing and motion analysis.
+
+### H17 — Compact internal-combustion engine valvetrain mock-up
+Create a single-cylinder four-valve cylinder-head valvetrain mock-up containing a cylinder head envelope, four valve stems, four valve springs, two camshafts, cam lobes, followers and timing gears. Set valve stem diameter to 6 mm, valve head diameter to 24 mm for intake and 20 mm for exhaust, and nominal lift to 8 mm. Arrange valves at practical non-intersecting angles around a central cylinder axis and locate the cam lobes over their followers. Add bearing journals and a timing cover. This is a packaging model; do not claim combustion, thermal, airflow or fatigue validation.
+
+### H18 — Mechanical press linkage and guarded frame
+Design a small mechanical press with a 350 × 250 mm base, a rigid portal frame with 250 mm clear width, a guided ram with 100 mm stroke, and a crank-slider or toggle drive. Include input shaft, bearings, connecting link, ram guides, tool-holder plates and a removable safety guard envelope. Select link lengths and pivots so the ram remains constrained to vertical motion through the specified stroke. Provide top/bottom positions and confirm no obvious geometric interference with the frame. Keep load capacity and safety compliance out of scope unless separate structural and risk analyses are carried out.
+
+### H19 — Modular automated inspection fixture
+Create a fixture for inspecting a prismatic component 150 × 90 × 40 mm. Use a 300 × 220 × 20 mm base plate, three datum supports, two side locators, two pneumatic clamps, a vertical probing-column envelope and four interchangeable sensor brackets. Add 25 mm-grid mounting holes, Ø8 mm locator pins, clamp pivot joints and adjustment slots. Define a repeatable 3-2-1 locating scheme without overconstraining the workpiece, preserve component-level editability, and route the sensor brackets so the probe reaches six specified measurement zones. Report reach/clearance checks separately from measurement uncertainty or fixture capability.
+
+### H20 — Integrated machine assembly challenge
+Create a compact automated drilling station with a 400 × 300 mm base, a vertical linear axis with 150 mm travel, a spindle envelope Ø80 mm, a motor envelope Ø100 × 160 mm, a vice fixture for a 100 × 80 × 20 mm workpiece, and a guarded chip-clearance envelope. Include linear rails, screw drive, bearing blocks, spindle bracket, workholding clamps, base stiffeners, limit-switch brackets, fasteners and an access panel. Define a consistent datum frame, component dependencies, mounting interfaces and a safe non-interfering home pose. Provide separate parts, assembled and exploded views, a STEP export and a validation report. Explicitly distinguish geometric validation from cutting-force, stiffness, safety and process validation.
+
+---
+
+# Suggested scoring sheet
+
+Score each prompt from 0 to 5 in each category:
+
+1. **Execution:** 0 = fails; 5 = completes without manual repair.
+2. **Geometry:** 0 = empty/incorrect; 5 = correct features and valid solids.
+3. **Dimensions:** 0 = grossly wrong; 5 = measured dimensions within agreed tolerance.
+4. **Topology/components:** 0 = parts fused/split incorrectly; 5 = correct solid and component counts.
+5. **Assembly:** 0 = missing/misaligned; 5 = correct interfaces, placement and clearances.
+6. **Export:** 0 = no usable export; 5 = exports and re-imports correctly.
+7. **Requirement fidelity:** 0 = generic or unrelated output; 5 = satisfies the stated requirements.
+
+For individual-part prompts, assembly scoring can be marked N/A. For mechanism prompts, score kinematics only if the implementation actually performs and tests it; otherwise label it unverified, not passed. Record model name, quantization, prompt ID, inference settings, retries, elapsed time and any manual intervention.
+
+**Benchmark principle:** use identical prompts and validation checks to compare models. A visually convincing result that fails dimensions, feature checks, assembly constraints or export validation is not a successful CAD result.

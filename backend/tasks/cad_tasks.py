@@ -19,7 +19,11 @@ settings = get_settings()
 AGENT_DISPLAY = {
     "input_classifier": "Input Classifier",
     "supervisor": "Supervisor",
+    "design_planner": "Design Planner",
     "design_agent": "Design Agent",
+    "assembly_generator": "Assembly Component Generator",
+    "assembly_executor": "Assembly Executor",
+    "assembly_validator": "Assembly Validator",
     "cadir_validator": "CADIR Validator",
     "interpreter": "CADIR Interpreter",
     "cad_executor": "CAD Executor",
@@ -125,6 +129,13 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
             "max_retries": settings.max_retries,
             "last_error": "",
             "messages": [],
+
+            "is_assembly": False,
+            "assembly_spec": None,
+            "component_cadirs": {},
+            "assembly_result": {},
+            "assembly_validation": {},
+            "design_plan": {},
         }
 
         # ---------------------------------------------------------
@@ -255,9 +266,10 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
                 )
 
         # ---------------------------------------------------------
-        # 6. Mark COMPLETE
+        # 6. Mark COMPLETE or FAILED
         # ---------------------------------------------------------
-        update_data["status"] = "COMPLETE"
+        is_geom_valid = bool(final_state.get("geometry_valid", False) or final_state.get("export_paths"))
+        update_data["status"] = "COMPLETE" if is_geom_valid else "FAILED"
 
         crud.update_design(
             db,
@@ -290,13 +302,10 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
             r,
             design_id,
             {
-                "type": "pipeline_complete",
+                "type": "pipeline_complete" if is_geom_valid else "pipeline_error",
                 "design_id": design_id,
-                "status": "COMPLETE",
-                "geometry_valid": final_state.get(
-                    "geometry_valid",
-                    False
-                ),
+                "status": "COMPLETE" if is_geom_valid else "FAILED",
+                "geometry_valid": is_geom_valid,
                 "export_paths": final_state.get(
                     "export_paths",
                     {}
@@ -307,10 +316,8 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
                 ),
                 "message": (
                     "Pipeline complete!"
-                    if final_state.get("geometry_valid")
-                    else
-                    "Pipeline completed but geometry "
-                    "is invalid."
+                    if is_geom_valid
+                    else f"Pipeline completed with geometry validation issues: {final_state.get('last_error', '')}"
                 ),
             }
         )
@@ -376,9 +383,32 @@ def _safe_payload(node_name: str, output: dict) -> dict:
     payload = {}
     if node_name == "supervisor":
         payload = {"parsed_intent": output.get("parsed_intent", {})}
+    elif node_name == "design_planner":
+        payload = {
+            "is_assembly": output.get("is_assembly", False),
+            "design_plan": output.get("design_plan", {}),
+        }
     elif node_name == "design_agent":
         code = output.get("cad_code", "")
         payload = {"code_preview": code[:200] + "..." if len(code) > 200 else code}
+    elif node_name == "assembly_generator":
+        payload = {
+            "component_count": len(output.get("component_cadirs", {})),
+        }
+    elif node_name == "assembly_executor":
+        res = output.get("execution_result", {})
+        payload = {
+            "solids_count": res.get("solids_count", 0),
+            "instances_count": res.get("instances_count", 0),
+            "volume": res.get("volume", 0.0),
+        }
+    elif node_name == "assembly_validator":
+        val = output.get("assembly_validation", {})
+        payload = {
+            "is_valid": output.get("geometry_valid", False),
+            "collisions": val.get("collision_count", 0),
+            "clearances": len(val.get("clearances", [])),
+        }
     elif node_name == "geometry_validator":
         payload = {
             "valid": output.get("geometry_valid", False),
@@ -397,6 +427,22 @@ def _safe_payload(node_name: str, output: dict) -> dict:
 def _agent_message(node_name: str, output: dict) -> str:
     if node_name == "supervisor":
         return f"Parsed intent: {output.get('parsed_intent', {}).get('summary', '')}"
+    elif node_name == "design_planner":
+        if output.get("is_assembly"):
+            plan = output.get("design_plan", {})
+            return f"Assembly decomposition complete: {plan.get('component_count', 0)} components ({plan.get('total_instances', 0)} instances)"
+        return "Single-part mechanical workflow planned"
+    elif node_name == "assembly_generator":
+        comps = len(output.get("component_cadirs", {}))
+        return f"Generated parametric CADIR for {comps} assembly components"
+    elif node_name == "assembly_executor":
+        res = output.get("execution_result", {})
+        solids = res.get("solids_count", 0)
+        return f"Assembled {solids} solids with multi-body STEP/STL/GLB exports"
+    elif node_name == "assembly_validator":
+        val = output.get("assembly_validation", {})
+        cols = val.get("collision_count", 0)
+        return "Assembly verified with 0 interferences ✓" if cols == 0 else f"Interference report: {cols} contact zones detected"
     elif node_name == "geometry_validator":
         valid = output.get("geometry_valid", False)
         return "Geometry valid ✓" if valid else f"Errors: {'; '.join(output.get('validation_errors', []))}"

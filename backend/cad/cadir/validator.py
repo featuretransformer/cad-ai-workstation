@@ -96,48 +96,176 @@ def validate_cadir_document(doc: CADIRDocument) -> CADIRValidationResult:
                 errors.append(f"Sphere feature '{fid}' requires positive 'radius'.")
 
         elif f_type == "extrude":
+            # Auto-normalize distance from depth if distance is missing
+            if (feature.distance is None or feature.distance <= 0) and feature.depth and feature.depth > 0:
+                feature.distance = feature.depth
             # If sketch_id is missing, normalize into cylinder or box primitive
             if not feature.sketch_id:
                 if (feature.radius and feature.radius > 0) or (feature.diameter and feature.diameter > 0):
                     feature.feature_type = "cylinder"
                     f_type = "cylinder"
                     if not feature.height:
-                        feature.height = feature.distance or feature.length or 10.0
+                        feature.height = feature.distance or feature.depth or feature.length or 10.0
                     if not feature.radius and feature.diameter:
                         feature.radius = feature.diameter / 2.0
                 elif feature.length and feature.width:
                     feature.feature_type = "box"
                     f_type = "box"
                     if not feature.height:
-                        feature.height = feature.distance or 10.0
+                        feature.height = feature.distance or feature.depth or 10.0
+                elif feature.height and feature.height > 0:
+                    # LLM often generates extrude with only height/depth (e.g. bolt heads)
+                    # Convert to cylinder with a default radius
+                    feature.feature_type = "cylinder"
+                    f_type = "cylinder"
+                    if not feature.radius:
+                        feature.radius = feature.height * 0.8  # reasonable default
+                elif feature.depth and feature.depth > 0:
+                    # depth-only extrude → cylinder with default radius
+                    feature.feature_type = "cylinder"
+                    f_type = "cylinder"
+                    feature.height = feature.depth
+                    if not feature.radius:
+                        feature.radius = feature.depth * 0.8
                 else:
-                    errors.append(f"Extrude feature '{fid}' requires a 'sketch_id'.")
+                    errors.append(f"Extrude feature '{fid}' requires a 'sketch_id' or dimensions (radius/diameter, length/width, or height/depth).")
             if f_type == "extrude" and (feature.distance is None or feature.distance <= 0):
                 errors.append(f"Extrude feature '{fid}' requires positive 'distance'.")
 
         elif f_type == "revolve":
             if not feature.sketch_id:
-                errors.append(f"Revolve feature '{fid}' requires a 'sketch_id'.")
+                if feature.operation == "cut":
+                    feature.feature_type = "hole"
+                    f_type = "hole"
+                    if not feature.diameter and feature.radius:
+                        feature.diameter = feature.radius * 2.0
+                    elif not feature.diameter:
+                        feature.diameter = 10.0
+                    if not feature.depth:
+                        feature.depth = feature.height or 5.0
+                elif feature.radius or feature.diameter:
+                    feature.feature_type = "cylinder"
+                    f_type = "cylinder"
+                    if not feature.height:
+                        feature.height = feature.distance or feature.depth or 20.0
+                else:
+                    errors.append(f"Revolve feature '{fid}' requires a 'sketch_id'.")
 
         elif f_type == "hole":
+            # Auto-normalize radius into diameter if diameter is missing
+            if (feature.diameter is None or feature.diameter <= 0) and feature.radius and feature.radius > 0:
+                feature.diameter = feature.radius * 2.0
+            # Auto-normalize diameter into radius if radius is missing
+            if (feature.radius is None or feature.radius <= 0) and feature.diameter and feature.diameter > 0:
+                feature.radius = feature.diameter / 2.0
             if feature.diameter is None or feature.diameter <= 0:
-                errors.append(f"Hole feature '{fid}' requires positive 'diameter'.")
+                feature.diameter = 8.0
+                feature.radius = 4.0
+            # Auto-default depth from height or length
+            if (feature.depth is None or feature.depth <= 0) and feature.height and feature.height > 0:
+                feature.depth = feature.height
+            elif (feature.depth is None or feature.depth <= 0) and feature.length and feature.length > 0:
+                feature.depth = feature.length
             if feature.depth is None or feature.depth <= 0:
-                errors.append(f"Hole feature '{fid}' requires positive 'depth'.")
-            if not feature.dependencies:
+                feature.depth = 20.0
+            if not feature.dependencies and feature_index_map.get(fid, 0) > 0:
+                prev_id = doc.features[feature_index_map[fid] - 1].id
+                feature.dependencies = [prev_id]
+            elif not feature.dependencies:
                 errors.append(
                     f"Hole feature '{fid}' must have dependencies declaring the target solid it cuts into."
                 )
+
+            # Auto-clamp hole radius so it does not exceed the parent body
+            if feature.dependencies:
+                parent_id = feature.dependencies[0]
+                parent_feat = next((pf for pf in doc.features if pf.id == parent_id), None)
+                if not parent_feat and feature_index_map.get(fid, 0) > 0:
+                    parent_feat = doc.features[feature_index_map[fid] - 1]
+                if parent_feat:
+                    if parent_feat.feature_type in ("cylinder", "sphere") and parent_feat.radius:
+                        if feature.radius and feature.radius >= parent_feat.radius:
+                            feature.radius = round(parent_feat.radius * 0.55, 2)
+                            feature.diameter = feature.radius * 2.0
+                    elif parent_feat.feature_type == "extrude" and parent_feat.sketch_id:
+                        sk = next((s for s in doc.sketches if s.id == parent_feat.sketch_id), None)
+                        if sk and sk.primitives:
+                            prim = sk.primitives[0]
+                            prim_r = getattr(prim, "radius", None)
+                            if prim_r and feature.radius and feature.radius >= prim_r:
+                                feature.radius = round(prim_r * 0.55, 2)
+                                feature.diameter = feature.radius * 2.0
+                    elif parent_feat.feature_type == "box" and parent_feat.length and parent_feat.width:
+                        max_r = min(parent_feat.length, parent_feat.width) / 2.0
+                        if feature.radius and feature.radius >= max_r:
+                            feature.radius = round(max_r * 0.55, 2)
+                            feature.diameter = feature.radius * 2.0
+
+        elif f_type == "pocket":
+            # Auto-normalize radius/diameter
+            if (feature.diameter is None or feature.diameter <= 0) and feature.radius and feature.radius > 0:
+                feature.diameter = feature.radius * 2.0
+            if (feature.radius is None or feature.radius <= 0) and feature.diameter and feature.diameter > 0:
+                feature.radius = feature.diameter / 2.0
+            if (not feature.length or not feature.width) and (not feature.radius and not feature.diameter):
+                errors.append(f"Pocket feature '{fid}' requires length and width, or radius/diameter.")
+            if not feature.depth and not feature.height:
+                feature.depth = 10.0
+            elif not feature.depth and feature.height:
+                feature.depth = feature.height
+            if not feature.dependencies and feature_index_map.get(fid, 0) > 0:
+                prev_id = doc.features[feature_index_map[fid] - 1].id
+                feature.dependencies = [prev_id]
 
         elif f_type in ("fillet", "chamfer"):
             if f_type == "fillet" and (feature.radius is None or feature.radius <= 0):
                 errors.append(f"Fillet feature '{fid}' requires positive 'radius'.")
             if f_type == "chamfer" and (feature.distance is None or feature.distance <= 0):
-                errors.append(f"Chamfer feature '{fid}' requires positive 'distance'.")
-            if not feature.dependencies:
+                feature.distance = feature.length or 1.0
+            if not feature.dependencies and feature_index_map.get(fid, 0) > 0:
+                prev_id = doc.features[feature_index_map[fid] - 1].id
+                feature.dependencies = [prev_id]
+            elif not feature.dependencies:
                 errors.append(
                     f"{f_type.capitalize()} feature '{fid}' must declare dependency on the target solid whose edges are modified."
                 )
+
+        elif f_type == "sweep":
+            if not feature.sketch_id:
+                errors.append(f"Sweep feature '{fid}' requires a profile 'sketch_id'.")
+            if not feature.path_sketch_id and not feature.distance and not feature.length:
+                feature.distance = 20.0  # fallback linear sweep
+
+        elif f_type == "loft":
+            if len(feature.section_sketch_ids) < 2 and not feature.sketch_id:
+                errors.append(f"Loft feature '{fid}' requires at least 2 sketches in 'section_sketch_ids'.")
+
+        elif f_type == "shell":
+            if feature.thickness is None or feature.thickness <= 0:
+                feature.thickness = 2.0  # reasonable default wall thickness
+            if not feature.dependencies and feature_index_map.get(fid, 0) > 0:
+                prev_id = doc.features[feature_index_map[fid] - 1].id
+                feature.dependencies = [prev_id]
+
+        elif f_type == "rib":
+            if feature.rib_thickness is None or feature.rib_thickness <= 0:
+                feature.rib_thickness = feature.thickness or 3.0
+            if not feature.dependencies and feature_index_map.get(fid, 0) > 0:
+                prev_id = doc.features[feature_index_map[fid] - 1].id
+                feature.dependencies = [prev_id]
+
+        elif f_type == "thread":
+            if (feature.thread_diameter is None or feature.thread_diameter <= 0):
+                feature.thread_diameter = feature.diameter or 10.0
+            if (feature.thread_length is None or feature.thread_length <= 0):
+                feature.thread_length = feature.length or feature.height or 25.0
+            if feature.pitch is None or feature.pitch <= 0:
+                # ISO coarse pitch approximation for metric threads
+                d = feature.thread_diameter
+                feature.pitch = round(0.15 * d + 0.25, 2) if d > 3 else 0.5
+            if not feature.dependencies and feature_index_map.get(fid, 0) > 0:
+                prev_id = doc.features[feature_index_map[fid] - 1].id
+                feature.dependencies = [prev_id]
 
         elif f_type in ("boolean_cut", "boolean_union", "boolean_intersect"):
             if not feature.tool_feature_id and len(feature.dependencies) < 2:

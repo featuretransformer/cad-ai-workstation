@@ -53,41 +53,35 @@ def get_ollama_llm(model: Optional[str] = None, base_url: Optional[str] = None):
 def get_supervisor_llm():
     """
     Supervisor, DFM, Engineering, Cost, Safety agents.
-    Provides resilient failover: Gemini (fast attempt) -> Groq (Qwen) -> Ollama (local).
+    Provides resilient failover: Groq (ultra-fast Qwen) -> Gemini -> Ollama (local).
     """
     s = _get_settings()
-    gemini_llm = None
-    groq_llm = None
+    if s.groq_api_key:
+        try:
+            from langchain_groq import ChatGroq
+            return ChatGroq(
+                model="qwen/qwen3.8-27b",
+                groq_api_key=s.groq_api_key,
+                temperature=0.1,
+                max_tokens=750,
+                max_retries=0,
+                request_timeout=4.0,
+            )
+        except Exception:
+            pass
 
     if s.gemini_api_key and _google_api_reachable():
         try:
             from langchain_google_genai import ChatGoogleGenerativeAI
-            gemini_llm = ChatGoogleGenerativeAI(
-                model="gemini-3.8-flash",
+            return ChatGoogleGenerativeAI(
+                model="gemini-1.5-flash",
                 google_api_key=s.gemini_api_key,
                 temperature=0.1,
-                max_retries=0,
+                max_retries=1,
+                max_output_tokens=8192,
             )
         except Exception:
             pass
-
-    if s.groq_api_key:
-        try:
-            from langchain_groq import ChatGroq
-            groq_llm = ChatGroq(
-                model="qwen/qwen3.8-27b",
-                groq_api_key=s.groq_api_key,
-                temperature=0.1,
-            )
-        except Exception:
-            pass
-
-    if gemini_llm and groq_llm:
-        return gemini_llm.with_fallbacks([groq_llm])
-    elif gemini_llm:
-        return gemini_llm
-    elif groq_llm:
-        return groq_llm
 
     # Fallback to local Ollama
     return get_ollama_llm(model=s.ollama_model)
@@ -96,41 +90,35 @@ def get_supervisor_llm():
 def get_design_llm():
     """
     Design Agent code generation.
-    Provides resilient failover: Gemini (fast attempt) -> Groq (Qwen) -> Ollama (local).
+    Provides resilient failover: Groq (ultra-fast Qwen) -> Gemini -> Ollama (local).
     """
     s = _get_settings()
-    gemini_llm = None
-    groq_llm = None
+    if s.groq_api_key:
+        try:
+            from langchain_groq import ChatGroq
+            return ChatGroq(
+                model="qwen/qwen3.8-27b",
+                groq_api_key=s.groq_api_key,
+                temperature=0.15,
+                max_tokens=750,
+                max_retries=0,
+                request_timeout=4.0,
+            )
+        except Exception:
+            pass
 
     if s.gemini_api_key and _google_api_reachable():
         try:
             from langchain_google_genai import ChatGoogleGenerativeAI
-            gemini_llm = ChatGoogleGenerativeAI(
-                model="gemini-3.8-flash",
+            return ChatGoogleGenerativeAI(
+                model="gemini-1.5-flash",
                 google_api_key=s.gemini_api_key,
-                temperature=0.2,
-                max_retries=0,
+                temperature=0.15,
+                max_retries=1,
+                max_output_tokens=8192,
             )
         except Exception:
             pass
-
-    if s.groq_api_key:
-        try:
-            from langchain_groq import ChatGroq
-            groq_llm = ChatGroq(
-                model="qwen/qwen3.8-27b",
-                groq_api_key=s.groq_api_key,
-                temperature=0.2,
-            )
-        except Exception:
-            pass
-
-    if gemini_llm and groq_llm:
-        return gemini_llm.with_fallbacks([groq_llm])
-    elif gemini_llm:
-        return gemini_llm
-    elif groq_llm:
-        return groq_llm
 
     # Fallback to local Ollama
     return get_ollama_llm(model=s.ollama_model)

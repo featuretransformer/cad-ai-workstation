@@ -53,3 +53,12 @@ class AgentState(TypedDict, total=False):
     retrieved_examples: List[Dict[str, Any]]
     repair_attempts: int
 
+    # ─── Multi-Component Assembly Extensions (Roadmap Phases 1-5) ─────
+    is_assembly: bool
+    assembly_spec: Optional[Any]
+    component_cadirs: Dict[str, Any]
+    assembly_result: Dict[str, Any]
+    assembly_validation: Dict[str, Any]
+    design_plan: Dict[str, Any]
+
+

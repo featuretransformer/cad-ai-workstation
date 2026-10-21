@@ -1,6 +1,7 @@
 """
 LangGraph Multi-Agent CAD Generation Workflow.
 Connects input classification, intent parsing, few-shot dataset retrieval,
+hierarchical design planning (single-part vs multi-component assembly),
 parametric CADIR synthesis, deterministic build123d code interpretation,
 sandboxed CAD execution, physical geometry validation, self-healing repair,
 and downstream engineering analysis reports.
@@ -18,7 +19,13 @@ from langgraph.graph import StateGraph, END
 from agents.state import AgentState
 from agents.input_classifier import classify_input_node
 from agents.supervisor import supervisor_node
+from agents.design_planner import design_planner_node
 from agents.design_agent import design_agent_node
+from agents.assembly_nodes import (
+    assembly_generator_node,
+    assembly_executor_node,
+    assembly_validator_node,
+)
 from agents.validator_nodes import (
     cadir_validator_node,
     interpreter_node,
@@ -35,6 +42,16 @@ from agents.downstream_nodes import (
     cam_agent_node,
     doc_agent_node,
 )
+
+
+def route_design_planner(state: AgentState) -> Literal["assembly_generator", "design_agent"]:
+    """
+    Routes from design planner: proceed to assembly generation if multi-component assembly,
+    or route to standard single-part design agent.
+    """
+    if state.get("is_assembly", False):
+        return "assembly_generator"
+    return "design_agent"
 
 
 def route_cadir_validation(state: AgentState) -> Literal["interpreter", "cadir_repair", "__end__"]:
@@ -76,7 +93,11 @@ def create_cad_workflow() -> StateGraph:
     # 1. Register All Agent Nodes
     workflow.add_node("input_classifier", classify_input_node)
     workflow.add_node("supervisor", supervisor_node)
+    workflow.add_node("design_planner", design_planner_node)
     workflow.add_node("design_agent", design_agent_node)
+    workflow.add_node("assembly_generator", assembly_generator_node)
+    workflow.add_node("assembly_executor", assembly_executor_node)
+    workflow.add_node("assembly_validator", assembly_validator_node)
     workflow.add_node("cadir_validator", cadir_validator_node)
     workflow.add_node("interpreter", interpreter_node)
     workflow.add_node("cad_executor", cad_executor_node)
@@ -95,7 +116,24 @@ def create_cad_workflow() -> StateGraph:
     # 2. Define Workflow Edges & Routing
     workflow.set_entry_point("input_classifier")
     workflow.add_edge("input_classifier", "supervisor")
-    workflow.add_edge("supervisor", "design_agent")
+    workflow.add_edge("supervisor", "design_planner")
+
+    # Conditional Branch 0: Assembly vs Single-Part
+    workflow.add_conditional_edges(
+        "design_planner",
+        route_design_planner,
+        {
+            "assembly_generator": "assembly_generator",
+            "design_agent": "design_agent",
+        },
+    )
+
+    # Pathway A: Multi-Component Assembly Pipeline
+    workflow.add_edge("assembly_generator", "assembly_executor")
+    workflow.add_edge("assembly_executor", "assembly_validator")
+    workflow.add_edge("assembly_validator", "dfm_agent")
+
+    # Pathway B: Single-Part CADIR Pipeline
     workflow.add_edge("design_agent", "cadir_validator")
 
     # Conditional Branch 1: CADIR Validation Check
@@ -126,7 +164,7 @@ def create_cad_workflow() -> StateGraph:
     # Self-Healing Retry Loop: return to CADIR validator
     workflow.add_edge("cadir_repair", "cadir_validator")
 
-    # Downstream Engineering Sequence
+    # Downstream Engineering Sequence (Shared by both Single Parts and Assemblies)
     workflow.add_edge("dfm_agent", "engineering_agent")
     workflow.add_edge("engineering_agent", "cost_agent")
     workflow.add_edge("cost_agent", "safety_agent")

@@ -50,8 +50,30 @@ def cadir_repair_node(state: AgentState) -> Dict[str, Any]:
 
     repaired_doc = copy.deepcopy(doc)
 
+    # 0. Empty Mesh / Zero Volume Repair (cut swallowed solid body)
+    if "empty" in all_error_text or "volume" in all_error_text or "mesh" in all_error_text:
+        for f in repaired_doc.features:
+            if f.feature_type in ("hole", "pocket"):
+                deps = f.dependencies or []
+                parent = next((pf for pf in repaired_doc.features if pf.id in deps), None)
+                if not parent and repaired_doc.features:
+                    parent = repaired_doc.features[0]
+                if parent and parent.feature_type in ("cylinder", "sphere") and parent.radius:
+                    f.radius = round(parent.radius * 0.5, 2)
+                    f.diameter = f.radius * 2.0
+                elif parent and parent.feature_type == "box" and parent.length and parent.width:
+                    max_r = min(parent.length, parent.width) / 2.0
+                    f.radius = round(max_r * 0.5, 2)
+                    f.diameter = f.radius * 2.0
+            elif f.feature_type in ("chamfer", "fillet"):
+                if f.distance and f.distance > 0.5:
+                    f.distance = 0.5
+                    f.length = 0.5
+                if f.radius and f.radius > 0.5:
+                    f.radius = 0.5
+
     # 1. Fillet Repair: Reduce radius if too large or remove failed fillet
-    if "fillet" in all_error_text:
+    elif "fillet" in all_error_text:
         for f in repaired_doc.features:
             if f.feature_type == "fillet":
                 if f.radius and f.radius > 0.5:

@@ -4,26 +4,52 @@ Defines the strict Pydantic v2 models representing parametric mechanical compone
 sketch profiles, 3D operations, explicit feature dependencies, and engineering intent.
 """
 from typing import List, Dict, Any, Optional, Literal, Union
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
 import json
+import uuid
 
 
 class Point3D(BaseModel):
     """3D Cartesian Point with parametric coordinates."""
+    model_config = ConfigDict(extra="ignore")
     x: float = 0.0
     y: float = 0.0
     z: float = 0.0
 
+    @model_validator(mode="before")
+    @classmethod
+    def parse_coords(cls, data):
+        if isinstance(data, (list, tuple)):
+            return {
+                "x": float(data[0]) if len(data) > 0 else 0.0,
+                "y": float(data[1]) if len(data) > 1 else 0.0,
+                "z": float(data[2]) if len(data) > 2 else 0.0,
+            }
+        return data
+
 
 class Vector3D(BaseModel):
     """3D Directional Vector."""
+    model_config = ConfigDict(extra="ignore")
     x: float = 0.0
     y: float = 0.0
     z: float = 1.0
 
+    @model_validator(mode="before")
+    @classmethod
+    def parse_vector(cls, data):
+        if isinstance(data, (list, tuple)):
+            return {
+                "x": float(data[0]) if len(data) > 0 else 0.0,
+                "y": float(data[1]) if len(data) > 1 else 0.0,
+                "z": float(data[2]) if len(data) > 2 else 1.0,
+            }
+        return data
+
 
 class CADIRPlane(BaseModel):
     """Construction plane for 2D sketches."""
+    model_config = ConfigDict(extra="ignore")
     origin: Point3D = Field(default_factory=Point3D)
     normal: Vector3D = Field(default_factory=lambda: Vector3D(x=0.0, y=0.0, z=1.0))
     x_axis: Vector3D = Field(default_factory=lambda: Vector3D(x=1.0, y=0.0, z=0.0))
@@ -100,12 +126,21 @@ FeatureType = Literal[
     "pocket",
     "fillet",
     "chamfer",
+    "sweep",
+    "loft",
+    "shell",
+    "rib",
+    "thread",
     "linear_pattern",
     "polar_pattern",
     "mirror",
     "boolean_union",
     "boolean_cut",
     "boolean_intersect",
+    "regular_polygon",
+    "groove",
+    "counterbore_hole",
+    "countersink_hole",
 ]
 
 BooleanOperationType = Literal["new_body", "join", "cut", "intersect"]
@@ -116,8 +151,10 @@ class CADIRFeature(BaseModel):
     Parametric feature node in the CAD construction tree.
     Explicitly tracks dependencies on preceding features.
     """
-    id: str = Field(description="Unique identifier (e.g. 'f1_base_box')")
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: f"f_{uuid.uuid4().hex[:6]}")
     name: str = ""
+    description: str = ""
     feature_type: FeatureType
     dependencies: List[str] = Field(
         default_factory=list,
@@ -131,23 +168,47 @@ class CADIRFeature(BaseModel):
     suppressed: bool = False
 
     # 3D Primitive parameters
-    length: Optional[float] = Field(default=None, gt=0.0)
-    width: Optional[float] = Field(default=None, gt=0.0)
-    height: Optional[float] = Field(default=None, gt=0.0)
-    radius: Optional[float] = Field(default=None, gt=0.0)
+    length: Optional[float] = None
+    width: Optional[float] = None
+    height: Optional[float] = None
+    radius: Optional[float] = None
     center: Optional[Point3D] = None
     axis: Optional[Vector3D] = None
 
     # Sketch-based 3D parameters
     sketch_id: Optional[str] = None
-    distance: Optional[float] = Field(default=None, gt=0.0)
-    depth: Optional[float] = Field(default=None, gt=0.0)
+    distance: Optional[float] = None
+    depth: Optional[float] = None
     angle: Optional[float] = None
     taper_angle: float = 0.0
     symmetric: bool = False
 
+    # Sweep parameters
+    path_sketch_id: Optional[str] = None
+    path_feature_id: Optional[str] = None
+
+    # Loft parameters
+    section_sketch_ids: List[str] = Field(default_factory=list)
+    ruled: bool = False
+
+    # Shell parameters
+    thickness: Optional[float] = None
+    opening_faces: List[str] = Field(
+        default_factory=list,
+        description="Faces to remove for hollow shell (e.g. ['top'], ['bottom'])"
+    )
+
+    # Rib parameters
+    rib_thickness: Optional[float] = None
+
+    # Thread parameters
+    pitch: Optional[float] = None
+    thread_diameter: Optional[float] = None
+    thread_length: Optional[float] = None
+    thread_type: Literal["metric", "unified", "acme", "schematic"] = "metric"
+
     # Hole parameters
-    diameter: Optional[float] = Field(default=None, gt=0.0)
+    diameter: Optional[float] = None
     hole_type: Literal["simple", "counterbore", "countersink"] = "simple"
     cbore_diameter: Optional[float] = None
     cbore_depth: Optional[float] = None
@@ -162,6 +223,14 @@ class CADIRFeature(BaseModel):
         description="Rule/query for target edges (e.g. 'all', 'top', 'bottom', 'vertical', 'edges_at_z_max')",
     )
 
+    # Regular Polygon / Prism parameters
+    side_count: Optional[int] = Field(default=6, ge=3)
+
+    # Groove parameters
+    outer_radius: Optional[float] = None
+    inner_radius: Optional[float] = None
+    groove_width: Optional[float] = None
+
     # Pattern / Transform parameters
     count: Optional[int] = Field(default=None, ge=1)
     spacing: Optional[float] = None
@@ -173,6 +242,36 @@ class CADIRFeature(BaseModel):
     # Generic parameter dictionary for extended flexibility
     params: Dict[str, Any] = Field(default_factory=dict)
 
+    @field_validator(
+        "length", "width", "height", "radius", "distance", "depth", "diameter",
+        "cbore_diameter", "cbore_depth", "csink_diameter", "csink_angle",
+        "thickness", "pitch", "thread_diameter", "thread_length", "rib_thickness",
+        mode="before"
+    )
+    @classmethod
+    def coerce_positive_numeric(cls, v):
+        """Ensure positive numeric values; raise ValueError for non-positive numbers."""
+        if v is None:
+            return None
+        try:
+            val = float(v)
+            if val <= 0:
+                raise ValueError(f"Value must be strictly positive, got {val}")
+            return val
+        except (ValueError, TypeError) as e:
+            raise ValueError(f"Invalid positive numeric value: {v}") from e
+
+    @model_validator(mode="before")
+    @classmethod
+    def sync_position_and_center(cls, data):
+        if isinstance(data, dict):
+            # Sync center and position
+            if "position" in data and ("center" not in data or data["center"] is None):
+                data["center"] = data["position"]
+            elif "center" in data and ("position" not in data or data["position"] is None):
+                data["position"] = data["center"]
+        return data
+
 
 # ─── CADIR Document Root ───────────────────────────────────────────────────────────
 
@@ -181,9 +280,10 @@ class CADIRDocument(BaseModel):
     Canonical CAD Intermediate Representation (CADIR) Document.
     Serves as the deterministic bridge between AI intent and build123d construction.
     """
+    model_config = ConfigDict(extra="ignore")
     schema_version: str = "1.0.0"
-    id: str
-    name: str
+    id: str = Field(default_factory=lambda: f"doc_{uuid.uuid4().hex[:8]}")
+    name: str = "Mechanical Component"
     description: str = ""
     component_family: Optional[str] = Field(
         default=None,
