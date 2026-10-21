@@ -257,10 +257,12 @@ def plan_features_with_llm(prompt: str, intent: Dict[str, Any]) -> List[Dict[str
         "into an ordered Feature Build Plan.\n"
         "RULES FOR MECHANICAL BUILD ORDER:\n"
         "1. Step 1 MUST ALWAYS be the main primary solid envelope (the base cylinder or base box).\n"
-        "2. Step 2+ should add major solid bodies (flanges, bosses, lugs, ribs).\n"
+        "2. Step 2 should add major secondary positive solid bodies (flanges, bosses, lugs, ribs).\n"
         "3. Intermediate steps add subtractive features (cavities, pockets, bores, channels, grooves, holes).\n"
-        "4. The FINAL step MUST ALWAYS be edge modifications (fillets, chamfers, edge breaks).\n"
-        "5. Keep the plan to between 3 and 5 total steps, with 1 to 4 features per step.\n"
+        "4. FASTENER HOLES: If mounting holes are specified, allocate a dedicated step for the hole pattern (e.g., 4 corner holes or circular bolt circle PCD).\n"
+        "5. The FINAL step MUST ALWAYS be edge modifications (fillets, chamfers, edge breaks).\n"
+        "6. SPATIAL ANCHORS MUST BE ONE OF: 'origin', 'top_face', 'base_face', 'corners', 'outer_surface_mid', 'pcd_bolt_circle', 'global_edges'.\n"
+        "7. Keep the plan to between 3 and 5 total steps, with 1 to 4 features per step.\n"
         "Output ONLY a valid JSON object matching this schema:\n"
         f"{json.dumps(sample_plan, indent=2)}\n"
         "Output raw JSON without markdown formatting."
@@ -268,7 +270,10 @@ def plan_features_with_llm(prompt: str, intent: Dict[str, Any]) -> List[Dict[str
 
     try:
         llm = get_design_llm()
-        res = llm.invoke([("system", sys_msg), ("user", f"Decompose this mechanical CAD part into a build plan:\n{prompt}")])
+        sem = intent.get("semantic_parameters", {})
+        spec_text = f"\nExtracted Specs: {sem}" if sem else ""
+        user_msg = f"Decompose this mechanical CAD part into a build plan:\nPrompt: {prompt}{spec_text}"
+        res = llm.invoke([("system", sys_msg), ("user", user_msg)])
         raw_text = res.content if hasattr(res, "content") else str(res)
         plan_dict = _extract_json_plan(raw_text)
         if plan_dict and "build_plan" in plan_dict and len(plan_dict["build_plan"]) >= 2:

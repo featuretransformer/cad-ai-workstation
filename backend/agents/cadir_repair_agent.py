@@ -91,14 +91,29 @@ def cadir_repair_node(state: AgentState) -> Dict[str, Any]:
                 else:
                     f.suppressed = True
 
-    # 3. Hole Depth / Radius / Position Repair
-    elif "hole" in all_error_text or "bore" in all_error_text:
+    # 3. Hole Depth / Radius / Position / Operation Repair
+    elif "hole" in all_error_text or "bore" in all_error_text or "position" in all_error_text or "bounds" in all_error_text:
+        base_body = repaired_doc.features[0] if repaired_doc.features else None
+        max_half_x = (base_body.length / 2.0) if base_body and base_body.length else 50.0
+        max_half_y = (base_body.width / 2.0) if base_body and base_body.width else 40.0
+        base_h = (base_body.height or 20.0) if base_body else 20.0
+
         for f in repaired_doc.features:
             if f.feature_type == "hole":
+                f.operation = "cut"
                 if f.depth is None or f.depth <= 0:
-                    f.depth = 20.0
-                if f.diameter and f.diameter > 50.0:
-                    f.diameter = round(f.diameter * 0.7, 2)
+                    f.depth = base_h + 5.0
+                if f.diameter and f.diameter > (max_half_x * 1.5):
+                    f.diameter = round(max_half_x * 0.8, 2)
+                    f.radius = f.diameter / 2.0
+                # Clamp position coordinates within host body
+                if f.position:
+                    r = f.radius or (f.diameter / 2.0 if f.diameter else 3.3)
+                    margin = max(4.0, r * 1.5)
+                    if abs(f.position.x) >= max_half_x:
+                        f.position.x = (max_half_x - margin) if f.position.x > 0 else (-max_half_x + margin)
+                    if abs(f.position.y) >= max_half_y:
+                        f.position.y = (max_half_y - margin) if f.position.y > 0 else (-max_half_y + margin)
 
     # 4. Cylinder / Box Missing Height or Radius Repair
     if "height" in all_error_text:

@@ -509,43 +509,80 @@ def generate_step_features_with_llm(
     """
     Invokes LLM with current cumulative geometry context to generate
     only the focused features for this specific step.
+    Provides explicit coordinate bounding box, spatial anchoring math, and few-shot grounding.
     """
     step_num = step.get("step", 1)
     group_name = step.get("group_name", "Feature Group")
     desc = step.get("description", "")
     spatial_anchor = step.get("spatial_anchor", "origin")
 
+    # Compute cumulative geometric bounds
+    b_min_x, b_max_x = -50.0, 50.0
+    b_min_y, b_max_y = -40.0, 40.0
+    b_min_z, b_max_z = -10.0, 10.0
+    base_f_type = "box"
+
     existing_features_summary = []
     if cumulative_doc and cumulative_doc.features:
         for f in cumulative_doc.features:
             pos_str = f"({f.position.x},{f.position.y},{f.position.z})" if f.position else "(0,0,0)"
             existing_features_summary.append(
-                f"- {f.id} [{f.feature_type}, op={f.operation}]: dim(r={f.radius}, h={f.height}, d={f.depth}) at {pos_str}"
+                f"- {f.id} [{f.feature_type}, op={f.operation}]: dim(r={f.radius}, l={f.length}, w={f.width}, h={f.height}, d={f.depth}) at {pos_str}"
             )
+        base = cumulative_doc.features[0]
+        base_f_type = base.feature_type
+        if base.feature_type == "box" and base.length and base.width and base.height:
+            b_min_x, b_max_x = -base.length / 2.0, base.length / 2.0
+            b_min_y, b_max_y = -base.width / 2.0, base.width / 2.0
+            b_min_z, b_max_z = -base.height / 2.0, base.height / 2.0
+        elif base.feature_type == "cylinder" and base.radius and base.height:
+            b_min_x, b_max_x = -base.radius, base.radius
+            b_min_y, b_max_y = -base.radius, base.radius
+            b_min_z, b_max_z = -base.height / 2.0, base.height / 2.0
+
     summary_text = "\n".join(existing_features_summary) if existing_features_summary else "No existing features yet (Step 1)."
+    bounds_text = f"X in [{b_min_x}, {b_max_x}], Y in [{b_min_y}, {b_max_y}], Z in [{b_min_z}, {b_max_z}] (Base type: {base_f_type})"
 
     sys_msg = (
-        "You are an expert mechanical CAD designer generating parametric features for an incremental build plan.\n"
-        "You are currently building ONE specific feature group onto an EXISTING mechanical solid.\n\n"
+        "You are an expert mechanical CAD systems engineer generating parametric features for an incremental build plan.\n"
+        "You are constructing ONE specific feature group onto an EXISTING mechanical solid.\n\n"
         f"OVERALL PART GOAL: {overall_prompt}\n"
+        f"CUMULATIVE SOLID BOUNDING BOX: {bounds_text}\n"
         f"EXISTING GEOMETRY IN PART SO FAR:\n{summary_text}\n\n"
         f"CURRENT STEP TO GENERATE:\n"
         f"- Step: {step_num}\n"
         f"- Group Name: {group_name}\n"
         f"- Description: {desc}\n"
         f"- Spatial Anchor: {spatial_anchor}\n\n"
-        "RULES:\n"
-        "1. Output ONLY a valid JSON list of 1 to 4 features for THIS step.\n"
-        "2. Do NOT re-create the main base body unless this is Step 1.\n"
-        "3. Features that add material must have operation: 'join'. Features that remove material must have operation: 'cut'.\n"
-        "4. Position all features accurately relative to the existing geometry coordinates.\n"
-        "5. Valid feature_type values: box, cylinder, sphere, hole, pocket, groove, fillet, chamfer, regular_polygon.\n"
-        "Output raw JSON list only (e.g. [{\"feature_type\": ...}])."
+        "=== STRICT RULES FOR FEATURE GROUNDING ===\n"
+        "1. COORDINATES: Base body is centered at (0, 0, 0). All coordinates MUST lie strictly within or on the bounding box.\n"
+        "   - Corner holes: MUST be at (+/-(length/2 - margin), +/-(width/2 - margin), 0). NEVER place outside part bounds!\n"
+        "   - Center bores: Position is [0, 0, 0], depth must be >= part height, operation: 'cut'.\n"
+        "   - Circular Bolt Circles (PCD): 4 holes on PCD radius R: (+/-R, 0, 0) and (0, +/-R, 0).\n"
+        "2. OPERATIONS:\n"
+        "   - Subtractive features (hole, pocket, groove, cavity): MUST have operation: 'cut'.\n"
+        "   - Additive features (cylinder, box, boss, flange, lug, rib): MUST have operation: 'join' (or 'new_body' for Step 1).\n"
+        "   - Edge modifications (fillet, chamfer): MUST have operation: 'join', radius <= 2.0mm.\n"
+        "3. METRIC FASTENERS:\n"
+        "   M4=4.5mm hole, M5=5.5mm hole, M6=6.6mm hole, M8=9.0mm hole, M10=11.0mm hole.\n"
+        "4. OUTPUT FORMAT: Output ONLY a valid JSON list of 1 to 4 features. E.g.:\n"
+        "[\n"
+        "  {\n"
+        '    "id": "s' + str(step_num) + '_hole_1",\n'
+        '    "name": "Mounting Clearance Hole",\n'
+        '    "feature_type": "hole",\n'
+        '    "operation": "cut",\n'
+        '    "diameter": 6.6,\n'
+        '    "depth": 20.0,\n'
+        '    "position": [35.0, 25.0, 0.0]\n'
+        "  }\n"
+        "]\n"
+        "Output raw JSON list only without markdown code fences."
     )
 
     try:
         llm = get_design_llm()
-        res = llm.invoke([("system", sys_msg), ("user", f"Generate JSON feature list for: {desc}")])
+        res = llm.invoke([("system", sys_msg), ("user", f"Generate JSON feature list for Step {step_num}: {desc}")])
         raw_text = res.content if hasattr(res, "content") else str(res)
         raw_list = _extract_features_list(raw_text)
 

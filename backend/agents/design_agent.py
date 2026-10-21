@@ -409,85 +409,263 @@ def _sanitize_raw_cadir(data: dict) -> dict:
     return data
 
 
-def _try_llm_structured_output(llm, sys_msg: str, prompt: str) -> Optional[CADIRDocument]:
+# Canonical Mechanical CADIR Few-Shot Exemplars for Grounding
+CADIR_EXEMPLARS = [
+    {
+        "title": "Rectangular Mounting Plate with 4 Corner Holes",
+        "description": "100x80x10mm plate with four M6 corner clearance holes and 2mm edge fillets",
+        "doc": {
+            "schema_version": "1.0.0",
+            "id": "doc_mounting_plate",
+            "name": "Rectangular Mounting Plate",
+            "component_family": "mounting_plate",
+            "units": "mm",
+            "parameters": {"length": 100.0, "width": 80.0, "thickness": 10.0, "hole_dia": 6.6},
+            "features": [
+                {
+                    "id": "f1_base_plate",
+                    "name": "Base Plate Solid",
+                    "feature_type": "box",
+                    "operation": "new_body",
+                    "length": 100.0,
+                    "width": 80.0,
+                    "height": 10.0,
+                    "position": [0.0, 0.0, 0.0],
+                    "dependencies": [],
+                },
+                {
+                    "id": "f2_hole_ne",
+                    "name": "Corner Hole (+X, +Y)",
+                    "feature_type": "hole",
+                    "operation": "cut",
+                    "diameter": 6.6,
+                    "depth": 15.0,
+                    "position": [38.0, 28.0, 0.0],
+                    "dependencies": ["f1_base_plate"],
+                },
+                {
+                    "id": "f3_hole_nw",
+                    "name": "Corner Hole (-X, +Y)",
+                    "feature_type": "hole",
+                    "operation": "cut",
+                    "diameter": 6.6,
+                    "depth": 15.0,
+                    "position": [-38.0, 28.0, 0.0],
+                    "dependencies": ["f1_base_plate"],
+                },
+                {
+                    "id": "f4_hole_sw",
+                    "name": "Corner Hole (-X, -Y)",
+                    "feature_type": "hole",
+                    "operation": "cut",
+                    "diameter": 6.6,
+                    "depth": 15.0,
+                    "position": [-38.0, -28.0, 0.0],
+                    "dependencies": ["f1_base_plate"],
+                },
+                {
+                    "id": "f5_hole_se",
+                    "name": "Corner Hole (+X, -Y)",
+                    "feature_type": "hole",
+                    "operation": "cut",
+                    "diameter": 6.6,
+                    "depth": 15.0,
+                    "position": [38.0, -28.0, 0.0],
+                    "dependencies": ["f1_base_plate"],
+                },
+                {
+                    "id": "f6_edge_fillet",
+                    "name": "Vertical Edge Fillet",
+                    "feature_type": "fillet",
+                    "operation": "join",
+                    "radius": 2.0,
+                    "edge_selector": "vertical",
+                    "dependencies": ["f1_base_plate"],
+                },
+            ],
+        },
+    },
+    {
+        "title": "Cylindrical Flanged Bearing Hub with PCD Bolt Circle",
+        "description": "80mm OD x 40mm tall flanged hub with 30mm central bore and 4x M8 holes on 60mm PCD",
+        "doc": {
+            "schema_version": "1.0.0",
+            "id": "doc_bearing_hub",
+            "name": "Flanged Bearing Hub",
+            "component_family": "bearing_housing",
+            "units": "mm",
+            "parameters": {"flange_dia": 80.0, "hub_dia": 50.0, "bore_dia": 30.0, "pcd": 60.0},
+            "features": [
+                {
+                    "id": "f1_flange_base",
+                    "name": "Mounting Flange",
+                    "feature_type": "cylinder",
+                    "operation": "new_body",
+                    "radius": 40.0,
+                    "diameter": 80.0,
+                    "height": 12.0,
+                    "position": [0.0, 0.0, -14.0],
+                    "dependencies": [],
+                },
+                {
+                    "id": "f2_hub_body",
+                    "name": "Central Hub Column",
+                    "feature_type": "cylinder",
+                    "operation": "join",
+                    "radius": 25.0,
+                    "diameter": 50.0,
+                    "height": 28.0,
+                    "position": [0.0, 0.0, 6.0],
+                    "dependencies": ["f1_flange_base"],
+                },
+                {
+                    "id": "f3_center_bore",
+                    "name": "Through Shaft Bore",
+                    "feature_type": "hole",
+                    "operation": "cut",
+                    "diameter": 30.0,
+                    "depth": 45.0,
+                    "position": [0.0, 0.0, 0.0],
+                    "dependencies": ["f2_hub_body"],
+                },
+                {
+                    "id": "f4_pcd_hole_1",
+                    "name": "PCD Bolt Hole 1",
+                    "feature_type": "hole",
+                    "operation": "cut",
+                    "diameter": 9.0,
+                    "depth": 15.0,
+                    "position": [30.0, 0.0, -14.0],
+                    "dependencies": ["f1_flange_base"],
+                },
+                {
+                    "id": "f5_pcd_hole_2",
+                    "name": "PCD Bolt Hole 2",
+                    "feature_type": "hole",
+                    "operation": "cut",
+                    "diameter": 9.0,
+                    "depth": 15.0,
+                    "position": [-30.0, 0.0, -14.0],
+                    "dependencies": ["f1_flange_base"],
+                },
+                {
+                    "id": "f6_pcd_hole_3",
+                    "name": "PCD Bolt Hole 3",
+                    "feature_type": "hole",
+                    "operation": "cut",
+                    "diameter": 9.0,
+                    "depth": 15.0,
+                    "position": [0.0, 30.0, -14.0],
+                    "dependencies": ["f1_flange_base"],
+                },
+                {
+                    "id": "f7_pcd_hole_4",
+                    "name": "PCD Bolt Hole 4",
+                    "feature_type": "hole",
+                    "operation": "cut",
+                    "diameter": 9.0,
+                    "depth": 15.0,
+                    "position": [0.0, -30.0, -14.0],
+                    "dependencies": ["f1_flange_base"],
+                },
+            ],
+        },
+    },
+    {
+        "title": "Standard Hexagonal Nut",
+        "description": "M8 Hexagonal Nut with 13mm across flats, 6.5mm height, and central M8 threaded bore",
+        "doc": {
+            "schema_version": "1.0.0",
+            "id": "doc_hex_nut",
+            "name": "M8 Hexagonal Nut",
+            "component_family": "fastener",
+            "units": "mm",
+            "parameters": {"across_flats": 13.0, "height": 6.5, "thread_dia": 8.0},
+            "features": [
+                {
+                    "id": "f1_hex_prism",
+                    "name": "Hexagonal Body Prism",
+                    "feature_type": "regular_polygon",
+                    "operation": "new_body",
+                    "side_count": 6,
+                    "radius": 7.51,
+                    "height": 6.5,
+                    "position": [0.0, 0.0, 0.0],
+                    "dependencies": [],
+                },
+                {
+                    "id": "f2_central_hole",
+                    "name": "Central M8 Bore",
+                    "feature_type": "hole",
+                    "operation": "cut",
+                    "diameter": 8.0,
+                    "depth": 10.0,
+                    "position": [0.0, 0.0, 0.0],
+                    "dependencies": ["f1_hex_prism"],
+                },
+                {
+                    "id": "f3_top_chamfer",
+                    "name": "Entry Chamfer",
+                    "feature_type": "chamfer",
+                    "operation": "join",
+                    "distance": 0.5,
+                    "edge_selector": "top",
+                    "dependencies": ["f1_hex_prism"],
+                },
+            ],
+        },
+    },
+]
+
+
+def _try_llm_structured_output(llm, sys_msg: str, prompt: str, semantic_spec: Optional[Dict[str, Any]] = None) -> Optional[CADIRDocument]:
     """
-    Attempt LLM-based CADIR generation using structured output.
-    Tries exemplar-guided raw JSON prompting with pre-sanitization and retry loop with error feedback.
+    Attempt LLM-based CADIR generation with rigorous mathematical grounding and few-shot exemplars.
+    Includes coordinate framing rules, ISO clearance standards, and self-correction feedback loop.
     """
-    sample_template = {
-        "schema_version": "1.0.0",
-        "id": "doc_sample_part",
-        "name": "Mounting Block",
-        "component_family": "bracket",
-        "units": "mm",
-        "features": [
-            {
-                "id": "f1_base",
-                "name": "Base Solid",
-                "feature_type": "box",
-                "operation": "new_body",
-                "length": 80.0,
-                "width": 60.0,
-                "height": 20.0,
-                "center": [0.0, 0.0, 10.0],
-                "dependencies": [],
-            },
-            {
-                "id": "f2_pocket",
-                "name": "Internal Pocket",
-                "feature_type": "pocket",
-                "operation": "cut",
-                "length": 50.0,
-                "width": 30.0,
-                "height": 10.0,
-                "position": [0.0, 0.0, 15.0],
-                "dependencies": ["f1_base"],
-            },
-            {
-                "id": "f3_bore",
-                "name": "Central Bore",
-                "feature_type": "hole",
-                "operation": "cut",
-                "diameter": 16.0,
-                "depth": 25.0,
-                "position": [0.0, 0.0, 0.0],
-                "dependencies": ["f2_pocket"],
-            },
-            {
-                "id": "f4_fillet",
-                "name": "Edge Fillet",
-                "feature_type": "fillet",
-                "operation": "join",
-                "radius": 2.0,
-                "edge_selector": "vertical",
-                "dependencies": ["f3_bore"],
-            },
-        ],
-    }
+    exemplars_formatted = []
+    for ex in CADIR_EXEMPLARS:
+        title = ex["title"]
+        desc = ex["description"]
+        body = json.dumps(ex["doc"], indent=2)
+        exemplars_formatted.append(f"### EXAMPLE: {title} ({desc})\n{body}")
+    exemplars_block = "\n\n".join(exemplars_formatted)
+
+    spec_hint = ""
+    if semantic_spec:
+        spec_lines = [f"- {k}: {v}" for k, v in semantic_spec.items()]
+        specs_joined = "\n".join(spec_lines)
+        spec_hint = f"\nEXTRACTED SPECIFICATIONS & GROUNDING:\n{specs_joined}\n"
 
     last_error = ""
-    # Strategy 1: Prompting with pre-sanitization and retry feedback
     for attempt in range(2):
         try:
             if attempt == 0:
                 json_sys_msg = (
                     sys_msg
-                    + "\n\nCRITICAL: Output ONLY a valid JSON object strictly matching this schema structure:\n"
-                    + json.dumps(sample_template, indent=2)
-                    + "\nAllowed feature_type values: box, cylinder, sphere, regular_polygon, groove, extrude, revolve, hole, pocket, fillet, chamfer, linear_pattern, polar_pattern, mirror, boolean_union, boolean_cut, boolean_intersect."
-                    + "\nNote: For hexagonal nuts or hexagonal prisms, use feature_type: 'regular_polygon' with side_count: 6 and radius: across_flats / 1.732."
-                    + "\nNote: For retaining ring grooves on cylinders, use feature_type: 'groove' with outer_radius, inner_radius, and groove_width."
-                    + "\nAllowed operation values: new_body, join, cut, intersect."
-                    + "\nOutput raw JSON only without markdown code fences or conversational text."
+                    + "\n\n=== CANONICAL MECHANICAL CADIR EXEMPLARS ===\n"
+                    + exemplars_block
+                    + "\n\n=== STRICT COORDINATE & GEOMETRIC ACCURACY RULES ==="
+                    + "\n1. ORIGIN CONVENTION: Base solids are centered at (0, 0, 0) by default."
+                    + "\n   - For Box(length=L, width=W, height=H), corners are at (+/-L/2, +/-W/2)."
+                    + "\n   - Corner holes with margin M MUST be placed at: (+/-(L/2 - M), +/-(W/2 - M), 0)."
+                    + "\n   - NEVER place holes at (L, W) -- that is outside the part!"
+                    + "\n2. BOLT CIRCLES (PCD): Radius R = PCD / 2. 4 holes: (+/-R, 0, Z) and (0, +/-R, Z)."
+                    + "\n3. REGULAR POLYGONS: Hexagonal across-flats S -> radius = S / 1.732, side_count = 6."
+                    + "\n4. OPERATIONS: Base body = 'new_body'. Additions (flange, boss, rib) = 'join'. Cuts (hole, pocket, groove) = 'cut'. Fillets/chamfers = 'join'."
+                    + "\n5. METRIC CLEARANCE HOLES: M3=3.4mm, M4=4.5mm, M5=5.5mm, M6=6.6mm, M8=9.0mm, M10=11.0mm, M12=13.5mm."
+                    + "\n6. Output ONLY a valid JSON object matching the CADIR schema. No markdown fences, no conversational text."
                 )
+                user_msg = f"{prompt}\n{spec_hint}\nGenerate the complete CADIR JSON document."
             else:
                 json_sys_msg = (
                     sys_msg
-                    + f"\n\nCRITICAL CORRECTION REQUIRED: Your previous output had this schema/validation error:\n{last_error}\n"
-                    + "Please fix this and output ONLY the corrected JSON object matching the CADIR schema strictly."
+                    + f"\n\nCRITICAL ERROR CORRECTION REQUIRED:\nYour previous output failed with error: {last_error}\n"
+                    + "Please fix the coordinate positioning and schema structure. Output ONLY the corrected CADIR JSON object."
                 )
+                user_msg = f"{prompt}\n{spec_hint}\nProduce the corrected CADIR JSON."
 
-            res = llm.invoke([("system", json_sys_msg), ("user", prompt)])
+            res = llm.invoke([("system", json_sys_msg), ("user", user_msg)])
             raw_text = res.content if hasattr(res, "content") else str(res)
             json_str = _extract_json_from_text(raw_text)
 
@@ -554,7 +732,7 @@ def design_agent_node(state: AgentState) -> Dict[str, Any]:
             f"Here are reference examples from the mechanical dataset:\n{context_str}\n"
         )
 
-        doc = _try_llm_structured_output(llm, sys_msg, prompt)
+        doc = _try_llm_structured_output(llm, sys_msg, prompt, semantic_spec=intent.get("semantic_parameters"))
     except Exception as e:
         print(f"LLM Generation Failed: {e}", file=sys.stderr)
         doc = None
