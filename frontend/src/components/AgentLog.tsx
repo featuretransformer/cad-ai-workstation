@@ -69,8 +69,30 @@ function AgentCard({ event }: { event: WSEvent }) {
 }
 
 export default function AgentLog() {
-  const { agentEvents, isGenerating } = useCADStore();
+  const { agentEvents, isGenerating, activeDesign, addAgentEvent } = useCADStore();
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (activeDesign && agentEvents.length === 0) {
+      import("@/lib/api").then(({ api }) => {
+        api.getDesignLogs(activeDesign.id).then((logs) => {
+          if (Array.isArray(logs) && logs.length > 0) {
+            logs.forEach((l) => {
+              addAgentEvent({
+                type: "agent_update",
+                agent: l.agent_name,
+                display_name: l.agent_name.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+                status: l.status,
+                confidence: Math.round((l.confidence || 0) * (l.confidence <= 1 ? 100 : 1)),
+                payload: l.payload as Record<string, unknown>,
+                message: l.message,
+              });
+            });
+          }
+        }).catch(() => {});
+      });
+    }
+  }, [activeDesign, agentEvents.length, addAgentEvent]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });

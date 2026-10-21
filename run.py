@@ -22,6 +22,18 @@ import time
 import webbrowser
 from pathlib import Path
 
+# Fix Windows console encoding crashes (cp1252 / charmap)
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+if hasattr(sys.stderr, "reconfigure"):
+    try:
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 ROOT_DIR = Path(__file__).resolve().parent
 BACKEND_DIR = ROOT_DIR / "backend"
 FRONTEND_DIR = ROOT_DIR / "frontend"
@@ -40,8 +52,13 @@ RESET = "\033[0m"
 
 
 def log(prefix: str, msg: str, color: str = RESET):
-    sys.stdout.write(f"{color}{BOLD}[{prefix}]{RESET} {msg}\n")
-    sys.stdout.flush()
+    try:
+        sys.stdout.write(f"{color}{BOLD}[{prefix}]{RESET} {msg}\n")
+        sys.stdout.flush()
+    except UnicodeEncodeError:
+        safe_msg = msg.encode("ascii", errors="replace").decode("ascii")
+        sys.stdout.write(f"[{prefix}] {safe_msg}\n")
+        sys.stdout.flush()
 
 
 def find_python() -> str:
@@ -115,8 +132,13 @@ def stream_output(proc: subprocess.Popen, prefix: str, color: str):
                 break
             clean_line = line.rstrip()
             if clean_line:
-                sys.stdout.write(f"{color}[{prefix}]{RESET} {clean_line}\n")
-                sys.stdout.flush()
+                try:
+                    sys.stdout.write(f"{color}[{prefix}]{RESET} {clean_line}\n")
+                    sys.stdout.flush()
+                except UnicodeEncodeError:
+                    safe_line = clean_line.encode("ascii", errors="replace").decode("ascii")
+                    sys.stdout.write(f"[{prefix}] {safe_line}\n")
+                    sys.stdout.flush()
     except Exception:
         pass
 
@@ -146,10 +168,10 @@ def main():
     args = parser.parse_args()
 
     print(f"""{CYAN}{BOLD}
-╔═══════════════════════════════════════════════════════════════════╗
-║            🤖  AI-NATIVE CAD-CAM WORKSTATION RUNNER  🤖            ║
-║     FastAPI Backend  •  Celery Worker  •  Next.js 14 Frontend    ║
-╚═══════════════════════════════════════════════════════════════════╝{RESET}
++-------------------------------------------------------------------+
+|               AI-NATIVE CAD-CAM WORKSTATION RUNNER                |
+|     FastAPI Backend  *  Celery Worker  *  Next.js 14 Frontend    |
++-------------------------------------------------------------------+{RESET}
 """)
 
     check_environment()
@@ -167,8 +189,8 @@ def main():
     pg_active = is_port_in_use(5432)
     redis_active = is_port_in_use(6379)
 
-    log("STATUS", f"PostgreSQL (5432): {'CONNECTED ✓' if pg_active else 'OFFLINE (Will use fallback)'}", GREEN if pg_active else YELLOW)
-    log("STATUS", f"Redis (6379):      {'CONNECTED ✓' if redis_active else 'OFFLINE (Will use in-process tasks)'}", GREEN if redis_active else YELLOW)
+    log("STATUS", f"PostgreSQL (5432): {'CONNECTED [OK]' if pg_active else 'OFFLINE (Will use fallback)'}", GREEN if pg_active else YELLOW)
+    log("STATUS", f"Redis (6379):      {'CONNECTED [OK]' if redis_active else 'OFFLINE (Will use in-process tasks)'}", GREEN if redis_active else YELLOW)
 
     procs = []
 
@@ -272,13 +294,13 @@ def main():
         time.sleep(0.5)
 
     print(f"""
-{GREEN}{BOLD}═══════════════════════════════════════════════════════════════════
-🎉  CAD AI WORKSTATION IS READY AND LIVE!
-═══════════════════════════════════════════════════════════════════{RESET}
-  {BOLD}📱 Web Workstation UI:{RESET}  {CYAN}http://localhost:{args.frontend_port}{RESET}
-  {BOLD}⚙️  API Documentation:{RESET}   {BLUE}http://localhost:{args.backend_port}/docs{RESET}
-  {BOLD}🔌 WebSocket Gateway:{RESET}    {MAGENTA}ws://localhost:{args.backend_port}/ws{RESET}
-{GREEN}═══════════════════════════════════════════════════════════════════{RESET}
+{GREEN}{BOLD}===================================================================
+[OK]  CAD AI WORKSTATION IS READY AND LIVE!
+==================================================================={RESET}
+  {BOLD}* Web Workstation UI:{RESET}  {CYAN}http://localhost:{args.frontend_port}{RESET}
+  {BOLD}* API Documentation:{RESET}   {BLUE}http://localhost:{args.backend_port}/docs{RESET}
+  {BOLD}* WebSocket Gateway:{RESET}    {MAGENTA}ws://localhost:{args.backend_port}/ws{RESET}
+{GREEN}==================================================================={RESET}
   {YELLOW}Press Ctrl+C anytime to cleanly stop all services.{RESET}
 """)
 

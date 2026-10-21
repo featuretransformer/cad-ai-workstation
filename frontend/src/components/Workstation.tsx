@@ -2,17 +2,24 @@
 import { useEffect, useState } from "react";
 import { useCADStore } from "@/store/cadStore";
 import { useCADSession } from "@/hooks/useCADSession";
+import { useDesignWebSocket } from "@/hooks/useWebSocket";
+import { api } from "@/lib/api";
+import type { Design } from "@/lib/types";
 import ViewerCanvas from "./ViewerCanvas";
 import ChatPanel from "./ChatPanel";
 import FeatureTree from "./FeatureTree";
+import SessionsPanel from "./SessionsPanel";
 import AgentLog from "./AgentLog";
 import ExportPanel from "./ExportPanel";
 import StatusBar from "./StatusBar";
 
 export default function Workstation() {
-  const { leftPanelTab, setLeftPanelTab, rightPanelTab, setRightPanelTab, activeSession } = useCADStore();
+  const { leftPanelTab, setLeftPanelTab, rightPanelTab, setRightPanelTab, activeSession, activeDesign, activeDesignId } = useCADStore();
   const { loadSessions, createSession } = useCADSession();
   const [backendOnline, setBackendOnline] = useState<boolean | null>(null);
+
+  // Keep WebSocket open across all tab views
+  useDesignWebSocket(activeDesignId ?? activeDesign?.id ?? null);
 
   useEffect(() => {
     loadSessions().then(async (sessions) => {
@@ -21,8 +28,23 @@ export default function Workstation() {
         const s = await createSession("Default Session");
         setBackendOnline(s !== null);
       } else {
-        useCADStore.getState().setActiveSession(sessions[0]);
+        const firstSession = sessions[0];
+        useCADStore.getState().setActiveSession(firstSession);
         setBackendOnline(true);
+        try {
+          const designs = (await api.listDesigns(firstSession.id)) as Design[];
+          if (Array.isArray(designs) && designs.length > 0) {
+            const latest = designs[0];
+            useCADStore.getState().setActiveDesign(latest);
+            useCADStore.getState().setActiveDesignId(latest.id);
+            if (latest.status === "COMPLETE" && latest.geometry_valid) {
+              const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+              useCADStore.getState().setGlbUrl(`${API_URL}/api/export/${latest.id}/download/glb?t=${Date.now()}`);
+            }
+          }
+        } catch {
+          // ignore error fetching initial designs
+        }
       }
     }).catch(() => setBackendOnline(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -73,7 +95,7 @@ export default function Workstation() {
             </div>
           </div>
           <div style={{ flex: 1, overflow: "auto", padding: "8px" }}>
-            <FeatureTree />
+            {leftPanelTab === "feature-tree" ? <FeatureTree /> : <SessionsPanel />}
           </div>
         </aside>
 
