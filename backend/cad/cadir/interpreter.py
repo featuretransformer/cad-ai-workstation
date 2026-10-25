@@ -106,7 +106,36 @@ def generate_build123d_code(doc: CADIRDocument) -> str:
             cz = pos.z if pos else 0.0
             rad = f.radius or (f.diameter / 2.0 if f.diameter else 10.0)
             hgt = f.height or f.length or f.depth or 20.0
-            if cx == 0 and cy == 0 and cz == 0:
+
+            # Check if the feature specifies a non-Z axis (e.g., horizontal hole, angled feature)
+            axis = f.axis  # Vector3D or None
+            has_custom_axis = (
+                axis is not None
+                and not (abs(axis.x) < 1e-6 and abs(axis.y) < 1e-6 and axis.z > 0.5)
+            )
+
+            if has_custom_axis:
+                # Compute rotation from Z-axis to target axis using Rot(x_angle, y_angle, z_angle)
+                # For common cases: X-axis → Rot(0, 90, 0), Y-axis → Rot(-90, 0, 0)
+                ax, ay, az = axis.x, axis.y, axis.z
+                if abs(ax) > 0.9 and abs(ay) < 0.1 and abs(az) < 0.1:
+                    rot_expr = "Rot(0, 90, 0)"
+                elif abs(ay) > 0.9 and abs(ax) < 0.1 and abs(az) < 0.1:
+                    rot_expr = "Rot(90, 0, 0)"
+                else:
+                    # Generic: approximate via atan2 angles
+                    import math as _math
+                    rx = round(_math.degrees(_math.atan2(ay, az)), 2)
+                    ry = round(_math.degrees(_math.atan2(ax, az)), 2)
+                    rot_expr = f"Rot({rx}, {ry}, 0)"
+                if cx == 0 and cy == 0 and cz == 0:
+                    code_lines.append(f"    with {rot_expr}:")
+                    code_lines.append(f"        Cylinder(radius={rad}, height={hgt}, mode={mode})")
+                else:
+                    code_lines.append(f"    with Locations(({cx}, {cy}, {cz})):")
+                    code_lines.append(f"        with {rot_expr}:")
+                    code_lines.append(f"            Cylinder(radius={rad}, height={hgt}, mode={mode})")
+            elif cx == 0 and cy == 0 and cz == 0:
                 code_lines.append(
                     f"    Cylinder(radius={rad}, height={hgt}, mode={mode})"
                 )
@@ -155,10 +184,12 @@ def generate_build123d_code(doc: CADIRDocument) -> str:
             w = getattr(f, "groove_width", None) or f.width or 2.0
             depth = f.depth or 1.0
             r_in = getattr(f, "inner_radius", None) or max(0.5, r_out - depth)
-            code_lines.append("    with BuildPart(mode=Mode.SUBTRACT):")
-            code_lines.append(f"        with Locations(({px}, {py}, {pz})):")
-            code_lines.append(f"            Cylinder(radius={round(r_out + 1.0, 3)}, height={w})")
-            code_lines.append(f"            Cylinder(radius={round(r_in, 3)}, height={round(w + 0.2, 3)}, mode=Mode.SUBTRACT)")
+            # Correct API: use a ring (annulus) sketch extruded with SUBTRACT
+            # A groove is a ring-shaped cut into the surface of a cylinder
+            code_lines.append(f"    with BuildSketch(Plane.XY.offset({round(pz - w / 2.0, 3)})):")
+            code_lines.append(f"        Circle(radius={round(r_out, 3)})")
+            code_lines.append(f"        Circle(radius={round(r_in, 3)}, mode=Mode.SUBTRACT)")
+            code_lines.append(f"    extrude(amount={round(w, 3)}, mode=Mode.SUBTRACT)")
 
         elif f_type == "pocket":
             pos = f.position or f.center
@@ -247,15 +278,17 @@ def generate_build123d_code(doc: CADIRDocument) -> str:
             else:
                 is_through = (
                     dep is None
-                    or dep >= 15.0
                     or "through" in (f.name or "").lower()
                     or "bore" in (f.name or "").lower()
                     or "mounting" in (f.name or "").lower()
+                    or f.hole_type in ("through", "thru")
                 )
-                if is_through:
-                    code_lines.append(f"        Hole(radius={rad}, depth=None)")
-                else:
+                if dep is not None and not is_through:
+                    # Blind hole: use specified depth
                     code_lines.append(f"        Hole(radius={rad}, depth={dep})")
+                else:
+                    # Through hole: no depth restriction
+                    code_lines.append(f"        Hole(radius={rad}, depth=None)")
 
         elif f_type == "fillet":
             rad = f.radius or 1.0
@@ -263,9 +296,12 @@ def generate_build123d_code(doc: CADIRDocument) -> str:
             code_lines.append("    try:")
             code_lines.append("        _edges = p.edges()")
             if selector == "top":
-                code_lines.append("        _edges = _edges.sort_by(Axis.Z)[-4:]")
+                # Dynamic: get the top face's edges instead of assuming exactly 4
+                code_lines.append("        _top_face = p.faces().sort_by(Axis.Z)[-1:]")
+                code_lines.append("        _edges = _top_face.edges() if _top_face else _edges")
             elif selector == "bottom":
-                code_lines.append("        _edges = _edges.sort_by(Axis.Z)[:4]")
+                code_lines.append("        _bot_face = p.faces().sort_by(Axis.Z)[:1]")
+                code_lines.append("        _edges = _bot_face.edges() if _bot_face else _edges")
             elif selector == "vertical":
                 code_lines.append("        _edges = _edges.filter_by(Axis.Z)")
             code_lines.append(f"        if _edges:")
@@ -279,9 +315,11 @@ def generate_build123d_code(doc: CADIRDocument) -> str:
             code_lines.append("    try:")
             code_lines.append("        _edges = p.edges()")
             if selector == "top":
-                code_lines.append("        _edges = _edges.sort_by(Axis.Z)[-4:]")
+                code_lines.append("        _top_face = p.faces().sort_by(Axis.Z)[-1:]")
+                code_lines.append("        _edges = _top_face.edges() if _top_face else _edges")
             elif selector == "bottom":
-                code_lines.append("        _edges = _edges.sort_by(Axis.Z)[:4] ")
+                code_lines.append("        _bot_face = p.faces().sort_by(Axis.Z)[:1]")
+                code_lines.append("        _edges = _bot_face.edges() if _bot_face else _edges")
             elif selector == "vertical":
                 code_lines.append("        _edges = _edges.filter_by(Axis.Z)")
             code_lines.append(f"        if _edges:")

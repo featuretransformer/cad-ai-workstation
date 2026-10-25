@@ -427,7 +427,7 @@ def generate_component_cadir(
     # ─────────────────────────────────────────────────────────────────────────
     # 9. HOUSING / CASING / CALIPER / VALVE BODY
     # ─────────────────────────────────────────────────────────────────────────
-    elif role in ("housing", "casing", "caliper", "body", "valve_body", "cylinder_block"):
+    elif role in ("housing", "casing", "caliper", "body", "valve_body", "cylinder_block", "bearing_housing", "pillow_block", "manifold", "pipe_manifold", "manifold_body"):
         l = params.get("length", 90.0)
         w = params.get("width", 70.0)
         h = params.get("height", params.get("thickness", 40.0))

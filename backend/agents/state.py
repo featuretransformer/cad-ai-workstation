@@ -44,6 +44,7 @@ class AgentState(TypedDict, total=False):
     # ─── CADIR Canonical Extensions (Target Architecture) ─────────────
     input_type: str
     image_data: Optional[Any]
+    images: Optional[List[Any]]          # multi-image list (sketch + photo + drawing)
     file_path: Optional[str]
     clarification_needed: Optional[str]
     drawing_parse_error: Optional[str]
@@ -52,6 +53,16 @@ class AgentState(TypedDict, total=False):
     cadir_errors: List[str]
     retrieved_examples: List[Dict[str, Any]]
     repair_attempts: int
+
+    # Rich Design Intent (from intent_extractor.py)
+    design_intent: Optional[Dict[str, Any]]  # full MechanicalDesignIntent dict
+
+    # ─── CAD Asset Retrieval & Component Reuse Subsystem ──────────────
+    retrieved_assets: List[Dict[str, Any]]
+    reused_components: List[Dict[str, Any]]
+    reference_assets: List[Dict[str, Any]]
+    custom_components: List[Dict[str, Any]]
+    retrieval_strategy: Dict[str, Any]
 
     # ─── Multi-Component Assembly Extensions (Roadmap Phases 1-5) ─────
     is_assembly: bool

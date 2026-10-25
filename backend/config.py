@@ -40,6 +40,8 @@ class Settings(BaseSettings):
     datasets_dir: str = str((Path(__file__).resolve().parent.parent / "datasets").resolve())
     processed_dir: str = str((Path(__file__).resolve().parent.parent / "datasets" / "processed").resolve())
     knowledge_db_path: str = str((Path(__file__).resolve().parent.parent / "datasets" / "processed" / "knowledge.db").resolve())
+    asset_db_path: str = str((Path(__file__).resolve().parent.parent / "datasets" / "processed" / "cad_assets.db").resolve())
+    asset_library_dir: str = str((Path(__file__).resolve().parent.parent / "datasets" / "cad_assets").resolve())
 
     model_config = SettingsConfigDict(
         env_file=(".env", str(Path(__file__).resolve().parent / ".env")),

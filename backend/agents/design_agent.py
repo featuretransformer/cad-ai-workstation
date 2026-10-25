@@ -276,34 +276,61 @@ def _sanitize_raw_cadir(data: dict) -> dict:
                 prev_id = features[i - 1].get("id", f"f{i}")
                 f["dependencies"] = [prev_id]
 
-            # Map non-standard LLM field names to CADIR fields
+            # Map non-standard LLM field names to CADIR fields.
+            # IMPORTANT: Each source field maps to a UNIQUE target field to prevent
+            # destructive last-write-wins overwrites (e.g., inner_diameter and outer_diameter
+            # must NOT both map to "diameter" — the last one would silently discard the first).
             FIELD_ALIASES = {
+                # Naming variants → standard CADIR name (safe: unique sources)
                 "head_height": "height",
                 "head_diameter": "diameter",
                 "head_radius": "radius",
-                "shank_diameter": "diameter",
                 "shank_length": "length",
-                "shank_radius": "radius",
-                "bore_diameter": "diameter",
                 "bore_depth": "depth",
                 "overall_length": "length",
                 "overall_height": "height",
                 "across_flats": "width",
                 "af": "width",
-                "hole_diameter": "diameter",
                 "hole_depth": "depth",
                 "fillet_radius": "radius",
                 "chamfer_distance": "distance",
                 "chamfer_length": "distance",
-                "wall_thickness": "height",
-                "thickness": "height",
-                "face_width": "height",
-                "outer_diameter": "diameter",
-                "inner_diameter": "diameter",
+                # thickness/face_width map to their own key, NOT height (semantically distinct)
+                "wall_thickness": "thickness",
+                "thickness": "thickness",
+                "face_width": "width",
+                # hole_diameter/shank_diameter/bore_diameter → diameter (safe: overwrite only if absent)
+                "hole_diameter": "diameter",
+                "shank_diameter": "diameter",
+                "bore_diameter": "diameter",
+                # shank_radius/head_radius → radius (safe: overwrite only if absent)
+                "shank_radius": "radius",
+                "bore_radius": "radius",
             }
             for alias, target in FIELD_ALIASES.items():
                 if alias in f and f[alias] is not None and not f.get(target):
                     f[target] = f[alias]
+
+            # Special case: outer_diameter and inner_diameter must be resolved separately.
+            # outer_diameter → the main "diameter" (sets diameter + radius for OD).
+            # inner_diameter → stored as "bore_diameter" for tube/pipe/ring features;
+            #   the interpreter will use bore_radius to subtract the inner bore.
+            if f.get("outer_diameter") is not None:
+                od = f["outer_diameter"]
+                if od and od > 0:
+                    if not f.get("diameter"):
+                        f["diameter"] = od
+                    if not f.get("radius"):
+                        f["radius"] = od / 2.0
+            if f.get("inner_diameter") is not None:
+                id_ = f["inner_diameter"]
+                if id_ and id_ > 0:
+                    # Preserve inner bore separately — do NOT overwrite the main "diameter"
+                    f.setdefault("bore_diameter", id_)
+                    f.setdefault("bore_radius", id_ / 2.0)
+            # Infer wall_thickness from OD/ID if not explicitly given
+            if f.get("bore_diameter") and f.get("diameter") and not f.get("thickness"):
+                f["thickness"] = (f["diameter"] - f["bore_diameter"]) / 2.0
 
             # Sync position and center
             if "position" in f and ("center" not in f or f.get("center") is None):
@@ -385,25 +412,37 @@ def _sanitize_raw_cadir(data: dict) -> dict:
                 f["diameter"] = f["radius"] * 2.0
                 f["depth"] = max(sibling_heights) if sibling_heights else 20.0
 
-        # Third pass: Ensure all holes/cuts fit inside their parent solid bodies
+        # Third pass: Ensure all holes/cuts fit inside their parent solid bodies.
+        # Uses engineering-aware clamping ratios instead of a blind 55% factor:
+        #   - Holes that are explicitly "through" (bore, through, mounting) get up to 85% of parent OD
+        #     (allows bearing bores and shaft bores to be dimensionally correct)
+        #   - Small bolt-circle/clearance holes get up to 80% of the parent's min half-dimension
+        #   - Only genuinely oversized holes (≥ parent size) get clamped — to 75%
         for f in features:
             if not isinstance(f, dict):
                 continue
             if f.get("feature_type") in ("hole", "pocket"):
                 hole_r = f.get("radius") or ((f.get("diameter") or 0) / 2.0)
+                hole_name = (f.get("name") or "").lower()
+                is_through_bore = any(k in hole_name for k in ("through", "bore", "mounting", "clearance"))
                 deps = f.get("dependencies") or []
                 parent_f = next((pf for pf in features if isinstance(pf, dict) and pf.get("id") in deps), None)
                 if not parent_f and features:
                     parent_f = features[0]
                 if parent_f and isinstance(parent_f, dict):
                     p_rad = parent_f.get("radius")
-                    if p_rad and hole_r and hole_r >= p_rad:
-                        f["radius"] = round(p_rad * 0.55, 2)
-                        f["diameter"] = f["radius"] * 2.0
+                    if p_rad and hole_r:
+                        if hole_r >= p_rad:
+                            # Genuinely invalid: hole is bigger than parent — clamp to safe maximum
+                            max_ratio = 0.85 if is_through_bore else 0.75
+                            f["radius"] = round(p_rad * max_ratio, 2)
+                            f["diameter"] = f["radius"] * 2.0
+                        # If hole_r < p_rad, it already fits — do NOT clamp it
                     elif parent_f.get("length") and parent_f.get("width"):
                         max_r = min(parent_f["length"], parent_f["width"]) / 2.0
                         if hole_r and hole_r >= max_r:
-                            f["radius"] = round(max_r * 0.55, 2)
+                            max_ratio = 0.80 if is_through_bore else 0.70
+                            f["radius"] = round(max_r * max_ratio, 2)
                             f["diameter"] = f["radius"] * 2.0
 
     return data
@@ -1477,114 +1516,183 @@ def _synthesize_parametric_cadir(
         )
         doc.features.extend([f1, f2, f3])
 
-    # ── 16. Default: Mounting Plate with 4-corner + centre holes ────────────────
+    # ── 16. Intelligent Fallback: detect basic shape from prompt, then plate ──────
     else:
-        length = dims[0] if len(dims) > 0 else 60.0
-        width = dims[1] if len(dims) > 1 else 40.0
-        height = dims[2] if len(dims) > 2 else 12.0
-        hole_dia = min(length, width) * 0.25
-        f1 = CADIRFeature(
-            id=f"f_{uid}_box",
-            name="Base Plate",
-            feature_type="box",
-            length=length,
-            width=width,
-            height=height,
-            operation="new_body",
-            dependencies=[],
-        )
-        f2 = CADIRFeature(
-            id=f"f_{uid}_hole_c",
-            name="Centre Hole",
-            feature_type="hole",
-            diameter=hole_dia,
-            depth=height * 1.5,
-            position=Point3D(x=0.0, y=0.0, z=0.0),
-            operation="cut",
-            dependencies=[f1.id],
-        )
-        is_cbore = any(k in prompt_lower for k in ["counterbore", "counter-bore", "socket head", "shcs", "cap screw", "cbore"])
-        is_csink = any(k in prompt_lower for k in ["countersink", "counter-sink", "flat head", "csink"])
-        from cad.standards.fasteners import lookup_counterbore, lookup_countersink
-        screw_m = re.search(r"\bM(\d+(?:\.\d+)?)\b", prompt, re.IGNORECASE)
-        std_cb = lookup_counterbore(screw_m.group(0)) if (screw_m and is_cbore) else None
-        std_cs = lookup_countersink(screw_m.group(0)) if (screw_m and is_csink) else None
+        # First, try to detect if the prompt describes a simple primitive that
+        # doesn't match any of the 15 named families above.
+        # This prevents the benchmark issue where ALL unrecognized prompts
+        # produced an identical 227438.84mm³ mounting plate.
+        _is_box_prompt = any(k in prompt_lower for k in [
+            "box", "block", "rectangular", "cuboid", "cube", "prism", "slab", "plate", "brick"
+        ])
+        _is_cyl_prompt = any(k in prompt_lower for k in [
+            "cylinder", "cylindrical", "disc", "disk", "puck", "round rod", "round bar"
+        ])
+        _is_sphere_prompt = any(k in prompt_lower for k in ["sphere", "ball", "spherical"])
 
-        corner_hole_type = "counterbore" if is_cbore else ("countersink" if is_csink else "simple")
-        corner_d = std_cb["clearance_dia"] if std_cb else (std_cs["clearance_dia"] if std_cs else hole_dia * 0.5)
-        corner_cb_d = std_cb["cbore_dia"] if std_cb else (corner_d * 1.8 if is_cbore else None)
-        corner_cb_h = std_cb["cbore_depth"] if std_cb else (min(height * 0.5, 6.0) if is_cbore else None)
-        corner_cs_d = std_cs["csink_dia"] if std_cs else (corner_d * 2.0 if is_csink else None)
+        if _is_cyl_prompt and not _is_box_prompt:
+            # Simple cylinder extraction
+            dia_m = re.search(r'(?:[⌀ø]|diameter|dia)\s*[:=]?\s*(\d+(?:\.\d+)?)', prompt_lower)
+            len_m = re.search(r'(\d+(?:\.\d+)?)\s*(?:mm)?\s*(?:long|height|tall)', prompt_lower)
+            diameter = float(dia_m.group(1)) if dia_m else (dims[0] if dims else 50.0)
+            length = float(len_m.group(1)) if len_m else (dims[1] if len(dims) > 1 else max(diameter * 1.5, 30.0))
+            f1 = CADIRFeature(
+                id=f"f_{uid}_cyl",
+                name="Cylinder Body",
+                feature_type="cylinder",
+                radius=round(diameter / 2.0, 2),
+                height=round(length, 2),
+                operation="new_body",
+                dependencies=[],
+            )
+            # Check for a through-hole
+            hole_m = re.search(r'(\d+(?:\.\d+)?)\s*mm\s*(?:through.hole|bore|hole)', prompt_lower)
+            if hole_m:
+                hole_r = round(float(hole_m.group(1)) / 2.0, 2)
+                f2 = CADIRFeature(
+                    id=f"f_{uid}_bore",
+                    name="Through Bore",
+                    feature_type="hole",
+                    radius=hole_r,
+                    diameter=hole_r * 2.0,
+                    depth=length * 1.2,
+                    position=Point3D(x=0.0, y=0.0, z=0.0),
+                    operation="cut",
+                    dependencies=[f1.id],
+                )
+                doc.features.extend([f1, f2])
+            else:
+                doc.features.append(f1)
+            doc.name = f"Cylinder D{diameter}×{length}mm"
 
-        f3 = CADIRFeature(
-            id=f"f_{uid}_hole_1",
-            name="Corner Hole 1",
-            feature_type="hole",
-            hole_type=corner_hole_type,
-            diameter=corner_d,
-            cbore_diameter=corner_cb_d,
-            cbore_depth=corner_cb_h,
-            csink_diameter=corner_cs_d,
-            csink_angle=90.0 if is_csink else None,
-            depth=height * 1.5,
-            position=Point3D(x=length * 0.35, y=width * 0.35, z=0.0),
-            operation="cut",
-            dependencies=[f2.id],
-        )
-        f4 = CADIRFeature(
-            id=f"f_{uid}_hole_2",
-            name="Corner Hole 2",
-            feature_type="hole",
-            hole_type=corner_hole_type,
-            diameter=corner_d,
-            cbore_diameter=corner_cb_d,
-            cbore_depth=corner_cb_h,
-            csink_diameter=corner_cs_d,
-            csink_angle=90.0 if is_csink else None,
-            depth=height * 1.5,
-            position=Point3D(x=-length * 0.35, y=width * 0.35, z=0.0),
-            operation="cut",
-            dependencies=[f3.id],
-        )
-        f5 = CADIRFeature(
-            id=f"f_{uid}_hole_3",
-            name="Corner Hole 3",
-            feature_type="hole",
-            hole_type=corner_hole_type,
-            diameter=corner_d,
-            cbore_diameter=corner_cb_d,
-            cbore_depth=corner_cb_h,
-            csink_diameter=corner_cs_d,
-            csink_angle=90.0 if is_csink else None,
-            depth=height * 1.5,
-            position=Point3D(x=length * 0.35, y=-width * 0.35, z=0.0),
-            operation="cut",
-            dependencies=[f4.id],
-        )
-        f6 = CADIRFeature(
-            id=f"f_{uid}_hole_4",
-            name="Corner Hole 4",
-            feature_type="hole",
-            hole_type=corner_hole_type,
-            diameter=corner_d,
-            cbore_diameter=corner_cb_d,
-            cbore_depth=corner_cb_h,
-            csink_diameter=corner_cs_d,
-            csink_angle=90.0 if is_csink else None,
-            depth=height * 1.5,
-            position=Point3D(x=-length * 0.35, y=-width * 0.35, z=0.0),
-            operation="cut",
-            dependencies=[f5.id],
-        )
-        f7 = CADIRFeature(
-            id=f"f_{uid}_fillet",
-            name="Vertical Fillet",
-            feature_type="fillet",
-            radius=2.0,
-            edge_selector="vertical",
-            operation="join",
-            dependencies=[f6.id],
-        )
-        doc.features.extend([f1, f2, f3, f4, f5, f6, f7])
+        elif _is_sphere_prompt:
+            rad_m = re.search(r'(?:radius|r)\s*[:=]?\s*(\d+(?:\.\d+)?)', prompt_lower)
+            dia_m = re.search(r'(?:[⌀ø]|diameter|dia)\s*[:=]?\s*(\d+(?:\.\d+)?)', prompt_lower)
+            if rad_m:
+                radius = float(rad_m.group(1))
+            elif dia_m:
+                radius = float(dia_m.group(1)) / 2.0
+            else:
+                radius = dims[0] / 2.0 if dims else 25.0
+            f1 = CADIRFeature(
+                id=f"f_{uid}_sphere",
+                name="Sphere Body",
+                feature_type="sphere",
+                radius=round(radius, 2),
+                operation="new_body",
+                dependencies=[],
+            )
+            doc.features.append(f1)
+            doc.name = f"Sphere R{radius}mm"
+
+        else:
+            # Generic box/plate with optional centre hole
+            length = dims[0] if len(dims) > 0 else 60.0
+            width = dims[1] if len(dims) > 1 else 40.0
+            height = dims[2] if len(dims) > 2 else 12.0
+            hole_dia = min(length, width) * 0.25
+            f1 = CADIRFeature(
+                id=f"f_{uid}_box",
+                name="Base Plate",
+                feature_type="box",
+                length=length,
+                width=width,
+                height=height,
+                operation="new_body",
+                dependencies=[],
+            )
+            f2 = CADIRFeature(
+                id=f"f_{uid}_hole_c",
+                name="Centre Hole",
+                feature_type="hole",
+                diameter=hole_dia,
+                depth=height * 1.5,
+                position=Point3D(x=0.0, y=0.0, z=0.0),
+                operation="cut",
+                dependencies=[f1.id],
+            )
+            is_cbore = any(k in prompt_lower for k in ["counterbore", "counter-bore", "socket head", "shcs", "cap screw", "cbore"])
+            is_csink = any(k in prompt_lower for k in ["countersink", "counter-sink", "flat head", "csink"])
+            from cad.standards.fasteners import lookup_counterbore, lookup_countersink
+            screw_m = re.search(r"\bM(\d+(?:\.\d+)?)\b", prompt, re.IGNORECASE)
+            std_cb = lookup_counterbore(screw_m.group(0)) if (screw_m and is_cbore) else None
+            std_cs = lookup_countersink(screw_m.group(0)) if (screw_m and is_csink) else None
+
+            corner_hole_type = "counterbore" if is_cbore else ("countersink" if is_csink else "simple")
+            corner_d = std_cb["clearance_dia"] if std_cb else (std_cs["clearance_dia"] if std_cs else hole_dia * 0.5)
+            corner_cb_d = std_cb["cbore_dia"] if std_cb else (corner_d * 1.8 if is_cbore else None)
+            corner_cb_h = std_cb["cbore_depth"] if std_cb else (min(height * 0.5, 6.0) if is_cbore else None)
+            corner_cs_d = std_cs["csink_dia"] if std_cs else (corner_d * 2.0 if is_csink else None)
+
+            f3 = CADIRFeature(
+                id=f"f_{uid}_hole_1",
+                name="Corner Hole 1",
+                feature_type="hole",
+                hole_type=corner_hole_type,
+                diameter=corner_d,
+                cbore_diameter=corner_cb_d,
+                cbore_depth=corner_cb_h,
+                csink_diameter=corner_cs_d,
+                csink_angle=90.0 if is_csink else None,
+                depth=height * 1.5,
+                position=Point3D(x=length * 0.35, y=width * 0.35, z=0.0),
+                operation="cut",
+                dependencies=[f2.id],
+            )
+            f4 = CADIRFeature(
+                id=f"f_{uid}_hole_2",
+                name="Corner Hole 2",
+                feature_type="hole",
+                hole_type=corner_hole_type,
+                diameter=corner_d,
+                cbore_diameter=corner_cb_d,
+                cbore_depth=corner_cb_h,
+                csink_diameter=corner_cs_d,
+                csink_angle=90.0 if is_csink else None,
+                depth=height * 1.5,
+                position=Point3D(x=-length * 0.35, y=width * 0.35, z=0.0),
+                operation="cut",
+                dependencies=[f3.id],
+            )
+            f5 = CADIRFeature(
+                id=f"f_{uid}_hole_3",
+                name="Corner Hole 3",
+                feature_type="hole",
+                hole_type=corner_hole_type,
+                diameter=corner_d,
+                cbore_diameter=corner_cb_d,
+                cbore_depth=corner_cb_h,
+                csink_diameter=corner_cs_d,
+                csink_angle=90.0 if is_csink else None,
+                depth=height * 1.5,
+                position=Point3D(x=length * 0.35, y=-width * 0.35, z=0.0),
+                operation="cut",
+                dependencies=[f4.id],
+            )
+            f6 = CADIRFeature(
+                id=f"f_{uid}_hole_4",
+                name="Corner Hole 4",
+                feature_type="hole",
+                hole_type=corner_hole_type,
+                diameter=corner_d,
+                cbore_diameter=corner_cb_d,
+                cbore_depth=corner_cb_h,
+                csink_diameter=corner_cs_d,
+                csink_angle=90.0 if is_csink else None,
+                depth=height * 1.5,
+                position=Point3D(x=-length * 0.35, y=-width * 0.35, z=0.0),
+                operation="cut",
+                dependencies=[f5.id],
+            )
+            f7 = CADIRFeature(
+                id=f"f_{uid}_fillet",
+                name="Vertical Fillet",
+                feature_type="fillet",
+                radius=2.0,
+                edge_selector="vertical",
+                operation="join",
+                dependencies=[f6.id],
+            )
+            doc.features.extend([f1, f2, f3, f4, f5, f6, f7])
 
     return doc

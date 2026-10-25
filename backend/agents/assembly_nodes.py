@@ -38,11 +38,15 @@ def assembly_generator_node(state: AgentState) -> Dict[str, Any]:
     primary_doc = None
 
     for comp in asm_spec.components:
+        if comp.step_file_path and comp.usage_role == "standard_component_reuse":
+            component_cadirs[comp.component_id] = {"step_file_path": comp.step_file_path, "status": "reused_standard_step"}
+            continue
+
         if comp.cadir_document is None:
             comp.cadir_document = generate_component_cadir(comp, asm_spec)
 
         component_cadirs[comp.component_id] = comp.cadir_document
-        if primary_doc is None or comp.role in ("mounting_plate", "base_plate", "housing"):
+        if primary_doc is None or comp.role in ("mounting_plate", "base_plate", "housing", "bearing_housing", "pipe_manifold"):
             primary_doc = comp.cadir_document
 
     conf = {**state.get("confidence_scores", {})}

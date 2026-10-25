@@ -135,6 +135,41 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
     if dim_matches:
         parsed_intent["dimensions"] = [float(d) for d in dim_matches if float(d) > 0][:5]
 
+    # 1b. Merge rich MechanicalDesignIntent (populated by input_classifier via intent_extractor)
+    # This always takes precedence over bare regex results when available.
+    design_intent: Dict[str, Any] = state.get("design_intent") or {}
+    if design_intent:
+        # Component family (LLM is more reliable than regex keyword matching)
+        if design_intent.get("component_family"):
+            parsed_intent["component_family"] = design_intent["component_family"]
+        # Assembly flag
+        if design_intent.get("is_assembly") is not None:
+            parsed_intent["is_assembly"] = design_intent["is_assembly"]
+        # Envelope dimensions from structured output
+        env = design_intent.get("envelope") or {}
+        raw_env_dims = [v for v in [env.get("length"), env.get("width"), env.get("height")] if v]
+        if raw_env_dims:
+            parsed_intent.setdefault("dimensions", raw_env_dims)
+        # Material hint
+        if design_intent.get("material_hint"):
+            parsed_intent.setdefault("material", design_intent["material_hint"])
+        # Manufacturing process
+        if design_intent.get("manufacturing_process"):
+            parsed_intent.setdefault("manufacturing_process", design_intent["manufacturing_process"])
+        # Feature types extracted from image/text by intent extractor
+        if design_intent.get("feature_tree"):
+            parsed_intent.setdefault("features", [
+                f.get("feature_type", "") for f in design_intent["feature_tree"] if f.get("feature_type")
+            ])
+        # Assembly components list
+        if design_intent.get("assembly_components"):
+            parsed_intent.setdefault("detected_components", [
+                c.get("name", "") for c in design_intent["assembly_components"] if c.get("name")
+            ])
+        # Units
+        if design_intent.get("units"):
+            parsed_intent.setdefault("units", design_intent["units"])
+
     # 2. Query Knowledge Base for Few-Shot Exemplars
     retrieved_examples: List[Dict[str, Any]] = []
     try:
@@ -156,8 +191,120 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
     except Exception as e:
         parsed_intent["retrieval_warning"] = str(e)
 
+    # 3. Query Local CAD Asset Library for Standard Components & Reference Models
+    retrieved_assets: List[Dict[str, Any]] = []
+    try:
+        from retrieval.hybrid_retriever import HybridRetriever, CADRetrievalQuery
+        from retrieval.asset_schema import AssetUsageRole
+
+        retriever = HybridRetriever()
+        search_queries = []
+        p_lower = prompt.lower()
+
+        if any(k in p_lower for k in ["pin", "dowel", "pivot", "gripper"]):
+            search_queries.append(CADRetrievalQuery(
+                query_text=prompt,
+                category="pin",
+                required_dimensions={"diameter": 6.0},
+                desired_role=AssetUsageRole.STANDARD_COMPONENT_REUSE,
+                limit=2,
+            ))
+        if any(k in p_lower for k in ["bolt", "screw", "fastener", "nut", "m4", "m8", "m10", "m12", "gripper", "gearbox", "housing", "manifold"]):
+            f_dim = {}
+            if "m4" in p_lower:
+                f_dim["thread_size"] = 4.0
+            elif "m8" in p_lower:
+                f_dim["thread_size"] = 8.0
+            elif "m10" in p_lower:
+                f_dim["thread_size"] = 10.0
+            elif "m12" in p_lower:
+                f_dim["thread_size"] = 12.0
+            search_queries.append(CADRetrievalQuery(
+                query_text=prompt,
+                category="fastener",
+                required_dimensions=f_dim if f_dim else None,
+                desired_role=AssetUsageRole.STANDARD_COMPONENT_REUSE,
+                limit=4,
+            ))
+        if any(k in p_lower for k in ["bearing", "gearbox", "housing", "pillow block"]):
+            b_dim = {}
+            if "8mm" in p_lower or "608" in p_lower:
+                b_dim["bore_diameter"] = 8.0
+            elif "20mm" in p_lower or "6204" in p_lower or "housing" in p_lower:
+                b_dim["bore_diameter"] = 20.0
+            search_queries.append(CADRetrievalQuery(
+                query_text=prompt,
+                category="bearing",
+                required_dimensions=b_dim if b_dim else None,
+                desired_role=AssetUsageRole.STANDARD_COMPONENT_REUSE,
+                limit=2,
+            ))
+        if any(k in p_lower for k in ["gear", "gearbox", "pinion", "spur"]):
+            search_queries.append(CADRetrievalQuery(
+                query_text=prompt,
+                category="gear",
+                required_dimensions={"module": 2.0},
+                desired_role=AssetUsageRole.STANDARD_COMPONENT_REUSE,
+                limit=3,
+            ))
+        if any(k in p_lower for k in ["flange", "pipe", "manifold"]):
+            search_queries.append(CADRetrievalQuery(
+                query_text=prompt,
+                category="flange",
+                required_dimensions={"pcd": 85.0} if "dn25" in p_lower else None,
+                desired_role=AssetUsageRole.STANDARD_COMPONENT_REUSE,
+                limit=2,
+            ))
+        if any(k in p_lower for k in ["nipple", "grease", "lubricat", "housing"]):
+            search_queries.append(CADRetrievalQuery(
+                query_text=prompt,
+                category="lubrication",
+                desired_role=AssetUsageRole.STANDARD_COMPONENT_REUSE,
+                limit=1,
+            ))
+        if any(k in p_lower for k in ["finger", "linkage", "elbow", "reference"]):
+            search_queries.append(CADRetrievalQuery(
+                query_text=prompt,
+                desired_role=AssetUsageRole.DESIGN_REFERENCE,
+                limit=2,
+            ))
+
+        if not search_queries:
+            search_queries.append(CADRetrievalQuery(
+                query_text=prompt,
+                limit=5,
+            ))
+
+        seen_assets = set()
+        for sq in search_queries:
+            res_items = retriever.search(sq)
+            for item in res_items:
+                aid = item.asset.asset_id
+                if aid not in seen_assets:
+                    seen_assets.add(aid)
+                    retrieved_assets.append({
+                        "asset_id": aid,
+                        "name": item.asset.name,
+                        "category": item.asset.category,
+                        "subcategory": item.asset.subcategory,
+                        "description": item.asset.description,
+                        "format": item.asset.format.value,
+                        "geometry_nature": item.asset.geometry_nature.value,
+                        "file_path": item.asset.file_path,
+                        "score": item.total_score,
+                        "compatibility": item.compatibility.model_dump(),
+                        "is_compatible": item.compatibility.is_compatible,
+                        "recommended_role": item.compatibility.recommended_role.value,
+                        "provenance": item.asset.provenance.model_dump(),
+                        "nominal_dimensions": item.asset.nominal_dimensions,
+                        "match_reasons": item.match_reasons,
+                    })
+    except Exception as e:
+        parsed_intent["asset_retrieval_warning"] = str(e)
+
     return {
         "parsed_intent": parsed_intent,
         "retrieved_examples": retrieved_examples,
+        "retrieved_assets": retrieved_assets,
         "current_agent": "supervisor",
     }

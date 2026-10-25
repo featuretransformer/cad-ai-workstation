@@ -90,12 +90,41 @@ def execute_assembly(
     code_snippets = []
 
     # 1. Build and locate each component instance
-    for comp in asm_spec.components:
-        if comp.cadir_document is None:
-            comp.cadir_document = generate_component_cadir(comp, asm_spec)
+    from build123d import import_step
 
-        # Build base part
-        base_part = _build_part_from_cadir(comp.cadir_document)
+    for comp in asm_spec.components:
+        # Check if component is a verified standard STEP asset
+        if comp.step_file_path and Path(comp.step_file_path).exists():
+            step_p = Path(comp.step_file_path)
+            if step_p.suffix.lower() in [".stl"]:
+                raise ValueError(
+                    f"Component '{comp.name}' specifies an STL mesh file ({step_p.name}). "
+                    "STL is a triangulated surface mesh and cannot be used for B-Rep solid assembly modeling."
+                )
+            base_part = import_step(str(step_p))
+            if base_part is None or not getattr(base_part, "is_valid", False):
+                raise ValueError(f"Failed to import valid B-Rep solid from STEP asset {step_p.name}")
+            # Re-center imported body so its bounding box centroid is at the origin.
+            # This ensures that assembly placement offsets are measured from the part centroid,
+            # not from wherever the STEP was originally exported from.
+            try:
+                _bb = base_part.bounding_box()
+                _cx = (_bb.min.X + _bb.max.X) / 2.0
+                _cy = (_bb.min.Y + _bb.max.Y) / 2.0
+                _cz = (_bb.min.Z + _bb.max.Z) / 2.0
+                if abs(_cx) > 0.01 or abs(_cy) > 0.01 or abs(_cz) > 0.01:
+                    base_part = base_part.located(Location((-_cx, -_cy, -_cz)))
+            except Exception as _ctr_err:
+                logger.debug(f"Body centering skipped for {step_p.name}: {_ctr_err}")
+            comp_code = f"# Reused Standard Asset: {comp.name}\n# Source: {comp.source_attribution or 'Local Catalog'}\n# License: {comp.license or 'Apache-2.0'}\npart = import_step('{step_p.as_posix()}')"
+            code_snippets.append(f"# === Standard Reused Component: {comp.name} ({comp.component_id}) ===\n{comp_code}")
+        else:
+            if comp.cadir_document is None:
+                comp.cadir_document = generate_component_cadir(comp, asm_spec)
+            base_part = _build_part_from_cadir(comp.cadir_document)
+            comp_code = generate_build123d_code(comp.cadir_document)
+            code_snippets.append(f"# === Component: {comp.name} ({comp.component_id}) ===\n{comp_code}")
+
         component_solids[comp.component_id] = base_part
 
         # Export individual component STL
@@ -105,10 +134,6 @@ def execute_assembly(
             component_exports[comp.component_id] = comp_stl_path
         except Exception as e:
             logger.warning(f"Could not export STL for component {comp.name}: {e}")
-
-        # Record component code snippet
-        comp_code = generate_build123d_code(comp.cadir_document)
-        code_snippets.append(f"# === Component: {comp.name} ({comp.component_id}) ===\n{comp_code}")
 
         # Place each instance
         placements = comp.instance_placements or [comp.base_placement]

@@ -239,5 +239,9 @@ def get_supervisor_llm() -> ResilientChatModel:
 
 
 def get_design_llm() -> ResilientChatModel:
-    """Design Agent and Incremental CAD synthesis agents."""
-    return ResilientChatModel(agent_type="design", temperature=0.15, default_max_tokens=750)
+    """Design Agent and Incremental CAD synthesis agents.
+    
+    Token budget increased from 750 → 4096 to prevent mid-JSON truncation for complex
+    CADIR documents with 6+ features (e.g., flange hubs with PCD holes require ~1200-2000 tokens).
+    """
+    return ResilientChatModel(agent_type="design", temperature=0.15, default_max_tokens=4096)

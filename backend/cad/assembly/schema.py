@@ -56,6 +56,11 @@ MatingType = Literal[
     "fastener",
     "slot",
     "gear_mesh",
+    # ISO fit types — used for bearing/shaft/housing press and clearance fits
+    "interference_fit",   # press fit (negative clearance, K6/k5, etc.)
+    "press_fit",          # alias for interference_fit
+    "transition_fit",     # overlap of clearance and interference zones
+    "clearance_fit",      # positive clearance (H7/g6, etc.)
     "custom",
 ]
 
@@ -106,6 +111,26 @@ class ComponentSpec(BaseModel):
     motion_type: Literal["fixed", "revolute", "linear", "floating"] = "fixed"
     parameters: Dict[str, float] = Field(default_factory=dict)
     description: str = ""
+    step_file_path: Optional[str] = Field(
+        default=None,
+        description="Path to local verified STEP file for standard component reuse"
+    )
+    asset_id: Optional[str] = Field(
+        default=None,
+        description="ID of retrieved library asset"
+    )
+    usage_role: Literal["standard_component_reuse", "design_reference", "custom_geometry_generation", "assembly_construction"] = Field(
+        default="custom_geometry_generation",
+        description="Role in retrieval and generation pipeline"
+    )
+    source_attribution: Optional[str] = Field(
+        default=None,
+        description="Source provenance or standards reference"
+    )
+    license: Optional[str] = Field(
+        default=None,
+        description="SPDX license under which this component is reused"
+    )
 
     @model_validator(mode="after")
     def populate_instance_placements(self) -> "ComponentSpec":

@@ -114,19 +114,21 @@ def validate_cadir_document(doc: CADIRDocument) -> CADIRValidationResult:
                     if not feature.height:
                         feature.height = feature.distance or feature.depth or 10.0
                 elif feature.height and feature.height > 0:
-                    # LLM often generates extrude with only height/depth (e.g. bolt heads)
-                    # Convert to cylinder with a default radius
-                    feature.feature_type = "cylinder"
-                    f_type = "cylinder"
-                    if not feature.radius:
-                        feature.radius = feature.height * 0.8  # reasonable default
+                    # LLM often generates extrude with only height (e.g. bolt heads, pads).
+                    # Do NOT assume a cylinder — use a square box as the most neutral fallback.
+                    # (If the LLM intended a cylinder, it would have provided a radius/diameter.)
+                    feature.feature_type = "box"
+                    f_type = "box"
+                    feature.length = feature.length or feature.height  # square footprint
+                    feature.width = feature.width or feature.height
+                    # height is already set
                 elif feature.depth and feature.depth > 0:
-                    # depth-only extrude → cylinder with default radius
-                    feature.feature_type = "cylinder"
-                    f_type = "cylinder"
+                    # depth-only extrude → also a square box with depth as height
+                    feature.feature_type = "box"
+                    f_type = "box"
                     feature.height = feature.depth
-                    if not feature.radius:
-                        feature.radius = feature.depth * 0.8
+                    feature.length = feature.length or feature.depth
+                    feature.width = feature.width or feature.depth
                 else:
                     errors.append(f"Extrude feature '{fid}' requires a 'sketch_id' or dimensions (radius/diameter, length/width, or height/depth).")
             if f_type == "extrude" and (feature.distance is None or feature.distance <= 0):
@@ -176,16 +178,22 @@ def validate_cadir_document(doc: CADIRDocument) -> CADIRValidationResult:
                     f"Hole feature '{fid}' must have dependencies declaring the target solid it cuts into."
                 )
 
-            # Auto-clamp hole radius so it does not exceed the parent body
+            # Auto-clamp hole radius so it does not exceed the parent body.
+            # Uses engineering-aware ratios — NOT a blind 55% factor:
+            #  - Through-bores/shaft bores can legally be up to 85% of parent OD
+            #  - Standard holes clamped at 75% only when they exceed parent size
             if feature.dependencies:
                 parent_id = feature.dependencies[0]
                 parent_feat = next((pf for pf in doc.features if pf.id == parent_id), None)
                 if not parent_feat and feature_index_map.get(fid, 0) > 0:
                     parent_feat = doc.features[feature_index_map[fid] - 1]
                 if parent_feat:
+                    hole_name = (feature.name or "").lower()
+                    is_through_bore = any(k in hole_name for k in ("through", "bore", "mounting", "clearance"))
+                    max_ratio = 0.85 if is_through_bore else 0.75
                     if parent_feat.feature_type in ("cylinder", "sphere") and parent_feat.radius:
                         if feature.radius and feature.radius >= parent_feat.radius:
-                            feature.radius = round(parent_feat.radius * 0.55, 2)
+                            feature.radius = round(parent_feat.radius * max_ratio, 2)
                             feature.diameter = feature.radius * 2.0
                     elif parent_feat.feature_type == "extrude" and parent_feat.sketch_id:
                         sk = next((s for s in doc.sketches if s.id == parent_feat.sketch_id), None)
@@ -193,12 +201,13 @@ def validate_cadir_document(doc: CADIRDocument) -> CADIRValidationResult:
                             prim = sk.primitives[0]
                             prim_r = getattr(prim, "radius", None)
                             if prim_r and feature.radius and feature.radius >= prim_r:
-                                feature.radius = round(prim_r * 0.55, 2)
+                                feature.radius = round(prim_r * max_ratio, 2)
                                 feature.diameter = feature.radius * 2.0
                     elif parent_feat.feature_type == "box" and parent_feat.length and parent_feat.width:
                         max_r = min(parent_feat.length, parent_feat.width) / 2.0
+                        box_max_ratio = 0.80 if is_through_bore else 0.70
                         if feature.radius and feature.radius >= max_r:
-                            feature.radius = round(max_r * 0.55, 2)
+                            feature.radius = round(max_r * box_max_ratio, 2)
                             feature.diameter = feature.radius * 2.0
 
         elif f_type == "pocket":
