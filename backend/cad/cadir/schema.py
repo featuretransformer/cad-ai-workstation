@@ -77,8 +77,9 @@ class ConstraintType(str, Enum):
 
 class CADIRConstraint(BaseModel):
     model_config = ConfigDict(extra="ignore")
-    constraint_type: ConstraintType
-    entity1: str
+    constraint_type: Union[ConstraintType, str]
+    entities: List[str] = Field(default_factory=list)
+    entity1: Optional[str] = None
     entity2: Optional[str] = None
     value: Optional[float] = None
 
@@ -181,6 +182,8 @@ FeatureType = Literal[
     "groove",
     "counterbore_hole",
     "countersink_hole",
+    "iso_bolt",
+    "spur_gear_macro",
 ]
 
 BooleanOperationType = Literal["new_body", "join", "cut", "intersect"]
@@ -208,18 +211,18 @@ class CADIRFeature(BaseModel):
     suppressed: bool = False
 
     # 3D Primitive parameters
-    length: Optional[float] = None
-    width: Optional[float] = None
-    height: Optional[float] = None
-    radius: Optional[float] = None
+    length: Optional[Union[float, str]] = None
+    width: Optional[Union[float, str]] = None
+    height: Optional[Union[float, str]] = None
+    radius: Optional[Union[float, str]] = None
     center: Optional[Point3D] = None
     axis: Optional[Vector3D] = None
 
     # Sketch-based 3D parameters
     sketch_id: Optional[str] = None
     profile: Optional[CADIRSketchProfile] = None
-    distance: Optional[float] = None
-    depth: Optional[float] = None
+    distance: Optional[Union[float, str]] = None
+    depth: Optional[Union[float, str]] = None
     angle: Optional[float] = None
     taper_angle: float = 0.0
     symmetric: bool = False
@@ -233,23 +236,23 @@ class CADIRFeature(BaseModel):
     ruled: bool = False
 
     # Shell parameters
-    thickness: Optional[float] = None
+    thickness: Optional[Union[float, str]] = None
     opening_faces: List[str] = Field(
         default_factory=list,
         description="Faces to remove for hollow shell (e.g. ['top'], ['bottom'])"
     )
 
     # Rib parameters
-    rib_thickness: Optional[float] = None
+    rib_thickness: Optional[Union[float, str]] = None
 
     # Thread parameters
-    pitch: Optional[float] = None
-    thread_diameter: Optional[float] = None
-    thread_length: Optional[float] = None
+    pitch: Optional[Union[float, str]] = None
+    thread_diameter: Optional[Union[float, str]] = None
+    thread_length: Optional[Union[float, str]] = None
     thread_type: Literal["metric", "unified", "acme", "schematic"] = "metric"
 
     # Hole parameters
-    diameter: Optional[float] = None
+    diameter: Optional[Union[float, str]] = None
     hole_type: Literal["simple", "counterbore", "countersink"] = "simple"
     cbore_diameter: Optional[float] = None
     cbore_depth: Optional[float] = None
@@ -263,9 +266,18 @@ class CADIRFeature(BaseModel):
         default="all",
         description="Rule/query for target edges (e.g. 'all', 'top', 'bottom', 'vertical', 'edges_at_z_max')",
     )
+    target_face_selector: Optional[str] = None
+    target_edge_selector: Optional[str] = None
+    pattern_radius: Optional[Any] = None
 
     # Regular Polygon / Prism parameters
     side_count: Optional[int] = Field(default=6, ge=3)
+
+    # Hardware & Gear Macro parameters
+    module: Optional[float] = None
+    teeth: Optional[int] = None
+    face_width: Optional[float] = None
+    bore_diameter: Optional[float] = None
 
     # Groove parameters
     outer_radius: Optional[float] = None
@@ -294,6 +306,8 @@ class CADIRFeature(BaseModel):
         """Ensure positive numeric values; raise ValueError for non-positive numbers."""
         if v is None:
             return None
+        if isinstance(v, str) and (v.startswith("$") or any(op in v for op in ("+", "-", "*", "/", "<", ">"))):
+            return v
         try:
             val = float(v)
             if val <= 0:
@@ -339,6 +353,10 @@ class CADIRDocument(BaseModel):
     parameters: Dict[str, Any] = Field(
         default_factory=dict,
         description="Global parametric design variables referenced by features",
+    )
+    assertions: List[str] = Field(
+        default_factory=list,
+        description="Pre-execution engineering assertions",
     )
     engineering_intent: Dict[str, Any] = Field(
         default_factory=dict,

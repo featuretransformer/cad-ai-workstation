@@ -69,6 +69,7 @@ def generate_build123d_code(doc: CADIRDocument) -> str:
         code_lines.append("")
 
     code_lines.append("with BuildPart() as p:")
+    code_lines.append("    step_volumes = []")
 
     sketch_map: Dict[str, CADIRSketchProfile] = {s.id: s for s in doc.sketches}
 
@@ -192,12 +193,23 @@ def generate_build123d_code(doc: CADIRDocument) -> str:
             code_lines.append(f"    extrude(amount={round(w, 3)}, mode=Mode.SUBTRACT)")
 
         elif f_type == "pocket":
+            face_sel = (getattr(f, "target_face_selector", None) or "").lower()
             pos = f.position or f.center
             px = pos.x if pos else 0.0
             py = pos.y if pos else 0.0
             pz = pos.z if pos else 0.0
             dep = f.depth or f.height or 10.0
-            if f.length and f.width:
+            if face_sel == "front":
+                code_lines.append("    _face = p.faces().sort_by(Axis.Y)[0]")
+                code_lines.append("    with BuildWorkplanes(_face):")
+                if f.length and f.width:
+                    code_lines.append(f"        Box(length={f.length}, width={f.width}, height={dep}, mode=Mode.SUBTRACT)")
+            elif face_sel == "top":
+                code_lines.append("    _face = p.faces().sort_by(Axis.Z)[-1]")
+                code_lines.append("    with BuildWorkplanes(_face):")
+                if f.length and f.width:
+                    code_lines.append(f"        Box(length={f.length}, width={f.width}, height={dep}, mode=Mode.SUBTRACT)")
+            elif f.length and f.width:
                 if px == 0 and py == 0 and pz == 0:
                     code_lines.append(
                         f"    Box(length={f.length}, width={f.width}, height={dep}, mode=Mode.SUBTRACT)"
@@ -262,7 +274,22 @@ def generate_build123d_code(doc: CADIRDocument) -> str:
                     cb_r = std_info["cbore_dia"] / 2.0
                     cb_dep = std_info["cbore_depth"]
 
-            code_lines.append(f"    with Locations(({px}, {py}, {pz})):")
+            face_sel = (getattr(f, "target_face_selector", None) or "").lower()
+            if face_sel == "top":
+                code_lines.append("    _face = p.faces().sort_by(Axis.Z)[-1]")
+                code_lines.append("    with BuildWorkplanes(_face):")
+            elif face_sel == "bottom":
+                code_lines.append("    _face = p.faces().sort_by(Axis.Z)[0]")
+                code_lines.append("    with BuildWorkplanes(_face):")
+            elif face_sel == "front":
+                code_lines.append("    _face = p.faces().sort_by(Axis.Y)[0]")
+                code_lines.append("    with BuildWorkplanes(_face):")
+            elif face_sel == "back":
+                code_lines.append("    _face = p.faces().sort_by(Axis.Y)[-1]")
+                code_lines.append("    with BuildWorkplanes(_face):")
+            else:
+                code_lines.append(f"    with Locations(({px}, {py}, {pz})):")
+
             if is_cbore and cb_r and cb_dep:
                 hole_dep = dep or 30.0
                 code_lines.append(
@@ -292,18 +319,18 @@ def generate_build123d_code(doc: CADIRDocument) -> str:
 
         elif f_type == "fillet":
             rad = f.radius or 1.0
-            selector = f.edge_selector or "all"
+            selector = getattr(f, "target_edge_selector", None) or f.edge_selector or "all"
             code_lines.append("    try:")
             code_lines.append("        _edges = p.edges()")
-            if selector == "top":
+            if selector in ("top_perimeter", "top"):
                 # Dynamic: get the top face's edges instead of assuming exactly 4
                 code_lines.append("        _top_face = p.faces().sort_by(Axis.Z)[-1:]")
                 code_lines.append("        _edges = _top_face.edges() if _top_face else _edges")
             elif selector == "bottom":
                 code_lines.append("        _bot_face = p.faces().sort_by(Axis.Z)[:1]")
                 code_lines.append("        _edges = _bot_face.edges() if _bot_face else _edges")
-            elif selector == "vertical":
-                code_lines.append("        _edges = _edges.filter_by(Axis.Z)")
+            elif selector in ("all_vertical", "vertical"):
+                code_lines.append("        _edges = p.edges().filter_by(Axis.Z)")
             code_lines.append(f"        if _edges:")
             code_lines.append(f"            fillet(_edges, radius={rad})")
             code_lines.append("    except Exception as _fe:")
@@ -311,17 +338,17 @@ def generate_build123d_code(doc: CADIRDocument) -> str:
 
         elif f_type == "chamfer":
             dist = f.distance or 1.0
-            selector = f.edge_selector or "all"
+            selector = getattr(f, "target_edge_selector", None) or f.edge_selector or "all"
             code_lines.append("    try:")
             code_lines.append("        _edges = p.edges()")
-            if selector == "top":
+            if selector in ("top_perimeter", "top"):
                 code_lines.append("        _top_face = p.faces().sort_by(Axis.Z)[-1:]")
                 code_lines.append("        _edges = _top_face.edges() if _top_face else _edges")
             elif selector == "bottom":
                 code_lines.append("        _bot_face = p.faces().sort_by(Axis.Z)[:1]")
                 code_lines.append("        _edges = _bot_face.edges() if _bot_face else _edges")
-            elif selector == "vertical":
-                code_lines.append("        _edges = _edges.filter_by(Axis.Z)")
+            elif selector in ("all_vertical", "vertical"):
+                code_lines.append("        _edges = p.edges().filter_by(Axis.Z)")
             code_lines.append(f"        if _edges:")
             code_lines.append(f"            chamfer(_edges, length={dist})")
             code_lines.append("    except Exception as _ce:")
@@ -393,6 +420,30 @@ def generate_build123d_code(doc: CADIRDocument) -> str:
             code_lines.append(f"            chamfer(_top_edges, length=round({pitch} * 0.7, 2))")
             code_lines.append("    except Exception:")
             code_lines.append("        pass")
+
+        elif f_type == "iso_bolt":
+            d = f.diameter or 10.0
+            l = f.length or 50.0
+            code_lines.append("    # ISO 4014 Standard Bolt")
+            code_lines.append(f"    Cylinder(radius={d / 2.0}, height={l}, mode={mode})")
+
+        elif f_type == "spur_gear_macro":
+            m = f.module or 2.5
+            N = f.teeth or 28
+            w = f.face_width or 16.0
+            bore_d = f.bore_diameter or 12.0
+            code_lines.append("    # Spur Gear Macro")
+            code_lines.append(f"    _m = {m}")
+            code_lines.append(f"    _N = {N}")
+            code_lines.append(f"    _rp = _m * _N / 2.0")
+            code_lines.append(f"    Cylinder(radius=_rp, height={w}, mode={mode})")
+            if bore_d:
+                code_lines.append(f"    Hole(radius={bore_d / 2.0}, depth=None)")
+
+        code_lines.append("    try:")
+        code_lines.append(f"        step_volumes.append({{'feature_id': '{f.id}', 'feature_type': '{f.feature_type}', 'operation': '{mode}', 'volume': float(p.part.volume)}})")
+        code_lines.append("    except Exception:")
+        code_lines.append("        pass")
 
         code_lines.append("")
 
@@ -480,3 +531,110 @@ def interpret_and_execute(
     exec_result = execute_cad_code(code, design_id=design_id, timeout=timeout)
     exec_result["cad_code"] = code
     return exec_result
+
+
+# Direct alias for agent pipeline
+cadir_to_build123d = generate_build123d_code
+
+
+def solve_sketch_constraints(sketch: CADIRSketchProfile) -> CADIRSketchProfile:
+    """Deterministic 2D geometric constraint solver for sketch entities."""
+    from .schema import Point3D
+
+    prims = list(sketch.primitives or [])
+    entities = list(getattr(sketch, "entities", None) or [])
+    all_items = prims + [e for e in entities if e not in prims]
+
+    entities_map = {}
+    points_map = {}
+
+    for item in all_items:
+        iid = getattr(item, "id", "")
+        if iid:
+            entities_map[iid] = item
+            if hasattr(item, "start"):
+                points_map[f"{iid}_start"] = (item, "start")
+            if hasattr(item, "end"):
+                points_map[f"{iid}_end"] = (item, "end")
+
+    for _ in range(5):
+        for c in (sketch.constraints or []):
+            ctype = getattr(c, "constraint_type", "")
+            if hasattr(ctype, "value"):
+                ctype = ctype.value
+            ctype = str(ctype).lower()
+
+            ents = getattr(c, "entities", None) or []
+            if not ents and hasattr(c, "entity1") and c.entity1:
+                ents = [c.entity1]
+                if hasattr(c, "entity2") and c.entity2:
+                    ents.append(c.entity2)
+            elif not ents and isinstance(c, dict):
+                if "entities" in c:
+                    ents = c["entities"]
+                elif "entity1" in c:
+                    ents = [c["entity1"]]
+                    if c.get("entity2"):
+                        ents.append(c["entity2"])
+
+            val = getattr(c, "value", None)
+            if val is None and isinstance(c, dict):
+                val = c.get("value")
+
+            if ctype == "fixed" and ents:
+                p_name = ents[0]
+                if p_name in points_map:
+                    obj, attr = points_map[p_name]
+                    setattr(obj, attr, Point3D(x=0.0, y=0.0, z=0.0))
+                elif p_name in entities_map:
+                    target = entities_map[p_name]
+                    if hasattr(target, "center"):
+                        target.center = Point3D(x=0.0, y=0.0, z=0.0)
+
+            elif ctype == "horizontal" and len(ents) >= 2:
+                p1_name, p2_name = ents[0], ents[1]
+                if p1_name in points_map and p2_name in points_map:
+                    obj1, attr1 = points_map[p1_name]
+                    obj2, attr2 = points_map[p2_name]
+                    pt1 = getattr(obj1, attr1)
+                    pt2 = getattr(obj2, attr2)
+                    setattr(obj2, attr2, Point3D(x=pt2.x, y=pt1.y, z=pt2.z))
+
+            elif ctype == "distance" and len(ents) >= 2 and val is not None:
+                p1_name, p2_name = ents[0], ents[1]
+                if p1_name in points_map and p2_name in points_map:
+                    obj1, attr1 = points_map[p1_name]
+                    obj2, attr2 = points_map[p2_name]
+                    pt1 = getattr(obj1, attr1)
+                    pt2 = getattr(obj2, attr2)
+                    setattr(obj2, attr2, Point3D(x=pt1.x + float(val), y=pt2.y, z=pt2.z))
+
+            elif ctype == "coincident" and len(ents) >= 2:
+                p1_name, p2_name = ents[0], ents[1]
+                if p1_name in points_map and p2_name in points_map:
+                    obj1, attr1 = points_map[p1_name]
+                    obj2, attr2 = points_map[p2_name]
+                    pt1 = getattr(obj1, attr1)
+                    setattr(obj2, attr2, Point3D(x=pt1.x, y=pt1.y, z=pt1.z))
+
+            elif ctype == "concentric" and len(ents) >= 2:
+                e1 = entities_map.get(ents[0])
+                e2 = entities_map.get(ents[1])
+                if e1 and e2 and hasattr(e1, "center") and hasattr(e2, "center"):
+                    e1.center = Point3D(x=e2.center.x, y=e2.center.y, z=e2.center.z)
+
+            elif ctype == "radius" and ents and val is not None:
+                target = entities_map.get(ents[0])
+                if target and hasattr(target, "radius"):
+                    target.radius = float(val)
+
+            elif ctype == "diameter" and ents and val is not None:
+                target = entities_map.get(ents[0])
+                if target and hasattr(target, "radius"):
+                    target.radius = float(val) / 2.0
+
+    if prims:
+        sketch.primitives = prims
+    if entities:
+        sketch.entities = entities
+    return sketch
