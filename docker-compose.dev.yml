@@ -1,4 +1,3 @@
-version: '3.9'
 # Dev mode: spins up only Redis, PostgreSQL, MinIO
 # Run backend with: cd backend && uvicorn main:app --reload
 # Run frontend with: cd frontend && npm run dev
@@ -27,7 +26,7 @@ services:
       - "6379:6379"
 
   minio:
-    image: minio/minio:latest
+    image: quay.io/minio/aistor/minio:latest
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minioadmin

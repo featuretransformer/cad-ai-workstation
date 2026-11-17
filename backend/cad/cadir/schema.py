@@ -4,6 +4,7 @@ Defines the strict Pydantic v2 models representing parametric mechanical compone
 sketch profiles, 3D operations, explicit feature dependencies, and engineering intent.
 """
 from typing import List, Dict, Any, Optional, Literal, Union
+from enum import Enum
 from pydantic import BaseModel, Field, model_validator, field_validator, ConfigDict
 import json
 import uuid
@@ -55,15 +56,44 @@ class CADIRPlane(BaseModel):
     x_axis: Vector3D = Field(default_factory=lambda: Vector3D(x=1.0, y=0.0, z=0.0))
 
 
-# ─── 2D Sketch Primitives ──────────────────────────────────────────────────────────
+# ─── 2D Sketch Primitives & Constraints ──────────────────────────────────────────
+
+class ConstraintType(str, Enum):
+    fixed = "fixed"
+    concentric = "concentric"
+    radius = "radius"
+    diameter = "diameter"
+    coincident = "coincident"
+    parallel = "parallel"
+    perpendicular = "perpendicular"
+    horizontal = "horizontal"
+    vertical = "vertical"
+    tangent = "tangent"
+    distance = "distance"
+    angle = "angle"
+    equal = "equal"
+    symmetry = "symmetry"
+
+
+class CADIRConstraint(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    constraint_type: ConstraintType
+    entity1: str
+    entity2: Optional[str] = None
+    value: Optional[float] = None
+
 
 class CADIRLine(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = ""
     primitive_type: Literal["line"] = "line"
     start: Point3D
     end: Point3D
 
 
 class CADIRArc(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = ""
     primitive_type: Literal["arc"] = "arc"
     start: Point3D
     end: Point3D
@@ -72,12 +102,16 @@ class CADIRArc(BaseModel):
 
 
 class CADIRCircle(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = ""
     primitive_type: Literal["circle"] = "circle"
     center: Point3D = Field(default_factory=Point3D)
     radius: float = Field(gt=0.0, description="Radius must be strictly positive")
 
 
 class CADIRRectangle(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = ""
     primitive_type: Literal["rectangle"] = "rectangle"
     width: float = Field(gt=0.0, description="Width along local X")
     height: float = Field(gt=0.0, description="Height along local Y")
@@ -85,11 +119,15 @@ class CADIRRectangle(BaseModel):
 
 
 class CADIRPolygon(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = ""
     primitive_type: Literal["polygon"] = "polygon"
     points: List[Point3D] = Field(min_length=3, description="Minimum 3 vertices for a polygon")
 
 
 class CADIRSlot(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = ""
     primitive_type: Literal["slot"] = "slot"
     length: float = Field(gt=0.0)
     width: float = Field(gt=0.0)
@@ -103,15 +141,17 @@ CADIRSketchPrimitive = Union[
 
 class CADIRSketchProfile(BaseModel):
     """Closed or bounded planar profile comprised of 2D primitives."""
-    id: str
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: f"sk_{uuid.uuid4().hex[:6]}")
     name: str = ""
     plane: CADIRPlane = Field(default_factory=CADIRPlane)
     primitives: List[CADIRSketchPrimitive] = Field(default_factory=list)
+    entities: List[CADIRSketchPrimitive] = Field(default_factory=list)
     is_closed: bool = True
     inner_loops: List[List[CADIRSketchPrimitive]] = Field(
         default_factory=list, description="Internal closed boundaries (holes/islands)"
     )
-    constraints: List[Dict[str, Any]] = Field(default_factory=list)
+    constraints: List[Union[CADIRConstraint, Dict[str, Any]]] = Field(default_factory=list)
 
 
 # ─── 3D Features & Operations ──────────────────────────────────────────────────────
@@ -177,6 +217,7 @@ class CADIRFeature(BaseModel):
 
     # Sketch-based 3D parameters
     sketch_id: Optional[str] = None
+    profile: Optional[CADIRSketchProfile] = None
     distance: Optional[float] = None
     depth: Optional[float] = None
     angle: Optional[float] = None
