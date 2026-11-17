@@ -25,6 +25,7 @@ class Design(Base):
     session_id = Column(UUID(as_uuid=True), ForeignKey("sessions.id", ondelete="CASCADE"))
     version = Column(Integer, default=1)
     prompt = Column(Text, nullable=False)
+    image_data_b64 = Column(JSON, default=[])          # list of base64-encoded image strings
     cad_code = Column(Text)
     feature_tree = Column(JSON, default={})
     geometry_valid = Column(Boolean, default=False)

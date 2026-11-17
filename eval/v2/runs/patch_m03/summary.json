@@ -1,0 +1,100 @@
+{
+  "n": 1,
+  "overall_pass": 0.0,
+  "overall_ci": [
+    0.0,
+    79.3
+  ],
+  "strict_pass": 0.0,
+  "valid": 100.0,
+  "iou": 0.9975,
+  "shape_pass": 100.0,
+  "dim_pass": 100.0,
+  "placement_pass": 100.0,
+  "topology_pass": 100.0,
+  "volume_pass": 0.0,
+  "mean_dim_err": 0.0,
+  "mean_placement_err": 0.0,
+  "latency_p50": 27.31,
+  "latency_p95": 27.31,
+  "aspects": {
+    "validity": 1.0,
+    "dimensions": 1.0,
+    "volume": 0.0625,
+    "positioning": 1.0,
+    "topology": 1.0,
+    "shape": 0.9961070101100045
+  },
+  "taxonomy": {
+    "volume": 1
+  },
+  "by_level": {
+    "L2": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.9975,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.0625,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 0.9961070101100045
+      }
+    }
+  },
+  "by_tier": {
+    "medium": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.9975,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.0625,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 0.9961070101100045
+      }
+    }
+  },
+  "by_family": {
+    "u_channel": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.9975,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.0625,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 0.9961070101100045
+      }
+    }
+  }
+}

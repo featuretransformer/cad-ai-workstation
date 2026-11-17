@@ -1,0 +1,18 @@
+{
+  "tag": "retry_l2",
+  "generator": "pipeline",
+  "input_mode": "text-only",
+  "levels": [
+    "L2"
+  ],
+  "cases": 18,
+  "samples": 1,
+  "dataset": "C:\\Users\\shiva\\OneDrive\\Desktop\\cad-ai-workstation-main\\tests\\final test\\golden_cad_prompts_v2.jsonl",
+  "dataset_fingerprint": "127ac8d556022ce416a5ccfcd837d08cc97acf3655c19d128dbc60560b56c928",
+  "git_commit": "7494aa3",
+  "started": "2026-10-25T19:44:43",
+  "workers": 3,
+  "finished": "2026-10-25T19:48:43",
+  "elapsed_sec": 240.0,
+  "scoring_failures": 0
+}

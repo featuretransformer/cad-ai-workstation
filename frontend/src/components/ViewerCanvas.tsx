@@ -1,7 +1,7 @@
 "use client";
 import React, { Suspense, useRef, useEffect, useState, Component, ErrorInfo, ReactNode } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Grid, Environment, Center } from "@react-three/drei";
+import { OrbitControls, Grid, Center } from "@react-three/drei";
 import { GLTFLoader } from "three-stdlib";
 import { useCADStore } from "@/store/cadStore";
 import * as THREE from "three";
@@ -165,9 +165,12 @@ export default function ViewerCanvas() {
         gl={{ antialias: true, alpha: true }}
         shadows
       >
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={1.2} castShadow />
-        <directionalLight position={[-5, 5, -5]} intensity={0.4} color="#22d3ee" />
+        {/* Studio CAD Lighting Setup (100% offline & robust) */}
+        <ambientLight intensity={0.65} />
+        <hemisphereLight intensity={0.45} groundColor="#0f172a" color="#e2e8f0" />
+        <directionalLight position={[10, 15, 10]} intensity={1.2} castShadow />
+        <directionalLight position={[-10, 10, -10]} intensity={0.5} color="#38bdf8" />
+        <directionalLight position={[0, -10, 0]} intensity={0.25} color="#64748b" />
 
         <Grid
           infiniteGrid
@@ -192,7 +195,6 @@ export default function ViewerCanvas() {
         </Suspense>
 
         <OrbitControls makeDefault enableDamping dampingFactor={0.05} />
-        <Environment preset="city" />
       </Canvas>
     </div>
   );

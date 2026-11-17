@@ -14,6 +14,7 @@ if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
 from agents.state import AgentState
+from agents.family_recipes import is_single_pass_family
 
 GEOMETRIC_FEATURE_NOUNS = [
     "bore", "hole", "holes", "boss", "bosses", "flange", "flanges",
@@ -25,6 +26,9 @@ GEOMETRIC_FEATURE_NOUNS = [
     "pipe", "pipes", "tube", "tubes", "passage", "passages", "connector", "connectors",
     "cylinder", "cylinders", "shaft", "shafts", "plate", "plates", "bracket", "brackets",
     "block", "blocks", "housing", "housings", "bushing", "bushings", "body",
+    "tapered", "d-flat", "d-profile", "eccentric",
+    "asymmetric", "shoulder", "shoulders", "undercut", "undercuts", "dovetail", "dovetails",
+    "sweep", "loft", "revolve", "ellipse", "elliptical",
 ]
 
 SPATIAL_RELATION_PHRASES = [
@@ -91,21 +95,43 @@ def evaluate_prompt_complexity(prompt: str) -> Dict[str, Any]:
     conjunction_count = sum(1 for c in COMPLEXITY_CONJUNCTIONS if re.search(c, p_lower))
 
     # 5. Calculate weighted score
+    # Taper/sweep/loft/keyway bonus — these always need decomposition
+    adv_feature_bonus = 0.0
+    advanced_keywords = [
+        "taper", "tapered", "keyway", "d-flat", "d-profile", "eccentric",
+        "asymmetric", "shoulder", "undercut", "dovetail", "sweep", "loft", "revolve",
+        "ellipse", "elliptical", "spline", "helix",
+    ]
+    for kw in advanced_keywords:
+        if re.search(rf"\b{kw}\b", p_lower):
+            adv_feature_bonus += 1.5
+            break  # one bonus per prompt
+
     score = (
         (feature_count * 1.2) +
         (spatial_count * 1.5) +
         (dim_count * 0.4) +
         (conjunction_count * 0.6) +
+        (1.0 if word_count > 15 else 0.0) +
         (1.5 if word_count > 25 else 0.0) +
-        (2.0 if word_count > 50 else 0.0)
+        (2.0 if word_count > 50 else 0.0) +
+        (2.5 if word_count > 100 else 0.0) +
+        (3.0 if word_count > 200 else 0.0) +
+        adv_feature_bonus
     )
 
     # Trigger threshold:
     # Triggers decomposition if:
-    # - At least 2 features and score >= 4.5, OR
-    # - Overall score >= 7.0 (rich multi-dimension part), OR
-    # - At least 3 distinct features
-    is_complex = bool((feature_count >= 2 and score >= 4.5) or (score >= 7.0) or (feature_count >= 3))
+    # - At least 2 features and score >= 3.5, OR
+    # - Overall score >= 6.0 (rich multi-dimension part), OR
+    # - At least 3 distinct features, OR
+    # - Any advanced geometry keyword (forces decomposition)
+    is_complex = bool(
+        (feature_count >= 2 and score >= 3.5) or
+        (score >= 6.0) or
+        (feature_count >= 3) or
+        adv_feature_bonus > 0  # Any advanced geometry keyword forces decomposition
+    )
 
     return {
         "complexity_score": round(score, 2),
@@ -122,8 +148,14 @@ def complexity_classifier_node(state: AgentState) -> Dict[str, Any]:
     """LangGraph node to assess prompt complexity."""
     prompt = state.get("user_prompt", "")
     res = evaluate_prompt_complexity(prompt)
-    
+
+    # Families with a known, coherent build recipe are built in a single CADIR
+    # pass: decomposing into per-feature LLM calls tends to lose the global
+    # axis/dimension frame and costs several extra model round-trips.
+    single_pass = is_single_pass_family(prompt)
+
     return {
         "complexity_score": res["complexity_score"],
-        "is_complex_part": res["is_complex"] and not state.get("is_assembly", False),
+        "is_complex_part": bool(res["is_complex"] and not single_pass and not state.get("is_assembly", False)),
+        "decomposition_used": bool(res["is_complex"] and not single_pass),
     }

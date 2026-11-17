@@ -27,7 +27,13 @@ from cad.cadir.schema import (
     Point3D,
     Vector3D,
 )
-from utils.llm import get_design_llm
+from utils.llm import get_design_llm, ResilientChatModel
+from cad.cadir.validator import resolve_symbolic_parameters
+from cad.cadir.interpreter import cadir_to_build123d
+from cad.executor import execute_cad_code
+from cad.validator import score_cadir_candidate
+from agents.family_recipes import recipe_block
+from agents.frame_spec import apply_frame
 
 
 def _repair_truncated_json(text: str):
@@ -240,12 +246,17 @@ def _sanitize_raw_cadir(data: dict) -> dict:
             if not isinstance(f, dict):
                 continue
 
-            # Flatten nested parameters or params dicts if LLM generated them
-            for p_key in ("parameters", "params"):
-                if isinstance(f.get(p_key), dict):
-                    for sub_k, sub_v in f[p_key].items():
-                        if sub_k not in f or f[sub_k] is None:
-                            f[sub_k] = sub_v
+            # Flatten a nested "parameters" dict (common LLM shape), but keep a
+            # "params" dict intact: it carries engineering parameters for the
+            # high-level parametric primitives (gear, spring, torus, ...).
+            if isinstance(f.get("parameters"), dict):
+                for sub_k, sub_v in f["parameters"].items():
+                    if sub_k not in f or f[sub_k] is None:
+                        f[sub_k] = sub_v
+            if isinstance(f.get("params"), dict):
+                f["params"] = {
+                    k: v for k, v in f["params"].items() if isinstance(v, (int, float, str, list, dict))
+                }
 
             # Map type -> feature_type
             if "type" in f and not f.get("feature_type"):
@@ -444,6 +455,49 @@ def _sanitize_raw_cadir(data: dict) -> dict:
                             max_ratio = 0.80 if is_through_bore else 0.70
                             f["radius"] = round(max_r * max_ratio, 2)
                             f["diameter"] = f["radius"] * 2.0
+
+        # Fourth pass: Geometric stability, coordinate normalization & kernel crash prevention
+        min_solid_dim = 10.0
+        for f in features:
+            if not isinstance(f, dict):
+                continue
+            pos = f.get("position")
+            if isinstance(pos, dict):
+                f["position"] = [float(pos.get("x", 0.0)), float(pos.get("y", 0.0)), float(pos.get("z", 0.0))]
+            elif not pos or not isinstance(pos, (list, tuple)):
+                f["position"] = [0.0, 0.0, 0.0]
+            else:
+                f["position"] = [float(p) for p in pos[:3]]
+                while len(f["position"]) < 3:
+                    f["position"].append(0.0)
+
+            if f.get("feature_type") in ("box", "cylinder", "extrude"):
+                for dk in ("length", "width", "height", "radius"):
+                    val = f.get(dk)
+                    if val and isinstance(val, (int, float)) and val > 0:
+                        min_solid_dim = min(min_solid_dim, float(val))
+
+        # Clamp edge modifications (fillets / chamfers) to prevent BRep kernel topology crashes
+        for f in features:
+            if not isinstance(f, dict):
+                continue
+            ft = f.get("feature_type")
+            if ft == "fillet":
+                r = f.get("radius", 1.5)
+                max_safe_fillet = max(0.5, min_solid_dim * 0.35)
+                if r > max_safe_fillet:
+                    f["radius"] = round(max_safe_fillet, 2)
+            elif ft == "chamfer":
+                d = f.get("distance", 1.0)
+                max_safe_chamfer = max(0.5, min_solid_dim * 0.35)
+                if d > max_safe_chamfer:
+                    f["distance"] = round(max_safe_chamfer, 2)
+            elif ft == "regular_polygon":
+                f.setdefault("side_count", 6)
+                if f["side_count"] < 3:
+                    f["side_count"] = 6
+                if not f.get("height"):
+                    f["height"] = 10.0
 
     return data
 
@@ -657,10 +711,18 @@ CADIR_EXEMPLARS = [
 ]
 
 
-def _try_llm_structured_output(llm, sys_msg: str, prompt: str, semantic_spec: Optional[Dict[str, Any]] = None) -> Optional[CADIRDocument]:
+def _try_llm_structured_output(
+    llm,
+    sys_msg: str,
+    prompt: str,
+    semantic_spec: Optional[Dict[str, Any]] = None,
+    images: Optional[List[Any]] = None,
+    geometry_context: Optional[str] = None,
+) -> Optional[CADIRDocument]:
     """
     Attempt LLM-based CADIR generation with rigorous mathematical grounding and few-shot exemplars.
     Includes coordinate framing rules, ISO clearance standards, and self-correction feedback loop.
+    Supports multimodal image grounding when images are attached.
     """
     exemplars_formatted = []
     for ex in CADIR_EXEMPLARS:
@@ -675,6 +737,17 @@ def _try_llm_structured_output(llm, sys_msg: str, prompt: str, semantic_spec: Op
         spec_lines = [f"- {k}: {v}" for k, v in semantic_spec.items()]
         specs_joined = "\n".join(spec_lines)
         spec_hint = f"\nEXTRACTED SPECIFICATIONS & GROUNDING:\n{specs_joined}\n"
+
+    if geometry_context:
+        spec_hint += f"\nPRE-COMPUTED GEOMETRIC GROUNDING & COORDINATES:\n{geometry_context}\n"
+
+    from agents.intent_extractor import _encode_image
+    valid_encoded = []
+    if images:
+        for img in images[:3]:
+            b64, mime = _encode_image(img)
+            if b64:
+                valid_encoded.append((b64, mime))
 
     last_error = ""
     for attempt in range(2):
@@ -704,7 +777,17 @@ def _try_llm_structured_output(llm, sys_msg: str, prompt: str, semantic_spec: Op
                 )
                 user_msg = f"{prompt}\n{spec_hint}\nProduce the corrected CADIR JSON."
 
-            res = llm.invoke([("system", json_sys_msg), ("user", user_msg)])
+            if valid_encoded:
+                from langchain_core.messages import SystemMessage, HumanMessage
+                human_content = [{"type": "text", "text": user_msg}]
+                for b64, mime in valid_encoded:
+                    human_content.append({
+                        "type": "image_url",
+                        "image_url": {"url": f"data:{mime};base64,{b64}"}
+                    })
+                res = llm.invoke([SystemMessage(content=json_sys_msg), HumanMessage(content=human_content)])
+            else:
+                res = llm.invoke([("system", json_sys_msg), ("user", user_msg)])
             raw_text = res.content if hasattr(res, "content") else str(res)
             json_str = _extract_json_from_text(raw_text)
 
@@ -731,6 +814,32 @@ def _try_llm_structured_output(llm, sys_msg: str, prompt: str, semantic_spec: Op
     return None
 
 
+
+STANDARD_DRILL_SIZES = [
+    1.6, 2.0, 2.5, 3.2, 3.4, 4.2, 4.5, 5.0, 5.5, 6.6, 6.8, 8.5, 9.0, 10.2, 11.0, 12.0, 13.5, 14.0, 17.5, 20.0
+]
+STANDARD_STOCK_THICKNESSES = [
+    1.0, 1.2, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 12.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0
+]
+
+def snap_parameter_value(val: float, standards: List[float], tolerance: float = 0.35) -> float:
+    for std in standards:
+        if abs(val - std) <= tolerance:
+            return std
+    return val
+
+def snap_cadir_parameters(doc: CADIRDocument) -> CADIRDocument:
+    """Snaps hole diameters and plate thicknesses to standard metric drill and stock sizes (Upgrade 7)."""
+    for f in doc.features:
+        if f.feature_type in ("hole", "counterbore", "countersink") and f.diameter:
+            if isinstance(f.diameter, (int, float)):
+                f.diameter = snap_parameter_value(float(f.diameter), STANDARD_DRILL_SIZES)
+                f.radius = round(f.diameter / 2.0, 2)
+        elif f.feature_type == "box" and f.height:
+            if isinstance(f.height, (int, float)):
+                f.height = snap_parameter_value(float(f.height), STANDARD_STOCK_THICKNESSES, tolerance=0.5)
+    return doc
+
 def design_agent_node(state: AgentState) -> Dict[str, Any]:
     """
     Produces or refines a CADIRDocument based on user prompt, intent, and retrieved examples.
@@ -751,38 +860,81 @@ def design_agent_node(state: AgentState) -> Dict[str, Any]:
             "current_agent": "design_agent",
         }
 
-    # Attempt LLM-assisted generation with retrieved context
-    doc: Optional[CADIRDocument] = None
-    try:
-        llm = get_design_llm()
-        context_snippets = []
-        for ex in retrieved[:2]:
-            if ex.get("cadir_json"):
-                context_snippets.append(ex["cadir_json"][:400])
+    # Best-of-N Candidate Sampling & Parameter Snapping (Upgrade 7)
+    target_env = intent.get("dimensions")
+    candidates: List[Dict[str, Any]] = []
 
-        context_str = "\n---\n".join(context_snippets)
-        sys_msg = (
-            "You are an expert mechanical CAD designer. Generate a JSON document adhering strictly to the CADIR schema.\n"
-            "IMPORTANT: Your JSON MUST include 'schema_version', 'id', and 'name' at the root level, with valid 'features'.\n"
-            "Each feature must have 'id', 'feature_type', 'operation', and 'dependencies' fields.\n"
-            "Use only these feature_type values: box, cylinder, sphere, regular_polygon, groove, extrude, revolve, hole, pocket, fillet, chamfer, "
-            "linear_pattern, polar_pattern, mirror, boolean_union, boolean_cut, boolean_intersect.\n"
-            "For hexagonal nuts or hex heads, use feature_type: 'regular_polygon' with side_count: 6.\n"
-            f"Here are reference examples from the mechanical dataset:\n{context_str}\n"
-        )
+    context_snippets = []
+    for ex in retrieved[:2]:
+        if ex.get("cadir_json"):
+            context_snippets.append(ex["cadir_json"][:400])
+    context_str = "\n---\n".join(context_snippets)
 
-        doc = _try_llm_structured_output(llm, sys_msg, prompt, semantic_spec=intent.get("semantic_parameters"))
-    except Exception as e:
-        print(f"LLM Generation Failed: {e}", file=sys.stderr)
-        doc = None
+    sys_msg = (
+        "You are an expert mechanical CAD designer. Generate a JSON document adhering strictly to the CADIR schema.\n"
+        "IMPORTANT: Your JSON MUST include 'schema_version', 'id', and 'name' at the root level, with valid 'features'.\n"
+        "Each feature must have 'id', 'feature_type', 'operation', and 'dependencies' fields.\n"
+        "SEMANTIC TOPOLOGICAL FACE & EDGE SELECTORS (MANDATORY FOR SECONDARY FEATURES):\n"
+        "Instead of guessing raw 3D coordinates, use:\n"
+        "- target_face_selector: 'top', 'bottom', 'front', 'back', 'right', 'left', 'largest_planar'\n"
+        "- target_edge_selector: 'all_vertical', 'top_perimeter', 'bottom_perimeter', 'hole_edges'\n"
+        "STANDARD HARDWARE MACROS: 'iso_bolt', 'iso_nut', 'pipe_flange', 'roller_bearing', 'deep_groove_bearing', 'spur_gear_macro', 'helical_gear', 'bevel_gear', 'rack_gear'.\n"
+        f"Here are reference examples from the mechanical dataset:\n{context_str}\n"
+    )
+    sys_msg += "\n" + recipe_block(prompt)
+    images = state.get("image_context") or state.get("images") or ([state.get("image_data")] if state.get("image_data") else None)
+    geom_ctx = state.get("geometry_context")
 
-    # Deterministic parametric synthesis if LLM is offline or output unparseable
-    if doc is None:
-        print("LLM generation unavailable — using deterministic parametric synthesis.", file=sys.stderr)
-        doc = _synthesize_parametric_cadir(design_id, prompt, intent, retrieved)
+    # Sample N=3 candidates across temperatures [0.0, 0.2, 0.4]
+    sample_temps = [0.0, 0.2, 0.4]
+    for c_idx, temp in enumerate(sample_temps):
+        try:
+            sample_llm = ResilientChatModel(agent_type="design", temperature=temp, default_max_tokens=4096)
+            cand_doc = _try_llm_structured_output(
+                sample_llm,
+                sys_msg,
+                prompt,
+                semantic_spec=intent.get("semantic_parameters"),
+                images=images,
+                geometry_context=geom_ctx,
+            )
+            if cand_doc and cand_doc.features:
+                cand_doc = resolve_symbolic_parameters(cand_doc)
+                cand_doc = snap_cadir_parameters(cand_doc)
+                apply_frame(cand_doc, prompt)
+
+                # Deterministic scoring
+                code = cadir_to_build123d(cand_doc)
+                exec_res = execute_cad_code(code, design_id=f"{design_id}_cand_{c_idx}", timeout=25)
+                score = score_cadir_candidate(exec_res, target_envelope=target_env, dfm_warnings_count=0)
+                candidates.append({
+                    "candidate_index": c_idx,
+                    "temperature": temp,
+                    "doc": cand_doc,
+                    "score": score,
+                    "success": exec_res.get("success", False),
+                    "code": code,
+                })
+        except Exception as e:
+            print(f"Candidate {c_idx} sampling notice: {e}", file=sys.stderr)
+
+    best_doc: Optional[CADIRDocument] = None
+    if candidates:
+        # Sort by score descending
+        candidates.sort(key=lambda c: c["score"], reverse=True)
+        best_cand = candidates[0]
+        best_doc = best_cand["doc"]
+        print(f"Selected best candidate {best_cand['candidate_index']} with score {best_cand['score']:.1f}")
+
+    # Fallback to deterministic parametric synthesis if all candidates failed
+    if best_doc is None:
+        best_doc = _synthesize_parametric_cadir(design_id, prompt, intent, retrieved)
+        best_doc = snap_cadir_parameters(best_doc)
+        apply_frame(best_doc, prompt)
 
     return {
-        "cadir_document": doc,
+        "cadir_document": best_doc,
+        "candidate_scores": [{"index": c["candidate_index"], "score": c["score"]} for c in candidates],
         "current_agent": "design_agent",
     }
 
@@ -1234,33 +1386,21 @@ def _synthesize_parametric_cadir(
         doc.features.extend([f1, f2])
 
     # ── 9. U-Channel / C-Channel ───────────────────────────────────────────────
-    elif any(kw in family or kw in prompt_lower for kw in ["u-channel", "c-channel", "channel section", "u channel"]):
-        length = dims[0] if len(dims) > 0 else 150.0
-        web = dims[1] if len(dims) > 1 else 60.0
-        flange = dims[2] if len(dims) > 2 else 40.0
-        thick = dims[3] if len(dims) > 3 else 5.0
+    elif any(kw in family or kw in prompt_lower for kw in ["u-channel", "c-channel", "channel section", "u channel", "u_channel"]):
         f1 = CADIRFeature(
-            id=f"f_{uid}_solid",
-            name="Channel Outer Solid",
-            feature_type="box",
-            length=length,
-            width=web,
-            height=flange,
+            id=f"f_{uid}_u_channel",
+            name="U-Channel",
+            feature_type="u_channel",
             operation="new_body",
+            params={
+                "width": dims[0] if len(dims) > 0 else 30.0,
+                "height": dims[1] if len(dims) > 1 else 20.0,
+                "wall_thickness": dims[2] if len(dims) > 2 else 3.0,
+                "length": dims[3] if len(dims) > 3 else 80.0,
+            },
             dependencies=[],
         )
-        f2 = CADIRFeature(
-            id=f"f_{uid}_cavity",
-            name="Channel Inner Pocket",
-            feature_type="pocket",
-            length=length + 10.0,
-            width=max(4.0, web - 2.0 * thick),
-            height=flange - thick + 1.0,
-            position=Point3D(x=0.0, y=0.0, z=thick / 2.0),
-            operation="cut",
-            dependencies=[f1.id],
-        )
-        doc.features.extend([f1, f2])
+        doc.features.append(f1)
 
     # ── 10. Clevis / Lug Mount ──────────────────────────────────────────────────
     elif any(kw in family or kw in prompt_lower for kw in ["clevis", "lug base", "fork lug", "mounting lug"]):
@@ -1478,43 +1618,116 @@ def _synthesize_parametric_cadir(
         doc.features.extend([f1, f2, f3])
 
     # ── 15. V-Block Fixture ─────────────────────────────────────────────────────
-    elif any(kw in family or kw in prompt_lower for kw in ["v-block", "v block", "vee block"]):
-        length = dims[0] if len(dims) > 0 else 60.0
-        width = dims[1] if len(dims) > 1 else 60.0
-        height = dims[2] if len(dims) > 2 else 50.0
+    elif any(kw in family or kw in prompt_lower for kw in ["v-block", "v block", "vee block", "v_block"]):
         f1 = CADIRFeature(
-            id=f"f_{uid}_block",
-            name="V-Block Solid",
-            feature_type="box",
-            length=length,
-            width=width,
-            height=height,
+            id=f"f_{uid}_v_block",
+            name="V-Block",
+            feature_type="v_block",
             operation="new_body",
+            params={
+                "width": dims[0] if len(dims) > 0 else 60.0,
+                "height": dims[1] if len(dims) > 1 else 40.0,
+                "length": dims[2] if len(dims) > 2 else 50.0,
+                "groove_depth": dims[3] if len(dims) > 3 else 15.0,
+                "groove_angle": 90.0,
+            },
             dependencies=[],
         )
-        f2 = CADIRFeature(
-            id=f"f_{uid}_slot",
-            name="Bottom Clamping Slot",
-            feature_type="pocket",
-            length=length + 5.0,
-            width=12.0,
-            height=8.0,
-            position=Point3D(x=0.0, y=0.0, z=-(height / 2.0 - 4.0)),
-            operation="cut",
-            dependencies=[f1.id],
+        doc.features.append(f1)
+
+    # ── 15b. I-Beam ─────────────────────────────────────────────────────────────
+    elif any(kw in family or kw in prompt_lower for kw in ["i_beam", "i-beam", "i beam", "h-beam", "universal beam"]):
+        f1 = CADIRFeature(
+            id=f"f_{uid}_i_beam",
+            name="I-Section Beam",
+            feature_type="i_beam",
+            operation="new_body",
+            params={
+                "height": dims[0] if len(dims) > 0 else 60.0,
+                "flange_width": dims[1] if len(dims) > 1 else 50.0,
+                "flange_thickness": dims[2] if len(dims) > 2 else 6.0,
+                "web_thickness": dims[3] if len(dims) > 3 else 6.0,
+                "length": dims[4] if len(dims) > 4 else 100.0,
+            },
+            dependencies=[],
         )
-        f3 = CADIRFeature(
-            id=f"f_{uid}_v_groove",
-            name="Top V-Groove",
-            feature_type="pocket",
-            length=length + 5.0,
-            width=40.0,
-            height=20.0,
-            position=Point3D(x=0.0, y=0.0, z=height / 2.0 - 10.0),
-            operation="cut",
-            dependencies=[f2.id],
+        doc.features.append(f1)
+
+    # ── 15c. Connecting Rod Link ────────────────────────────────────────────────
+    elif any(kw in family or kw in prompt_lower for kw in ["connecting rod", "connecting_rod", "link rod", "conrod"]):
+        f1 = CADIRFeature(
+            id=f"f_{uid}_link",
+            name="Connecting Rod Link",
+            feature_type="connecting_rod",
+            operation="new_body",
+            params={
+                "outer_r": 20.0,
+                "inner_r": 12.0,
+                "center_dist": 100.0,
+                "face_width": 10.0,
+                "bore_d": 25.0,
+                "small_bore": 14.0,
+            },
+            dependencies=[],
         )
-        doc.features.extend([f1, f2, f3])
+        doc.features.append(f1)
+
+    # ── 15d. Gear Rack ──────────────────────────────────────────────────────────
+    elif any(kw in family or kw in prompt_lower for kw in ["gear rack", "gear_rack", "spur rack", "rack gear"]):
+        f1 = CADIRFeature(
+            id=f"f_{uid}_rack",
+            name="Spur Gear Rack",
+            feature_type="gear_rack",
+            operation="new_body",
+            params={
+                "module": 2.0,
+                "pressure_angle": 20.0,
+                "teeth": 8,
+                "face_width": 12.0,
+                "wall_thickness": 6.0,
+                "height": 4.5,
+            },
+            dependencies=[],
+        )
+        doc.features.append(f1)
+
+    # ── 15e. Domed Cap ──────────────────────────────────────────────────────────
+    elif any(kw in family or kw in prompt_lower for kw in ["domed_cap", "domed cap", "hemispherical cap"]):
+        f1 = CADIRFeature(
+            id=f"f_{uid}_dome",
+            name="Hemispherical Domed Cap",
+            feature_type="domed_cap",
+            operation="new_body",
+            params={
+                "outer_r": 30.0,
+                "wall_thickness": 3.0,
+                "flange_od": 84.0,
+                "flange_thickness": 3.0,
+            },
+            dependencies=[],
+        )
+        doc.features.append(f1)
+
+    # ── 15f. V-Belt Pulley ──────────────────────────────────────────────────────
+    elif any(kw in family or kw in prompt_lower for kw in ["v_pulley", "v pulley", "v-belt pulley", "pulley"]):
+        f1 = CADIRFeature(
+            id=f"f_{uid}_pulley",
+            name="V-Belt Pulley",
+            feature_type="v_pulley",
+            operation="new_body",
+            params={
+                "od": 100.0,
+                "face_width": 30.0,
+                "groove_angle": 40.0,
+                "groove_depth": 9.0,
+                "rim_id": 80.0,
+                "web_thickness": 6.0,
+                "hub_diameter": 30.0,
+                "bore_d": 16.0,
+            },
+            dependencies=[],
+        )
+        doc.features.append(f1)
 
     # ── 16. Intelligent Fallback: detect basic shape from prompt, then plate ──────
     else:

@@ -37,10 +37,14 @@ export const api = {
     request(`/api/sessions/${sessionId}/designs`),
 
   // Design
-  generateDesign: (sessionId: string, prompt: string) =>
+  generateDesign: (sessionId: string, prompt: string, images?: string[]) =>
     request("/api/design/generate", {
       method: "POST",
-      body: JSON.stringify({ session_id: sessionId, prompt }),
+      body: JSON.stringify({
+        session_id: sessionId,
+        prompt,
+        ...(images && images.length > 0 ? { images } : {}),
+      }),
     }),
 
   getDesign: (designId: string) => request(`/api/design/${designId}`),

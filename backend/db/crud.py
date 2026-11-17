@@ -4,6 +4,7 @@ from typing import List, Optional
 from db import models
 
 
+
 # ── Sessions ───────────────────────────────────────────────────────────
 def create_session(db: DBSession, name: str = "Untitled Session") -> models.Session:
     session = models.Session(name=name)
@@ -31,10 +32,20 @@ def delete_session(db: DBSession, session_id: UUID) -> bool:
 
 
 # ── Designs ────────────────────────────────────────────────────────────
-def create_design(db: DBSession, session_id: UUID, prompt: str) -> models.Design:
+def create_design(
+    db: DBSession,
+    session_id: UUID,
+    prompt: str,
+    image_data_b64: Optional[List[str]] = None,
+) -> models.Design:
     # Get next version number
     count = db.query(models.Design).filter(models.Design.session_id == session_id).count()
-    design = models.Design(session_id=session_id, prompt=prompt, version=count + 1)
+    design = models.Design(
+        session_id=session_id,
+        prompt=prompt,
+        version=count + 1,
+        image_data_b64=image_data_b64 or [],
+    )
     db.add(design)
     db.commit()
     db.refresh(design)

@@ -4,8 +4,8 @@ Connects input classification, intent parsing, few-shot dataset retrieval,
 hierarchical design planning (single-part vs multi-component assembly),
 prompt complexity classification, feature-level sequential decomposition,
 parametric CADIR synthesis, deterministic build123d code interpretation,
-sandboxed CAD execution, physical geometry validation, self-healing repair,
-and downstream engineering analysis reports.
+sandboxed CAD execution, physical geometry validation, Set-of-Mark (SoM) visual critic,
+self-healing repair, and downstream engineering analysis reports.
 """
 from typing import Literal
 from pathlib import Path
@@ -35,6 +35,8 @@ from agents.validator_nodes import (
     interpreter_node,
     cad_executor_node,
     geometry_validator_node,
+    visual_verifier_node,
+    qa_judge_node,
 )
 from agents.cadir_repair_agent import cadir_repair_node
 from agents.downstream_nodes import (
@@ -97,18 +99,26 @@ def route_cadir_validation(state: AgentState) -> Literal["interpreter", "cadir_r
     return "__end__"
 
 
-def route_geometry_validation(state: AgentState) -> Literal["dfm_agent", "cadir_repair", "__end__"]:
+def route_qa_judge(state: AgentState) -> Literal["dfm_agent", "cadir_repair", "__end__"]:
     """
-    Routes from physical geometry validation: proceed to downstream DFM analysis if valid,
-    or route to CADIR repair agent if retries remain.
+    Routes from Independent QA Critic / Judge Node (Upgrade P0.3).
+    Issues binding transitions:
+    - 'accept' -> proceed to downstream engineering analysis (dfm_agent).
+    - 'repair' -> route to cadir_repair if retries remain, else end.
+    - 'halt' -> terminate execution to avoid infinite loops on unrecoverable models.
     """
-    if state.get("geometry_valid", False):
+    decision = state.get("judge_decision") or {}
+    action = decision.get("action", "accept")
+
+    if action == "accept":
         return "dfm_agent"
 
-    max_retries = state.get("max_retries", 3)
-    attempts = state.get("repair_attempts", 0)
-    if attempts < max_retries:
-        return "cadir_repair"
+    if action == "repair":
+        max_retries = state.get("max_retries", 3)
+        attempts = state.get("repair_attempts", 0)
+        if attempts < max_retries:
+            return "cadir_repair"
+        return "__end__"
 
     return "__end__"
 
@@ -132,6 +142,8 @@ def create_cad_workflow() -> StateGraph:
     workflow.add_node("interpreter", interpreter_node)
     workflow.add_node("cad_executor", cad_executor_node)
     workflow.add_node("geometry_validator", geometry_validator_node)
+    workflow.add_node("visual_verifier", visual_verifier_node)
+    workflow.add_node("qa_judge", qa_judge_node)
     workflow.add_node("cadir_repair", cadir_repair_node)
 
     # Downstream Analysis Nodes
@@ -200,11 +212,13 @@ def create_cad_workflow() -> StateGraph:
 
     workflow.add_edge("interpreter", "cad_executor")
     workflow.add_edge("cad_executor", "geometry_validator")
+    workflow.add_edge("geometry_validator", "visual_verifier")
+    workflow.add_edge("visual_verifier", "qa_judge")
 
-    # Conditional Branch 2: Physical Geometry Validation Check
+    # Conditional Branch 2: QA Critic / Judge Binding Arbitration (Upgrade P0.3)
     workflow.add_conditional_edges(
-        "geometry_validator",
-        route_geometry_validation,
+        "qa_judge",
+        route_qa_judge,
         {
             "dfm_agent": "dfm_agent",
             "cadir_repair": "cadir_repair",

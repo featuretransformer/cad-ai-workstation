@@ -28,6 +28,7 @@ class DesignResponse(BaseModel):
     session_id: UUID
     version: int
     prompt: str
+    image_data_b64: List[str] = []
     status: str = "PENDING"
     cad_code: Optional[str] = None
     feature_tree: Dict[str, Any] = {}
@@ -61,6 +62,10 @@ class AgentLogResponse(BaseModel):
 class GenerateRequest(BaseModel):
     session_id: UUID
     prompt: str
+    # Optional images as base64-encoded strings (data URLs or raw base64).
+    # Each entry may be "data:image/png;base64,..." or a raw base64 string.
+    # Up to 3 images are processed by the multimodal intent extractor.
+    images: Optional[List[str]] = None
 
 
 class GenerateResponse(BaseModel):

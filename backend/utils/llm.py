@@ -117,16 +117,23 @@ class ResilientChatModel:
         groq_pool = get_groq_pool()
         gemini_pool = get_gemini_pool()
 
-        # Token budget tuning: lightweight planning needs far fewer tokens than full CADIR
-        if self.agent_type in ("supervisor", "classifier", "planner"):
-            max_tokens = min(kwargs.get("max_tokens", 300), 300)
-        else:
-            max_tokens = kwargs.get("max_tokens", self.default_max_tokens)
+        # Token budget tuning: accommodate rich, long engineering prompts without truncation
+        max_tokens = kwargs.get("max_tokens", self.default_max_tokens)
+
+        has_images = False
+        if isinstance(messages, list):
+            for m in messages:
+                c = getattr(m, "content", m)
+                if isinstance(c, list):
+                    for part in c:
+                        if isinstance(part, dict) and part.get("type") in ("image_url", "image"):
+                            has_images = True
+                            break
 
         # -------------------------------------------------------------
-        # TIER 1: Groq Multi-Key Pool (qwen/qwen3.8-27b)
+        # TIER 1: Groq Multi-Key Pool (qwen/qwen3.8-27b) [Text only]
         # -------------------------------------------------------------
-        if groq_pool.has_keys():
+        if not has_images and groq_pool.has_keys():
             attempted_keys = set()
             while len(attempted_keys) < len(groq_pool.keys):
                 key = groq_pool.get_next_key()
@@ -142,7 +149,8 @@ class ResilientChatModel:
                         temperature=self.temperature,
                         max_tokens=max_tokens,
                         max_retries=0,
-                        request_timeout=5.0,
+                        request_timeout=20.0,
+                        default_headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
                     )
                     res = client.invoke(messages)
                     groq_pool.mark_success(key)
@@ -161,10 +169,10 @@ class ResilientChatModel:
                         print(f"[GROQ ERROR] Key ...{key[-4:] if len(key) >= 4 else ''}: {e}")
 
         # -------------------------------------------------------------
-        # TIER 2: Groq Alternative Model (openai/gpt-oss-120b)
+        # TIER 2: Groq Alternative Model (openai/gpt-oss-120b) [Text only]
         # Separate token quota on Groq platform
         # -------------------------------------------------------------
-        if groq_pool.has_keys():
+        if not has_images and groq_pool.has_keys():
             for key in groq_pool.keys:
                 try:
                     from langchain_groq import ChatGroq
@@ -174,7 +182,8 @@ class ResilientChatModel:
                         temperature=self.temperature,
                         max_tokens=max_tokens,
                         max_retries=0,
-                        request_timeout=6.0,
+                        request_timeout=20.0,
+                        default_headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
                     )
                     res = client.invoke(messages)
                     return res
@@ -183,6 +192,7 @@ class ResilientChatModel:
 
         # -------------------------------------------------------------
         # TIER 3: Cross-Provider Failover to Google Gemini Key Pool
+        # Supports multimodal vision and text
         # -------------------------------------------------------------
         if gemini_pool.has_keys() and _google_api_reachable():
             attempted_keys = set()
@@ -192,16 +202,16 @@ class ResilientChatModel:
                     break
                 attempted_keys.add(key)
 
-                for gemini_model in ("gemini-3.1-flash-lite", "gemini-3.8-flash"):
+                for gemini_model in ("gemini-flash-latest", "gemini-3.8-flash", "gemini-2.5-flash", "gemini-3.1-flash-lite"):
                     try:
                         from langchain_google_genai import ChatGoogleGenerativeAI
                         client = ChatGoogleGenerativeAI(
                             model=gemini_model,
                             google_api_key=key,
                             temperature=self.temperature,
-                            max_output_tokens=max_tokens * 2,
+                            max_output_tokens=max_tokens,
                             max_retries=0,
-                            request_timeout=7.0,
+                            request_timeout=20.0,
                         )
                         res = client.invoke(messages)
                         gemini_pool.mark_success(key)
@@ -235,7 +245,7 @@ class ResilientChatModel:
 
 def get_supervisor_llm() -> ResilientChatModel:
     """Supervisor, DFM, Engineering, Cost, Safety, and Classifier agents."""
-    return ResilientChatModel(agent_type="supervisor", temperature=0.1, default_max_tokens=300)
+    return ResilientChatModel(agent_type="supervisor", temperature=0.1, default_max_tokens=2048)
 
 
 def get_design_llm() -> ResilientChatModel:

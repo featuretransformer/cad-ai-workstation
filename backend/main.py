@@ -8,6 +8,7 @@ from config import get_settings
 from db import models  # noqa – registers all models
 from db.base import Base, engine
 from utils.storage import init_storage
+from db.migrate import run_migrations
 
 
 @asynccontextmanager
@@ -15,6 +16,7 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown lifecycle."""
     # Startup
     Base.metadata.create_all(bind=engine)
+    run_migrations()
     await init_storage()
     yield
     # Shutdown - cleanup if needed

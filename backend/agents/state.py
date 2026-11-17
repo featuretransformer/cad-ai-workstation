@@ -45,6 +45,8 @@ class AgentState(TypedDict, total=False):
     input_type: str
     image_data: Optional[Any]
     images: Optional[List[Any]]          # multi-image list (sketch + photo + drawing)
+    image_context: Optional[List[Any]]   # pre-processed images passed to downstream generators
+    geometry_context: Optional[str]      # pre-computed mathematical coordinate grounding string
     file_path: Optional[str]
     clarification_needed: Optional[str]
     drawing_parse_error: Optional[str]
@@ -80,3 +82,16 @@ class AgentState(TypedDict, total=False):
     cumulative_cadir: Optional[Any]
     build_step_results: List[Dict[str, Any]]
     decomposition_used: bool
+
+    # ─── Deterministic Architectural Upgrades ─────────────────────────
+    brep_state_summary: Optional[Dict[str, Any]]
+    step_volumes: Optional[List[Dict[str, Any]]]
+    visual_critique: Optional[Dict[str, Any]]
+    macro_exemplars: Optional[List[Dict[str, Any]]]
+    candidate_scores: Optional[List[Dict[str, Any]]]
+
+    # ─── Verification Target & QA Judge Subsystem (P0 Upgrade) ────────
+    cad_brief: Optional[Dict[str, Any]]
+    verification_targets: Optional[List[Dict[str, Any]]]
+    verification_receipt: Optional[Dict[str, Any]]
+    judge_decision: Optional[Dict[str, Any]]

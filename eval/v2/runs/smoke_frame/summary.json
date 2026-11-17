@@ -1,0 +1,142 @@
+{
+  "n": 3,
+  "overall_pass": 66.66666666666667,
+  "overall_ci": [
+    20.8,
+    93.9
+  ],
+  "strict_pass": 66.66666666666667,
+  "valid": 100.0,
+  "iou": 0.9988666666666667,
+  "shape_pass": 100.0,
+  "dim_pass": 100.0,
+  "placement_pass": 100.0,
+  "topology_pass": 100.0,
+  "volume_pass": 66.66666666666667,
+  "mean_dim_err": 0.0,
+  "mean_placement_err": 0.0,
+  "latency_p50": 29.49,
+  "latency_p95": 30.57,
+  "aspects": {
+    "validity": 1.0,
+    "dimensions": 1.0,
+    "volume": 0.6666666666666666,
+    "positioning": 1.0,
+    "topology": 1.0,
+    "shape": 0.9982210967136645
+  },
+  "taxonomy": {
+    "volume": 1
+  },
+  "by_level": {
+    "L2": {
+      "n": 3,
+      "overall_pass": 66.66666666666667,
+      "strict_pass": 66.66666666666667,
+      "valid": 100.0,
+      "iou": 0.9988666666666667,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.6666666666666666,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 0.9982210967136645
+      }
+    }
+  },
+  "by_tier": {
+    "medium": {
+      "n": 3,
+      "overall_pass": 66.66666666666667,
+      "strict_pass": 66.66666666666667,
+      "valid": 100.0,
+      "iou": 0.9988666666666667,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.6666666666666666,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 0.9982210967136645
+      }
+    }
+  },
+  "by_family": {
+    "u_channel": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.9966,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.0,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 0.9946632901409934
+      }
+    },
+    "t_section_bar": {
+      "n": 1,
+      "overall_pass": 100.0,
+      "strict_pass": 100.0,
+      "valid": 100.0,
+      "iou": 1.0,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 1.0,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 1.0
+      }
+    },
+    "staircase_block": {
+      "n": 1,
+      "overall_pass": 100.0,
+      "strict_pass": 100.0,
+      "valid": 100.0,
+      "iou": 1.0,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 1.0,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 1.0
+      }
+    }
+  }
+}

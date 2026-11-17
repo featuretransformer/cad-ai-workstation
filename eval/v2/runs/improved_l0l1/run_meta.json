@@ -1,0 +1,16 @@
+{
+  "tag": "improved_l0l1",
+  "generator": "pipeline",
+  "input_mode": "text-only",
+  "levels": [
+    "L0",
+    "L1"
+  ],
+  "cases": 40,
+  "samples": 1,
+  "dataset": "C:\\Users\\shiva\\OneDrive\\Desktop\\cad-ai-workstation-main\\tests\\final test\\golden_cad_prompts_v2.jsonl",
+  "dataset_fingerprint": "3f03c990804c7cd180255c4a550c204002338682d11946543dfefc6d6ae85bc7",
+  "git_commit": "7494aa3",
+  "started": "2026-10-25T19:51:26",
+  "workers": 4
+}

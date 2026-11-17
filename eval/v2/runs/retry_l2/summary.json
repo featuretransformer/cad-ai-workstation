@@ -1,0 +1,524 @@
+{
+  "n": 18,
+  "overall_pass": 16.666666666666668,
+  "overall_ci": [
+    5.8,
+    39.2
+  ],
+  "strict_pass": 16.666666666666668,
+  "valid": 100.0,
+  "iou": 0.8232944444444444,
+  "shape_pass": 50.0,
+  "dim_pass": 44.44444444444444,
+  "placement_pass": 27.77777777777778,
+  "topology_pass": 72.22222222222223,
+  "volume_pass": 33.333333333333336,
+  "mean_dim_err": 32.63133333333334,
+  "mean_placement_err": 20.610222222222223,
+  "latency_p50": 24.18,
+  "latency_p95": 66.64,
+  "aspects": {
+    "validity": 1.0,
+    "dimensions": 0.4494944444444444,
+    "volume": 0.4449805555555556,
+    "positioning": 0.30000000000000004,
+    "topology": 0.7222222222222222,
+    "shape": 0.7384477833940641
+  },
+  "taxonomy": {
+    "placement": 13,
+    "volume": 12,
+    "dimensions": 10,
+    "shape": 9,
+    "topology": 5
+  },
+  "by_level": {
+    "L2": {
+      "n": 18,
+      "overall_pass": 16.666666666666668,
+      "strict_pass": 16.666666666666668,
+      "valid": 100.0,
+      "iou": 0.8232944444444444,
+      "dim_pass": 44.44444444444444,
+      "placement_pass": 27.77777777777778,
+      "topology_pass": 72.22222222222223,
+      "shape_pass": 50.0,
+      "max_dim_err": 32.63133333333334,
+      "placement_err_mm": 20.610222222222223,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.4494944444444444,
+        "volume": 0.4449805555555556,
+        "positioning": 0.30000000000000004,
+        "topology": 0.7222222222222222,
+        "shape": 0.7384477833940641
+      }
+    }
+  },
+  "by_tier": {
+    "medium": {
+      "n": 4,
+      "overall_pass": 25.0,
+      "strict_pass": 25.0,
+      "valid": 100.0,
+      "iou": 0.88895,
+      "dim_pass": 75.0,
+      "placement_pass": 50.0,
+      "topology_pass": 100.0,
+      "shape_pass": 75.0,
+      "max_dim_err": 25.0,
+      "placement_err_mm": 16.4755,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.75,
+        "volume": 0.5853375000000001,
+        "positioning": 0.5,
+        "topology": 1.0,
+        "shape": 0.8486770578626839
+      }
+    },
+    "easy": {
+      "n": 1,
+      "overall_pass": 100.0,
+      "strict_pass": 100.0,
+      "valid": 100.0,
+      "iou": 0.9993,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 1.0,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 0.9987009019286881
+      }
+    },
+    "hard": {
+      "n": 8,
+      "overall_pass": 12.5,
+      "strict_pass": 12.5,
+      "valid": 100.0,
+      "iou": 0.826425,
+      "dim_pass": 37.5,
+      "placement_pass": 25.0,
+      "topology_pass": 75.0,
+      "shape_pass": 25.0,
+      "max_dim_err": 36.036625,
+      "placement_err_mm": 15.09675,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.375,
+        "volume": 0.507325,
+        "positioning": 0.3,
+        "topology": 0.75,
+        "shape": 0.7474755731206342
+      }
+    },
+    "complex": {
+      "n": 5,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.73056,
+      "dim_pass": 20.0,
+      "placement_pass": 0.0,
+      "topology_pass": 40.0,
+      "shape_pass": 60.0,
+      "max_dim_err": 39.8142,
+      "placement_err_mm": 36.861599999999996,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.21817999999999999,
+        "volume": 0.12194,
+        "positioning": 0.0,
+        "topology": 0.4,
+        "shape": 0.5837692765497314
+      }
+    }
+  },
+  "by_family": {
+    "l_bracket": {
+      "n": 1,
+      "overall_pass": 100.0,
+      "strict_pass": 100.0,
+      "valid": 100.0,
+      "iou": 1.0,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 1.0,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 1.0
+      }
+    },
+    "u_channel": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.9975,
+      "dim_pass": 100.0,
+      "placement_pass": 0.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 10.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.0625,
+        "positioning": 0.0,
+        "topology": 1.0,
+        "shape": 0.9961070101100045
+      }
+    },
+    "cone_frustum": {
+      "n": 1,
+      "overall_pass": 100.0,
+      "strict_pass": 100.0,
+      "valid": 100.0,
+      "iou": 0.9993,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 1.0,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 0.9987009019286881
+      }
+    },
+    "pocket_block": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 1.0,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.27885000000000004,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 1.0
+      }
+    },
+    "hex_bolt": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.6808,
+      "dim_pass": 0.0,
+      "placement_pass": 0.0,
+      "topology_pass": 100.0,
+      "shape_pass": 0.0,
+      "max_dim_err": 13.793,
+      "placement_err_mm": 6.4,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.0,
+        "volume": 0.4497,
+        "positioning": 0.0,
+        "topology": 1.0,
+        "shape": 0.5518329862553251
+      }
+    },
+    "i_beam": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.5583,
+      "dim_pass": 0.0,
+      "placement_pass": 0.0,
+      "topology_pass": 100.0,
+      "shape_pass": 0.0,
+      "max_dim_err": 100.0,
+      "placement_err_mm": 55.902,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.0,
+        "volume": 1.0,
+        "positioning": 0.0,
+        "topology": 1.0,
+        "shape": 0.39860122134073095
+      }
+    },
+    "pillow_block": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.7146,
+      "dim_pass": 0.0,
+      "placement_pass": 0.0,
+      "topology_pass": 0.0,
+      "shape_pass": 0.0,
+      "max_dim_err": 111.538,
+      "placement_err_mm": 39.287,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.0,
+        "volume": 0.0,
+        "positioning": 0.0,
+        "topology": 0.0,
+        "shape": 0.5657935485225394
+      }
+    },
+    "flanged_bushing": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.7866,
+      "dim_pass": 0.0,
+      "placement_pass": 0.0,
+      "topology_pass": 100.0,
+      "shape_pass": 0.0,
+      "max_dim_err": 16.667,
+      "placement_err_mm": 3.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.0,
+        "volume": 0.37129999999999996,
+        "positioning": 0.4,
+        "topology": 1.0,
+        "shape": 0.6483368637465834
+      }
+    },
+    "gusset_bracket": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.8667,
+      "dim_pass": 0.0,
+      "placement_pass": 0.0,
+      "topology_pass": 100.0,
+      "shape_pass": 0.0,
+      "max_dim_err": 117.348,
+      "placement_err_mm": 37.087,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.0,
+        "volume": 0.88275,
+        "positioning": 0.0,
+        "topology": 1.0,
+        "shape": 0.832687968987259
+      }
+    },
+    "slotted_boss_plate": {
+      "n": 1,
+      "overall_pass": 100.0,
+      "strict_pass": 100.0,
+      "valid": 100.0,
+      "iou": 1.0,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.97715,
+        "positioning": 1.0,
+        "topology": 1.0,
+        "shape": 1.0
+      }
+    },
+    "socket_cap_screw": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.7163,
+      "dim_pass": 0.0,
+      "placement_pass": 0.0,
+      "topology_pass": 100.0,
+      "shape_pass": 0.0,
+      "max_dim_err": 28.947,
+      "placement_err_mm": 15.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.0,
+        "volume": 0.8713500000000001,
+        "positioning": 0.0,
+        "topology": 1.0,
+        "shape": 0.6279303470399972
+      }
+    },
+    "grooved_shaft": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.8757,
+      "dim_pass": 100.0,
+      "placement_pass": 100.0,
+      "topology_pass": 0.0,
+      "shape_pass": 0.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 0.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.003349999999999964,
+        "positioning": 1.0,
+        "topology": 0.0,
+        "shape": 0.8053444066077844
+      }
+    },
+    "v_block": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.9707,
+      "dim_pass": 100.0,
+      "placement_pass": 0.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 20.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.503,
+        "positioning": 0.0,
+        "topology": 1.0,
+        "shape": 0.947878463805585
+      }
+    },
+    "filleted_hub_flange": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.9475,
+      "dim_pass": 0.0,
+      "placement_pass": 0.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 21.429,
+      "placement_err_mm": 7.5,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.0,
+        "volume": 0.6097,
+        "positioning": 0.0,
+        "topology": 1.0,
+        "shape": 0.906737170581797
+      }
+    },
+    "gear_rack": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.4591,
+      "dim_pass": 0.0,
+      "placement_pass": 0.0,
+      "topology_pass": 100.0,
+      "shape_pass": 0.0,
+      "max_dim_err": 76.127,
+      "placement_err_mm": 38.762,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.0,
+        "volume": 0.0,
+        "positioning": 0.0,
+        "topology": 1.0,
+        "shape": 0.28192388548128017
+      }
+    },
+    "v_pulley": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.9463,
+      "dim_pass": 100.0,
+      "placement_pass": 0.0,
+      "topology_pass": 0.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 15.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.0,
+        "positioning": 0.0,
+        "topology": 0.0,
+        "shape": 0.773758303018326
+      }
+    },
+    "domed_cap": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.9107,
+      "dim_pass": 0.0,
+      "placement_pass": 0.0,
+      "topology_pass": 0.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 9.091,
+      "placement_err_mm": 15.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.09090000000000009,
+        "volume": 0.0,
+        "positioning": 0.0,
+        "topology": 0.0,
+        "shape": 0.7303326757535086
+      }
+    },
+    "connecting_rod": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.3892,
+      "dim_pass": 0.0,
+      "placement_pass": 0.0,
+      "topology_pass": 0.0,
+      "shape_pass": 0.0,
+      "max_dim_err": 92.424,
+      "placement_err_mm": 108.046,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 0.0,
+        "volume": 0.0,
+        "positioning": 0.0,
+        "topology": 0.0,
+        "shape": 0.22609434791374533
+      }
+    }
+  }
+}

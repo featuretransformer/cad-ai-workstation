@@ -1,0 +1,18 @@
+{
+  "tag": "smoke_frame",
+  "generator": "core",
+  "input_mode": "text-only",
+  "levels": [
+    "L2"
+  ],
+  "cases": 3,
+  "samples": 1,
+  "dataset": "C:\\Users\\shiva\\OneDrive\\Desktop\\cad-ai-workstation-main\\tests\\final test\\golden_cad_prompts_v2.jsonl",
+  "dataset_fingerprint": "0b1c49715074f31dd24b644e3f7b1694ab76d1af00269a81068e8d47b2d0dc43",
+  "git_commit": "7494aa3",
+  "started": "2026-10-25T19:31:10",
+  "workers": 2,
+  "finished": "2026-10-25T19:31:58",
+  "elapsed_sec": 47.2,
+  "scoring_failures": 0
+}

@@ -10,9 +10,9 @@ from tasks.cad_tasks import run_cad_pipeline
 router = APIRouter()
 
 
-def _run_pipeline_sync(design_id: str, prompt: str):
+def _run_pipeline_sync(design_id: str, prompt: str, images: List[str] = None):
     """Direct (non-Celery) runner for BackgroundTasks fallback."""
-    run_cad_pipeline(design_id, prompt)
+    run_cad_pipeline(design_id, prompt, images or [])
 
 
 @router.post("/generate", response_model=schemas.GenerateResponse)
@@ -22,13 +22,23 @@ def generate_cad(
     db: Session = Depends(get_db)
 ):
     """
-    Initiate CAD generation pipeline from a text prompt or engineering drawing description.
+    Initiate CAD generation pipeline from a text prompt, with optional image attachments.
+
+    Accepts up to 3 images as base64 data URLs in the ``images`` field.
+    Images feed directly into the multimodal intent extractor (LLM vision).
     """
     session = crud.get_session(db, session_id=data.session_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    design = crud.create_design(db, session_id=data.session_id, prompt=data.prompt)
+    images = data.images or []
+
+    design = crud.create_design(
+        db,
+        session_id=data.session_id,
+        prompt=data.prompt,
+        image_data_b64=images,
+    )
 
     task_id = str(design.id)
     celery_dispatched = False
@@ -38,7 +48,7 @@ def generate_cad(
         from tasks.celery_app import celery_app
         ping_res = celery_app.control.ping(timeout=0.3)
         if ping_res:
-            celery_task = run_cad_pipeline.delay(str(design.id), data.prompt)
+            celery_task = run_cad_pipeline.delay(str(design.id), data.prompt, images)
             task_id = celery_task.id
             celery_dispatched = True
     except Exception as e:
@@ -47,7 +57,7 @@ def generate_cad(
     # Fallback to FastAPI BackgroundTasks if Celery worker is offline or dispatch fails
     if not celery_dispatched:
         print(f"Executing CAD pipeline directly via BackgroundTasks for design {design.id}")
-        background_tasks.add_task(_run_pipeline_sync, str(design.id), data.prompt)
+        background_tasks.add_task(_run_pipeline_sync, str(design.id), data.prompt, images)
 
     return schemas.GenerateResponse(
         task_id=task_id,

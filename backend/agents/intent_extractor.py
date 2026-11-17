@@ -25,7 +25,7 @@ backend_dir = Path(__file__).resolve().parent.parent
 if str(backend_dir) not in sys.path:
     sys.path.insert(0, str(backend_dir))
 
-from utils.llm import get_design_llm, _google_api_reachable
+from utils.llm import get_design_llm, get_supervisor_llm, _google_api_reachable
 from config import get_settings
 
 
@@ -132,6 +132,54 @@ OUTPUT SCHEMA (use exact field names; null for unknown values):
   ],
   "gdt_notes": [string],
   "views_detected": [string],
+  "ambiguities": [string],
+  "confidence": float,
+  "needs_clarification": boolean
+}"""
+
+_TEXT_ONLY_SYSTEM_PROMPT = """You are an expert mechanical CAD/CAM computer vision engineer and dimensioning specialist.
+Your task: analyse the user's natural language mechanical prompt and extract a complete structured mechanical design intent.
+
+CRITICAL RULES:
+1. OUTPUT ONLY valid JSON matching the schema below. No markdown fences, no explanations outside JSON.
+2. If a dimension is not specified in the prompt: output null, DO NOT guess or hallucinate.
+3. Ambiguous items must be listed in "ambiguities" array.
+4. Set "confidence" (0.0-1.0) based on how completely intent is specified.
+5. Set "needs_clarification": true if confidence < 0.6 or if critical dimensions are missing.
+6. For standard parts (bolts, bearings, pins): identify standard + nominal size.
+7. For assemblies: list every sub-component in "assembly_components".
+8. Preserve engineering units; default to "mm" if ambiguous.
+
+OUTPUT SCHEMA (use exact field names; null for unknown values):
+{
+  "part_name": string or null,
+  "component_family": string,
+  "is_assembly": boolean,
+  "manufacturing_process": string or null,
+  "material_hint": string or null,
+  "units": "mm" | "inch" | "unknown",
+  "envelope": {"length": number|null, "width": number|null, "height": number|null},
+  "primary_operation": "extrude" | "revolve" | "loft" | "unknown",
+  "feature_tree": [
+    {
+      "step": integer,
+      "name": string,
+      "feature_type": string,
+      "operation": "new_body" | "join" | "cut",
+      "dimensions": {},
+      "tolerances": string or null,
+      "spatial_relation": string or null,
+      "notes": string or null
+    }
+  ],
+  "assembly_components": [
+    {"name": string, "role": string, "quantity": integer, "key_dims": {}}
+  ],
+  "standard_parts_detected": [
+    {"standard": string, "nominal_size": string, "quantity": integer}
+  ],
+  "gdt_notes": [],
+  "views_detected": [],
   "ambiguities": [string],
   "confidence": float,
   "needs_clarification": boolean
@@ -262,7 +310,7 @@ def _extract_dimensions_from_text(text: str) -> Dict[str, Any]:
 
     # Collect raw numbers
     raw_nums = [float(n) for n in re.findall(r'\b(\d+(?:\.\d+)?)\b', t) if float(n) > 0]
-    dims["raw_numbers"] = raw_nums[:8]
+    dims["raw_numbers"] = raw_nums[:32]
 
     return dims
 
@@ -479,8 +527,7 @@ def extract_design_intent(
     fallback_intent = _build_deterministic_intent(user_prompt, image_count=len(valid_images))
 
     # Attempt LLM extraction
-    settings = get_settings()
-    if valid_images and settings.gemini_api_key and _google_api_reachable():
+    if valid_images:
         try:
             from langchain_core.messages import HumanMessage
             llm = get_design_llm()
@@ -497,22 +544,19 @@ def extract_design_intent(
                 merged["source"] = "llm_vision"
                 return merged
         except Exception as exc:
-            print(f"Intent extractor LLM notice: {exc}", file=sys.stderr)
+            print(f"Intent extractor vision-LLM notice: {exc}", file=sys.stderr)
             if raise_on_error:
                 raise
 
-    # Text-only LLM path (no images but LLM available)
-    if not valid_images and user_prompt and settings.gemini_api_key and _google_api_reachable():
+    # Text-only LLM path (no images but prompt provided)
+    if not valid_images and user_prompt:
         try:
-            from langchain_core.messages import HumanMessage
-            llm = get_design_llm()
+            llm = get_supervisor_llm()
 
-            text_prompt = (
-                _VISION_SYSTEM_PROMPT
-                + "\n\nUser description:\n" + user_prompt
-                + "\n\nOutput the structured JSON intent."
-            )
-            res = llm.invoke([("system", _VISION_SYSTEM_PROMPT), ("user", user_prompt + "\n\nOutput the structured JSON intent.")])
+            res = llm.invoke([
+                ("system", _TEXT_ONLY_SYSTEM_PROMPT),
+                ("user", f"User description:\n{user_prompt}\n\nOutput the structured JSON intent.")
+            ])
             raw_text = res.content if hasattr(res, "content") else str(res)
             llm_intent = _parse_intent_response(raw_text)
             if llm_intent:

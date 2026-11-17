@@ -1,0 +1,122 @@
+{
+  "n": 2,
+  "overall_pass": 0.0,
+  "overall_ci": [
+    0.0,
+    65.8
+  ],
+  "strict_pass": 0.0,
+  "valid": 100.0,
+  "iou": 0.98005,
+  "shape_pass": 100.0,
+  "dim_pass": 100.0,
+  "placement_pass": 0.0,
+  "topology_pass": 50.0,
+  "volume_pass": 100.0,
+  "mean_dim_err": 0.0,
+  "mean_placement_err": 3.75,
+  "latency_p50": 67.12,
+  "latency_p95": 67.12,
+  "aspects": {
+    "validity": 1.0,
+    "dimensions": 1.0,
+    "volume": 0.94655,
+    "positioning": 0.25,
+    "topology": 0.5,
+    "shape": 0.9699747755404678
+  },
+  "taxonomy": {
+    "placement": 2,
+    "topology": 1
+  },
+  "by_level": {
+    "L2": {
+      "n": 2,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.98005,
+      "dim_pass": 100.0,
+      "placement_pass": 0.0,
+      "topology_pass": 50.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 3.75,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.94655,
+        "positioning": 0.25,
+        "topology": 0.5,
+        "shape": 0.9699747755404678
+      }
+    }
+  },
+  "by_tier": {
+    "easy": {
+      "n": 2,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.98005,
+      "dim_pass": 100.0,
+      "placement_pass": 0.0,
+      "topology_pass": 50.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 3.75,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.94655,
+        "positioning": 0.25,
+        "topology": 0.5,
+        "shape": 0.9699747755404678
+      }
+    }
+  },
+  "by_family": {
+    "box": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 1.0,
+      "dim_pass": 100.0,
+      "placement_pass": 0.0,
+      "topology_pass": 100.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 5.0,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 1.0,
+        "positioning": 0.0,
+        "topology": 1.0,
+        "shape": 1.0
+      }
+    },
+    "plate_center_hole": {
+      "n": 1,
+      "overall_pass": 0.0,
+      "strict_pass": 0.0,
+      "valid": 100.0,
+      "iou": 0.9601,
+      "dim_pass": 100.0,
+      "placement_pass": 0.0,
+      "topology_pass": 0.0,
+      "shape_pass": 100.0,
+      "max_dim_err": 0.0,
+      "placement_err_mm": 2.5,
+      "aspects": {
+        "validity": 1.0,
+        "dimensions": 1.0,
+        "volume": 0.8931,
+        "positioning": 0.5,
+        "topology": 0.0,
+        "shape": 0.9399495510809357
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "tag": "patch_m03",
+  "generator": "pipeline",
+  "input_mode": "text-only",
+  "levels": [
+    "L2"
+  ],
+  "cases": 1,
+  "samples": 1,
+  "dataset": "C:\\Users\\shiva\\OneDrive\\Desktop\\cad-ai-workstation-main\\tests\\final test\\golden_cad_prompts_v2.jsonl",
+  "dataset_fingerprint": "5f034d29a849e89c79732b0e64979f786594f77134a4b182382d7ea67279166f",
+  "git_commit": "7494aa3",
+  "started": "2026-10-25T19:49:19",
+  "workers": 1,
+  "finished": "2026-10-25T19:49:49",
+  "elapsed_sec": 30.2,
+  "scoring_failures": 0
+}

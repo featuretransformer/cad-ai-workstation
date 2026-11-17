@@ -1,0 +1,18 @@
+{
+  "tag": "smoke_improved",
+  "generator": "core",
+  "input_mode": "text-only",
+  "levels": [
+    "L2"
+  ],
+  "cases": 10,
+  "samples": 1,
+  "dataset": "C:\\Users\\shiva\\OneDrive\\Desktop\\cad-ai-workstation-main\\tests\\final test\\golden_cad_prompts_v2.jsonl",
+  "dataset_fingerprint": "8f85acdbf82e1932a083cc1639fea0d74fba998b930cddb72c55069e295d12f0",
+  "git_commit": "7494aa3",
+  "started": "2026-10-25T19:24:25",
+  "workers": 2,
+  "finished": "2026-10-25T19:28:58",
+  "elapsed_sec": 273.0,
+  "scoring_failures": 0
+}

@@ -58,7 +58,21 @@ def publish_event(r, design_id: str, event: dict):
     name="tasks.cad_tasks.run_cad_pipeline",
     max_retries=0
 )
-def run_cad_pipeline(self: Task, design_id: str, prompt: str):
+def run_cad_pipeline(*args, **kwargs):
+    # Flexible argument unpacking: handle Celery bound task (with self) and direct calls
+    arg_list = list(args)
+    if arg_list and (isinstance(arg_list[0], Task) or hasattr(arg_list[0], "request")):
+        arg_list.pop(0)  # Remove self Task instance
+    elif arg_list and arg_list[0] is None and len(arg_list) >= 3 and isinstance(arg_list[1], (str, bytes)):
+        arg_list.pop(0)  # Remove dummy self=None
+
+    design_id = kwargs.get("design_id") or (arg_list.pop(0) if arg_list else None)
+    prompt = kwargs.get("prompt") or (arg_list.pop(0) if arg_list else "")
+    images = kwargs.get("images") or (arg_list.pop(0) if arg_list else [])
+
+    design_id = str(design_id) if design_id is not None else None
+    images = list(images) if isinstance(images, (list, tuple)) else []
+
 
     # Redis is optional — if unavailable, pipeline still runs but no real-time WS events
     r = None
@@ -99,10 +113,20 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
         # ---------------------------------------------------------
         # 2. Initial LangGraph state
         # ---------------------------------------------------------
+        # Build images list — images are base64 data URL strings from the API
+        _images = [img for img in (images or []) if img] or None
+
+        print(f"[CAD-PIPELINE] Started design {design_id}: '{prompt[:60]}' (images: {len(_images) if _images else 0})", flush=True)
+
         initial_state: AgentState = {
             "design_id": design_id,
             "session_id": "",
             "user_prompt": prompt,
+
+            # ── Multimodal input ──────────────────────────────────────────
+            "images": _images,
+            "image_data": _images[0] if _images else None,
+            "input_type": "multimodal" if _images else "text",
 
             "parsed_intent": {},
             "cad_code": "",
@@ -177,6 +201,8 @@ def run_cad_pipeline(self: Task, design_id: str, prompt: str):
                     .get("confidence_scores", {})
                     .get(node_name, 0)
                 )
+
+                print(f"[CAD-PIPELINE]  -> {display_name} done (confidence: {confidence:.2f})", flush=True)
 
                 payload = _safe_payload(
                     node_name,

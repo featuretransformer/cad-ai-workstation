@@ -12,6 +12,7 @@ export interface Design {
   session_id: string;
   version: number;
   prompt: string;
+  image_data_b64?: string[];
   status: string;  // PENDING | IN_PROGRESS | COMPLETE | FAILED
   cad_code?: string;
   feature_tree: FeatureTree;

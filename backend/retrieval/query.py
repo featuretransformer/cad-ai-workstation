@@ -31,12 +31,14 @@ class CADIRQuery(BaseModel):
 
 KNOWN_FAMILIES = [
     "washer", "hex_nut", "nut", "bolt", "screw", "shaft", "flange",
-    "bracket", "pulley", "gear", "bearing", "plate", "housing", "cylinder", "pin"
+    "bracket", "pulley", "gear", "bearing", "plate", "housing", "cylinder", "pin",
+    "gripper", "claw", "manifold", "gearbox", "pipe", "elbow", "spring", "adapter",
+    "lever", "linkage", "coupling", "mount", "bushing", "fastener", "hub", "spindle"
 ]
 
 KNOWN_FEATURES = [
     "extrude", "revolve", "hole", "fillet", "chamfer", "box", "cylinder",
-    "polygon", "cut", "union"
+    "polygon", "cut", "union", "pocket", "groove", "torus", "sweep", "loft"
 ]
 
 
@@ -66,7 +68,7 @@ def parse_intent_to_query(prompt: str) -> CADIRQuery:
     return CADIRQuery(
         family=detected_family,
         features=detected_features if detected_features else None,
-        keywords=keywords[:5] if keywords else None,
+        keywords=keywords[:30] if keywords else None,
         limit=5,
     )
 

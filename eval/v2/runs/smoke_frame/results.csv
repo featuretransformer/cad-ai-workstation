@@ -1,0 +1,4 @@
+id,family,tier,level,overall_pass,strict_pass,recognition_pass,valid_solid,iou,chamfer_pct,dim_max_err_pct,dim_pass,vol_err_pct,placement_corner_mm,placement_pass,holes_gen,holes_exp,topology_pass,latency_sec,error
+V2-M03,u_channel,medium,L2,0,0,1,1,0.9966,0.073,0.0,1,25.0,0.0,1,0,0,1,29.49,
+V2-M07,t_section_bar,medium,L2,1,1,1,1,1.0,0.0,0.0,1,0.0,0.0,1,0,0,1,30.57,
+V2-M10,staircase_block,medium,L2,1,1,1,1,1.0,0.0,0.0,1,0.0,0.0,1,0,0,1,15.88,

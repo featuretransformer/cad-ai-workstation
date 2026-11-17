@@ -18,6 +18,8 @@ from agents.state import AgentState
 from retrieval.index import KnowledgeIndex
 from retrieval.query import search_knowledge_base, parse_intent_to_query, CADIRQuery
 from config import settings
+from utils.macro_rag import query_macro_rag
+from cad.brief_schema import build_cad_brief
 
 
 def _extract_semantic_dimensions(prompt: str) -> Dict[str, Any]:
@@ -101,7 +103,102 @@ def _extract_semantic_dimensions(prompt: str) -> Dict[str, Any]:
             [hx, -hy, 0.0],
         ]
 
+    # 7b. Taper / Angle
+    taper_m = re.search(r'(\d+(?:\.\d+)?)\s*(?:°|deg(?:ree)?s?)\s*(?:taper|included|half[\s-]*angle)', p_lower)
+    if taper_m:
+        res["taper_angle"] = float(taper_m.group(1))
+
+    # 8. Keyway dimensions (e.g. 5mm wide x 3mm deep keyway)
+    kw_m = re.search(r'(\d+(?:\.\d+)?)\s*mm\s*(?:wide|width).*?(\d+(?:\.\d+)?)\s*mm\s*(?:deep|depth)\s*(?:key(?:way)?|slot)', p_lower)
+    if not kw_m:
+        kw_m = re.search(r'key(?:way)?\s*(?:[:=])?\s*(\d+(?:\.\d+)?)\s*(?:mm)?\s*[xX×]\s*(\d+(?:\.\d+)?)', p_lower)
+    if kw_m:
+        res["keyway"] = {"width": float(kw_m.group(1)), "depth": float(kw_m.group(2))}
+
+    # 9. D-flat / D-profile shaft
+    d_flat_m = re.search(r'd[- ]?(?:flat|profile|shaft)', p_lower)
+    if d_flat_m:
+        res["d_profile"] = True
+
     return res
+
+
+def _format_geometry_context(dims: Dict[str, Any], intent: Dict[str, Any], prompt: str) -> str:
+    """Formats exact, pre-computed mathematical coordinates to ground LLM CAD generation."""
+    lines = []
+    p_lower = prompt.lower()
+    import math
+
+    # 1. Base Body Geometry & Dimensions
+    if "box" in dims:
+        b = dims["box"]
+        lx, ly, lz = b['length'], b['width'], b['height']
+        lines.append(f"• BASE ENVELOPE (BOX): Length={lx}mm, Width={ly}mm, Height={lz}mm.")
+        lines.append(f"  Solid center is at [0.0, 0.0, 0.0]. X range: [{-lx/2.0:.1f}, {lx/2.0:.1f}], Y range: [{-ly/2.0:.1f}, {ly/2.0:.1f}].")
+    elif "cylinder" in dims:
+        c = dims["cylinder"]
+        dia, rad, h = c['diameter'], c['radius'], c['height']
+        lines.append(f"• BASE ENVELOPE (CYLINDER): Diameter={dia}mm (Radius={rad}mm), Height={h}mm.")
+        lines.append(f"  Solid center is at [0.0, 0.0, 0.0]. Z range: [{-h/2.0:.1f}, {h/2.0:.1f}].")
+
+    # 2. Fastener Specification
+    if "fastener" in dims:
+        lines.append(f"• FASTENER STANDARD: {dims['fastener']}. Use clearance hole diameter = {dims['hole_diameter']}mm (radius = {dims['hole_radius']}mm).")
+        if "cbore_spec" in dims:
+            cb = dims["cbore_spec"]
+            lines.append(f"  Counterbore: dia = {cb['cbore_dia']}mm, depth = {cb['cbore_depth']}mm.")
+
+    # 3. Central Bore
+    if "bore" in dims:
+        br = dims["bore"]
+        lines.append(f"• CENTRAL BORE: Diameter={br['diameter']}mm (Radius={br['radius']}mm). Position = [0.0, 0.0, 0.0]. Operation = 'cut'.")
+
+    # 4. Bolt Circle (PCD) Coordinates
+    if "pcd" in dims:
+        r = dims["pcd"]["radius"]
+        dia = dims["pcd"]["diameter"]
+        hole_count = 4
+        hc_match = re.search(r'(\d+)\s*(?:x|holes?|bolts?)', p_lower)
+        if hc_match:
+            try:
+                cnt = int(hc_match.group(1))
+                if cnt in (3, 4, 5, 6, 8, 10, 12):
+                    hole_count = cnt
+            except ValueError:
+                pass
+
+        lines.append(f"• BOLT CIRCLE (PCD): Diameter={dia}mm (Radius={r}mm) with {hole_count} holes.")
+        lines.append("  EXACT HOLE COORDINATES (pre-computed, do not alter):")
+        for i in range(hole_count):
+            angle = (2.0 * math.pi * i) / hole_count
+            hx = round(r * math.cos(angle), 2)
+            hy = round(r * math.sin(angle), 2)
+            lines.append(f"    - PCD Hole {i+1}: position=[{hx}, {hy}, 0.0]")
+
+    # 5. Corner Holes for Rectangular Parts
+    if "suggested_corner_hole_positions" in dims:
+        lines.append("• 4 CORNER HOLES (pre-computed inside box bounds):")
+        for i, pos in enumerate(dims["suggested_corner_hole_positions"]):
+            lines.append(f"    - Corner Hole {i+1}: position={pos}")
+
+    # 6. Hexagonal Head / Nut
+    if "across_flats" in dims:
+        lines.append(f"• HEXAGONAL FEATURE: Across flats S={dims['across_flats']}mm -> circumradius R={dims['hex_radius']}mm, side_count=6.")
+
+    # 7. Taper Angle
+    if "taper_angle" in dims:
+        lines.append(f"• TAPER ANGLE: {dims['taper_angle']}° — use taper_angle parameter in extrude/revolve feature.")
+
+    # 8. Keyway
+    if "keyway" in dims:
+        kw = dims["keyway"]
+        lines.append(f"• KEYWAY: width={kw['width']}mm, depth={kw['depth']}mm — add a 'pocket' feature cut along the shaft axis.")
+
+    # 9. D-profile
+    if dims.get("d_profile"):
+        lines.append("• D-PROFILE: Cut a flat pocket tangent to the shaft surface along the full shaft length, depth = shaft_radius * 0.15.")
+
+    return "\n".join(lines)
 
 
 def supervisor_node(state: AgentState) -> Dict[str, Any]:
@@ -133,7 +230,7 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
     # Extract dimensions from prompt (e.g. 50mm, 20 mm, diameter 30)
     dim_matches = re.findall(r"(\d+(?:\.\d+)?)\s*(?:mm|in)?", prompt)
     if dim_matches:
-        parsed_intent["dimensions"] = [float(d) for d in dim_matches if float(d) > 0][:5]
+        parsed_intent["dimensions"] = [float(d) for d in dim_matches if float(d) > 0][:30]
 
     # 1b. Merge rich MechanicalDesignIntent (populated by input_classifier via intent_extractor)
     # This always takes precedence over bare regex results when available.
@@ -171,6 +268,10 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
             parsed_intent.setdefault("units", design_intent["units"])
 
     # 2. Query Knowledge Base for Few-Shot Exemplars
+    if parsed_intent.get("component_family") and parsed_intent["component_family"] != "custom_part":
+        query_obj.family = parsed_intent["component_family"]
+    if parsed_intent.get("features"):
+        query_obj.features = parsed_intent["features"]
     retrieved_examples: List[Dict[str, Any]] = []
     try:
         kb_path = Path(settings.knowledge_db_path)
@@ -302,9 +403,31 @@ def supervisor_node(state: AgentState) -> Dict[str, Any]:
     except Exception as e:
         parsed_intent["asset_retrieval_warning"] = str(e)
 
+    # ── Macro RAG Query (Upgrade 6) ──────────────────────────────────────────
+    macro_exemplars = []
+    try:
+        detected_ops = list(parsed_intent.get("features", []))
+        macro_exemplars = query_macro_rag(prompt, operations=detected_ops, limit=3)
+    except Exception:
+        pass
+
+    geom_ctx = _format_geometry_context(sem_dims, parsed_intent, prompt)
+    if macro_exemplars:
+        geom_ctx += "\n\n=== RETRIEVED ZERO-TO-CAD AND HARDWARE MACRO ANCHORS ===\n"
+        for ex in macro_exemplars:
+            geom_ctx += f"- {ex['title']} ({ex['category']}):\n  Build snippet: {ex['build123d_snippet'][:120]}...\n"
+
+    # Pre-execution engineering contract (CADBrief & Machine-Measurable Targets)
+    cad_brief = build_cad_brief(prompt, parsed_intent, sem_dims)
+    v_targets = [t.model_dump() for t in cad_brief.verification_targets]
+
     return {
         "parsed_intent": parsed_intent,
+        "geometry_context": geom_ctx,
+        "cad_brief": cad_brief.model_dump(),
+        "verification_targets": v_targets,
         "retrieved_examples": retrieved_examples,
         "retrieved_assets": retrieved_assets,
+        "macro_exemplars": macro_exemplars,
         "current_agent": "supervisor",
     }

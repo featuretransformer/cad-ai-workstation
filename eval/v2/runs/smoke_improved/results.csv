@@ -1,0 +1,11 @@
+id,family,tier,level,overall_pass,strict_pass,recognition_pass,valid_solid,iou,chamfer_pct,dim_max_err_pct,dim_pass,vol_err_pct,placement_corner_mm,placement_pass,holes_gen,holes_exp,topology_pass,latency_sec,error
+V2-E09,cone_frustum,easy,L2,0,0,0,0,0.0,100.0,100.0,0,100.0,41.231,0,0,0,1,54.18,
+V2-E01,box,easy,L2,1,1,1,1,1.0,0.0,0.0,1,0.0,0.0,1,0,0,1,64.3,
+V2-M03,u_channel,medium,L2,0,0,1,1,0.9975,0.053,0.0,1,18.75,43.875,0,0,0,1,15.41,
+V2-M07,t_section_bar,medium,L2,0,0,0,1,0.4364,24.011,100.0,0,0.0,28.284,0,0,0,1,25.91,
+V2-M05,hex_nut,medium,L2,1,1,1,1,0.9999,0.004,0.027,1,0.08,0.003,1,1,1,1,37.36,
+V2-H03,pillow_block,hard,L2,0,0,0,1,0.7149,8.743,111.538,0,312.007,39.287,0,1,3,0,7.72,
+V2-C01,spur_gear,complex,L2,1,1,1,1,0.9913,0.181,0.073,1,2.995,0.023,1,1,1,1,21.65,
+V2-C02,pipe_elbow,complex,L2,0,0,1,1,0.9822,0.392,0.0,1,0.0,0.0,1,2,1,0,22.18,
+V2-C04,torus,complex,L2,1,1,1,1,0.9654,0.501,0.0,1,0.0,0.0,1,0,0,1,29.18,
+V2-C03,compression_spring,complex,L2,1,1,1,1,0.9421,0.477,0.036,1,0.801,0.012,1,0,0,1,37.56,

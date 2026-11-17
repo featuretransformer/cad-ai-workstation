@@ -90,7 +90,7 @@ export function useCADSession() {
     }, 2000);
   }, [store, stopPolling]);
 
-  const generate = useCallback(async (prompt: string): Promise<GenerateResponse> => {
+  const generate = useCallback(async (prompt: string, images?: string[]): Promise<GenerateResponse> => {
     if (!store.activeSession) throw new Error("No active session");
 
     stopPolling();
@@ -100,7 +100,7 @@ export function useCADSession() {
     store.setRightPanelTab("agent-log");
 
     try {
-      const resp = (await api.generateDesign(store.activeSession.id, prompt)) as GenerateResponse;
+      const resp = (await api.generateDesign(store.activeSession.id, prompt, images)) as GenerateResponse;
       store.setCurrentTaskId(resp.task_id);
       store.setActiveDesignId(resp.design_id);
 
